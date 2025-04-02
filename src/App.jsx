@@ -17,6 +17,7 @@ import EmergencyCare from './pages/EmergencyCare';
 import QualifiedDoctors from './pages/QualifiedDoctors';
 import Services247 from './pages/Services247';
 import OutdoorCheckup from './pages/OutdoorCheckup';
+import AddDoctor from './pages/AddDoctor';
 
 
 function App() {
@@ -43,6 +44,7 @@ function App() {
         <Route path="/qualified-doctors" element={<QualifiedDoctors />} />
         <Route path="/24-7-services" element={<Services247 />} />
         <Route path="/outdoor-checkup" element={<OutdoorCheckup />} />
+        <Route path="/add-doctor" element={<AddDoctor />} />
 
       
       </Routes>

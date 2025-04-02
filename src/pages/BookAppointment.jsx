@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios";
 import {
   ChevronLeft,
   Calendar as CalendarIcon,
@@ -8,9 +9,13 @@ import {
   Mail,
   MessageSquare,
 } from "lucide-react";
+import Alert from "@mui/material/Alert";
+import AlertTitle from "@mui/material/AlertTitle";
+
 import { Link } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+
 const departments = [
   "Cardiology",
   "Neurology",
@@ -21,6 +26,7 @@ const departments = [
   "Dentistry",
   "Ophthalmology",
 ];
+
 const doctors = [
   {
     id: 1,
@@ -44,6 +50,7 @@ const doctors = [
       "https://images.unsplash.com/photo-1594824476967-48c8b964273f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80",
   },
 ];
+
 const timeSlots = [
   "09:00 AM",
   "09:30 AM",
@@ -58,11 +65,15 @@ const timeSlots = [
   "04:00 PM",
   "04:30 PM",
 ];
+
 function BookAppointment() {
   const [step, setStep] = useState(1);
+  const [appointmentsuccess,setAppointmentSuccess]=useState(false)
+  const [appointfailure,setAppointmentFailure]=useState(false)
+
   const [formData, setFormData] = useState({
     department: "",
-    doctor: null,
+    doctor: "",
     date: "",
     time: "",
     name: "",
@@ -70,6 +81,7 @@ function BookAppointment() {
     phone: "",
     reason: "",
   });
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -77,28 +89,104 @@ function BookAppointment() {
       [name]: value,
     }));
   };
+
   const handleDoctorSelect = (doctor) => {
     setFormData((prev) => ({
       ...prev,
       doctor,
     }));
   };
+
   const handleTimeSelect = (time) => {
     setFormData((prev) => ({
       ...prev,
       time,
     }));
   };
+
+  const convertTime12to24 = (timeStr) => {
+    // timeStr should be in the format "HH:MM AM" or "HH:MM PM"
+    const [time, modifier] = timeStr.split(' ');
+    let [hours, minutes] = time.split(':');
+    if (modifier === 'PM' && hours !== '12') {
+      hours = (parseInt(hours, 10) + 12).toString();
+    }
+    if (modifier === 'AM' && hours === '12') {
+      hours = '00';
+    }
+    // Return in "HH:MM:SS" format
+    return `${hours.padStart(2, '0')}:${minutes}:00`;
+  };
+  
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle form submission here
-    console.log("Form submitted:", formData);
-    // Show success message or redirect
+    setAppointmentSuccess(false)
+    setAppointmentFailure(false)
+
+
+    
+  
+    // Convert appointment time from "09:00 AM" to "09:00:00"
+    const convertedTime = formData.time ? convertTime12to24(formData.time) : "";
+  
+    // Prepare payload to match your Django model's expected fields
+    const payload = {
+      department_name: formData.department,
+      doctor_name: formData.doctor ? formData.doctor.name : "",
+      appointment_date: formData.date,
+      appointment_time: convertedTime,
+      patient_name: formData.name,
+      patient_email: formData.email,
+      patient_phone: formData.phone,
+      reason_to_visit: formData.reason,
+    };
+
+     console.log("Payload before sending:", payload);
+
+
+
+  
+    // API call to your Django backend (adjust URL as necessary)
+    axios
+      .post("http://127.0.0.1:8000/api/appointments/create/", payload)
+      .then((response) => {
+        console.log("Before sendinf", payload)
+        console.log("Form submitted successfully:", response.data);
+        setAppointmentSuccess(true)
+        setAppointmentFailure(false)
+
+        
+        // Optionally, you could redirect or show a success message here.
+      })
+      .catch((error) => {
+        console.error("There was an error submitting the form:", error);
+        setAppointmentSuccess(false)
+        setAppointmentFailure(true)
+      });
   };
+
+
+  setTimeout(() => {
+    setFormData({
+      department: "",
+    doctor: "",
+    date: "",
+    time: "",
+    name: "",
+    email: "",
+    phone: "",
+    reason: "",
+    });
+    setAppointmentSuccess(false);
+  }, 30000);
+
+  
+
   return (
     <div className="min-h-screen bg-gray-50">
-    <Header/>
-      <div className="bg-white shadow-sm">
+      <Header />
+      <div className="bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <Link
             to="/"
@@ -120,13 +208,19 @@ function BookAppointment() {
               {[1, 2, 3].map((item) => (
                 <div key={item} className="flex items-center">
                   <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center ${step >= item ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-600"}`}
+                    className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                      step >= item
+                        ? "bg-blue-600 text-white"
+                        : "bg-gray-200 text-gray-600"
+                    }`}
                   >
                     {item}
                   </div>
                   {item < 3 && (
                     <div
-                      className={`h-1 w-24 ${step > item ? "bg-blue-600" : "bg-gray-200"}`}
+                      className={`h-1 w-24 ${
+                        step > item ? "bg-blue-600" : "bg-gray-200"
+                      }`}
                     />
                   )}
                 </div>
@@ -155,7 +249,11 @@ function BookAppointment() {
                       }));
                       setStep(2);
                     }}
-                    className={`p-4 border rounded-lg text-left hover:border-blue-600 ${formData.department === dept ? "border-blue-600 bg-blue-50" : "border-gray-200"}`}
+                    className={`p-4 border rounded-lg text-left hover:border-blue-600 ${
+                      formData.department === dept
+                        ? "border-blue-600 bg-blue-50"
+                        : "border-gray-200"
+                    }`}
                   >
                     {dept}
                   </button>
@@ -177,7 +275,11 @@ function BookAppointment() {
                     <button
                       key={doctor.id}
                       onClick={() => handleDoctorSelect(doctor)}
-                      className={`p-4 border rounded-lg flex items-center space-x-4 hover:border-blue-600 ${formData.doctor?.id === doctor.id ? "border-blue-600 bg-blue-50" : "border-gray-200"}`}
+                      className={`p-4 border rounded-lg flex items-center space-x-4 hover:border-blue-600 ${
+                        formData.doctor?.id === doctor.id
+                          ? "border-blue-600 bg-blue-50"
+                          : "border-gray-200"
+                      }`}
                     >
                       <img
                         src={doctor.image}
@@ -214,7 +316,11 @@ function BookAppointment() {
                     <button
                       key={time}
                       onClick={() => handleTimeSelect(time)}
-                      className={`p-2 border rounded-lg text-center hover:border-blue-600 ${formData.time === time ? "border-blue-600 bg-blue-50" : "border-gray-200"}`}
+                      className={`p-2 border rounded-lg text-center hover:border-blue-600 ${
+                        formData.time === time
+                          ? "border-blue-600 bg-blue-50"
+                          : "border-gray-200"
+                      }`}
                     >
                       {time}
                     </button>
@@ -311,11 +417,14 @@ function BookAppointment() {
             </form>
           )}
         </div>
+       <div>{!appointmentsuccess && appointfailure && <Alert severity="warning" >Failed to book the appointment. Please try again later.</Alert>}</div>
+       <div>{!appointfailure && appointmentsuccess && <Alert severity="success">Your appointment has been successfully booked! You will receive a confirmation email shortly.</Alert>}</div>
+      
+
       </div>
-      <Footer/>
+      <Footer />
     </div>
   );
 }
-
 
 export default BookAppointment;

@@ -124,6 +124,14 @@ export function FindDoctors() {
             Search our network of top-rated healthcare professionals to find the
             right doctor for your needs.
           </p>
+          <div className="mt-6">
+            <Link
+              to="/add-doctor"
+              className="inline-block bg-white text-blue-600 px-6 py-2 rounded-md hover:bg-blue-50 transition-colors"
+            >
+              Add New Doctor
+            </Link>
+          </div>
         </div>
       </div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
