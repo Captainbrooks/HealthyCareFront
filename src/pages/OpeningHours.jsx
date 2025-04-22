@@ -134,7 +134,7 @@ export function OpeningHours() {
                 doctor at your convenient time.
               </p>
               <a
-                href="/find-doctors"
+                href="/bookappointment"
                 className="inline-block w-full bg-blue-600 text-white text-center px-6 py-3 rounded-md hover:bg-blue-700 transition-colors"
               >
                 Book Appointment

@@ -56,13 +56,13 @@ export function HomePage() {
       <div className="py-12 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Link to="/bookappointment"> <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+          <Link to="/bookappointment"> <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md  transition-shadow">
               <Calendar className="text-blue-600 w-8 h-8 mb-4" />
               <h3 className="text-lg font-semibold mb-2">Book Appointment</h3>
               <p className="text-gray-600 mb-4">
                 Schedule your visit with our specialists
               </p>
-              <button className="text-blue-600 flex items-center">
+              <button className="text-blue-600 flex items-center hover:cursor-pointer">
                 Book Now <ChevronRight className="w-4 h-4 ml-2" />
               </button>
             </div>
@@ -73,7 +73,7 @@ export function HomePage() {
               <p className="text-gray-600 mb-4">
                 Search our network of professionals
               </p>
-              <button className="text-blue-600 flex items-center">
+              <button className="text-blue-600 flex items-center hover:cursor-pointer">
                 Search <ChevronRight className="w-4 h-4 ml-2" />
               </button>
             </div>
@@ -86,7 +86,7 @@ export function HomePage() {
               <p className="text-gray-600 mb-4">
                 Explore our specialized departments
               </p>
-              <button className="text-blue-600 flex items-center">
+              <button className="text-blue-600 flex items-center hover:cursor-pointer">
                 View All <ChevronRight className="w-4 h-4 ml-2" />
               </button>
             </div>
@@ -95,8 +95,10 @@ export function HomePage() {
             <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
               <Clock className="text-blue-600 w-8 h-8 mb-4" />
               <h3 className="text-lg font-semibold mb-2">Opening Hours</h3>
-              <p className="text-gray-600 mb-4">Check our working hours</p>
-              <button className="text-blue-600 flex items-center">
+              <p className="text-gray-600 mb-4">Explore our hours of operations
+
+              </p>
+              <button className="text-blue-600 flex items-center hover:cursor-pointer">
                 Learn More <ChevronRight className="w-4 h-4 ml-2" />
               </button>
             </div>

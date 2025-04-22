@@ -37,7 +37,7 @@ const DepartmentCard = ({ department }) => {
             </div>
           </div>
           <Link
-            to={`/find-doctors?department=${department.name}`}
+            to={`/find-doctors`}
             className="inline-flex items-center text-blue-600 text-sm font-medium hover:text-blue-700"
           >
             Find Doctors

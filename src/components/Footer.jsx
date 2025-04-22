@@ -22,12 +22,13 @@ import {
           <Phone className="w-8 h-8 mr-4" />
           <div>
             <p className="text-sm">Emergency Contact</p>
-            <p className="text-2xl font-bold">1-800-MEDICARE</p>
+            <p className="text-2xl font-bold">1-800-HealthyCare</p>
           </div>
         </div>
-        <button className="bg-white text-blue-600 px-6 py-3 rounded-md hover:bg-gray-100">
+       <Link to="/contact"> <button className="bg-white text-blue-600 px-6 py-3 rounded-md hover:bg-gray-100">
           Contact Now
         </button>
+        </Link>
       </div>
     </div>
   </div>
@@ -35,7 +36,7 @@ import {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
         <div>
-          <h3 className="text-white text-lg font-bold mb-4">MediCare</h3>
+          <h3 className="text-white text-lg font-bold mb-4">HealthyCare</h3>
           <p className="text-sm">
             Providing quality healthcare services for over 20 years.
           </p>
@@ -54,7 +55,7 @@ import {
               </Link>
             </li>
             <li>
-              <Link to="/doctors" className="hover:text-white">
+              <Link to="/find-doctors" className="hover:text-white">
                 Doctors
               </Link>
             </li>
@@ -103,7 +104,7 @@ import {
     <div className="border-t border-gray-700">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <p className="text-center text-sm">
-          © 2023 MediCare. All rights reserved.
+          © 2025 HealthyCare. All rights reserved.
         </p>
       </div>
     </div>

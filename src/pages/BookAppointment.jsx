@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import {
   ChevronLeft,
@@ -11,10 +11,12 @@ import {
 } from "lucide-react";
 import Alert from "@mui/material/Alert";
 import AlertTitle from "@mui/material/AlertTitle";
+import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
 
 import { Link } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 const departments = [
   "Cardiology",
@@ -27,49 +29,17 @@ const departments = [
   "Ophthalmology",
 ];
 
-const doctors = [
-  {
-    id: 1,
-    name: "Dr. Sarah Johnson",
-    specialty: "Cardiology",
-    image:
-      "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80",
-  },
-  {
-    id: 2,
-    name: "Dr. Michael Chen",
-    specialty: "Neurology",
-    image:
-      "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80",
-  },
-  {
-    id: 3,
-    name: "Dr. Emily Wilson",
-    specialty: "Pediatrics",
-    image:
-      "https://images.unsplash.com/photo-1594824476967-48c8b964273f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80",
-  },
-];
-
-const timeSlots = [
-  "09:00 AM",
-  "09:30 AM",
-  "10:00 AM",
-  "10:30 AM",
-  "11:00 AM",
-  "11:30 AM",
-  "02:00 PM",
-  "02:30 PM",
-  "03:00 PM",
-  "03:30 PM",
-  "04:00 PM",
-  "04:30 PM",
-];
-
 function BookAppointment() {
   const [step, setStep] = useState(1);
-  const [appointmentsuccess,setAppointmentSuccess]=useState(false)
-  const [appointfailure,setAppointmentFailure]=useState(false)
+  const [doctors, setDoctors] = useState([])
+  const [selecteddept, setSelectedDept] = useState("")
+  const [appointmentsuccess, setAppointmentSuccess] = useState(false)
+  const [appointfailure, setAppointmentFailure] = useState(false)
+  const [customError,setCustomError]=useState('')
+  const [timeslots, setTimeSlots] = useState([])
+  const [errors, setErrors] = useState({})
+  const stepcount = useRef(null)
+  const [loading,setLoading]=useState(true)
 
   const [formData, setFormData] = useState({
     department: "",
@@ -82,20 +52,85 @@ function BookAppointment() {
     reason: "",
   });
 
+
+
+
+
+
+
+
+
+  useEffect(() => {
+    stepcount.current?.scrollIntoView({ behaviour: 'smooth' });
+
+  }, [step])
+
+
+  const fetchTimeSlots = async (doctor_id, date) => {
+    try {
+      const response = await axios.get(`http://127.0.0.1:8000/api/doctors/timeslots/${doctor_id}/?appointment_date=${date}`, {
+        withCredentials: true
+      });
+
+
+      setTimeSlots(response.data)
+      setLoading(false)
+    } catch (error) {
+      console.error('Failed to fetch time slots:', error);
+      setLoading(false)
+    }
+  }
+
+  const convertTo12HourFormat = (timeStr) => {
+    const [hour, minute] = timeStr.split(':');
+    const hourInt = parseInt(hour);
+    const ampm = hourInt >= 12 ? 'PM' : 'AM';
+    const hour12 = hourInt % 12 === 0 ? 12 : hourInt % 12;
+    return `${hour12}:${minute} ${ampm}`;
+  };
+
+
+
+  const fetchDeptDoctors = async (selecteddept) => {
+
+    try {
+      const response = await axios.get(`http://127.0.0.1:8000/api/doctors/list/${selecteddept}`);
+     
+        setDoctors(response.data)
+        setLoading(false)
+      
+    }catch (error) {
+      console.log("There was an error", error)
+      setLoading(false)
+    }
+  
+  }
+
+  const handleDoctorSelect = (doctor) => {
+    setFormData((prev) => ({
+      ...prev,
+      doctor
+    }));
+
+    if (formData.date) {
+      fetchTimeSlots(doctor.id, formData.date)
+    }
+  };
+
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
+
+    if (name === 'date' && formData.doctor) {
+      fetchTimeSlots(formData.doctor.id, value);
+    }
   };
 
-  const handleDoctorSelect = (doctor) => {
-    setFormData((prev) => ({
-      ...prev,
-      doctor,
-    }));
-  };
+
 
   const handleTimeSelect = (time) => {
     setFormData((prev) => ({
@@ -104,84 +139,93 @@ function BookAppointment() {
     }));
   };
 
-  const convertTime12to24 = (timeStr) => {
-    // timeStr should be in the format "HH:MM AM" or "HH:MM PM"
-    const [time, modifier] = timeStr.split(' ');
-    let [hours, minutes] = time.split(':');
-    if (modifier === 'PM' && hours !== '12') {
-      hours = (parseInt(hours, 10) + 12).toString();
-    }
-    if (modifier === 'AM' && hours === '12') {
-      hours = '00';
-    }
-    // Return in "HH:MM:SS" format
-    return `${hours.padStart(2, '0')}:${minutes}:00`;
-  };
-  
+
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    const newErrors = {};
+
+    if (!formData.department) newErrors.department = "Please select a department";
+    if (!formData.doctor) newErrors.doctor = "Please select a doctor";
+    if (!formData.date) newErrors.date = "Please select a date";
+    if (!formData.time) newErrors.time = "Please select a time slot.";
+    if (!formData.name.trim()) newErrors.name = "Please enter your name.";
+    if (!formData.email.trim()) {
+      newErrors.email = "Please enter your email.";
+    } else if (!/^\S+@\S+\.\S+$/.test(formData.email)) {
+      newErrors.email = "Please enter a valid email.";
+    }
+    if (!formData.phone.trim()) newErrors.phone = "Please enter your phone number";
+    if (!formData.reason.trim()) newErrors.reason = "Please mention your reason for appointment.";
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors)
+      return;
+    }
+
+    setErrors({});
+
+
     setAppointmentSuccess(false)
     setAppointmentFailure(false)
 
-
-    
-  
-    // Convert appointment time from "09:00 AM" to "09:00:00"
-    const convertedTime = formData.time ? convertTime12to24(formData.time) : "";
-  
-    // Prepare payload to match your Django model's expected fields
     const payload = {
       department_name: formData.department,
-      doctor_name: formData.doctor ? formData.doctor.name : "",
+      doctor: formData.doctor.id ? formData.doctor.id : "",
       appointment_date: formData.date,
-      appointment_time: convertedTime,
+      timeslot: formData.time,
       patient_name: formData.name,
       patient_email: formData.email,
       patient_phone: formData.phone,
       reason_to_visit: formData.reason,
     };
 
-     console.log("Payload before sending:", payload);
 
 
-
-  
-    // API call to your Django backend (adjust URL as necessary)
     axios
       .post("http://127.0.0.1:8000/api/appointments/create/", payload)
       .then((response) => {
+        console.log("response", response)
+
         console.log("Before sendinf", payload)
         console.log("Form submitted successfully:", response.data);
         setAppointmentSuccess(true)
         setAppointmentFailure(false)
 
-        
-        // Optionally, you could redirect or show a success message here.
+        setTimeout(() => {
+          setFormData({
+            department: "",
+            doctor: "",
+            date: "",
+            time: "",
+            name: "",
+            email: "",
+            phone: "",
+            reason: "",
+          });
+          setAppointmentSuccess(false);
+        }, 3000);
+
       })
       .catch((error) => {
-        console.error("There was an error submitting the form:", error);
+        const errorMsg = error.response?.data?.non_field_errors?.[0];
+        console.log("Error message:",errorMsg)
+        if (errorMsg?.includes("must make a unique set")) {
+          setCustomError("The selected time slot has already been booked. Please refresh the page & choose a different time.");
+        } else {
+          setCustomError("Something went wrong while booking. Please try again.");
+        }
         setAppointmentSuccess(false)
         setAppointmentFailure(true)
       });
   };
 
 
-  setTimeout(() => {
-    setFormData({
-      department: "",
-    doctor: "",
-    date: "",
-    time: "",
-    name: "",
-    email: "",
-    phone: "",
-    reason: "",
-    });
-    setAppointmentSuccess(false);
-  }, 30000);
 
-  
+
+
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -203,24 +247,22 @@ function BookAppointment() {
             Book an Appointment
           </h1>
           {/* Progress Steps */}
-          <div className="mb-8">
+          <div ref={stepcount} className="mb-8">
             <div className="flex items-center justify-between">
               {[1, 2, 3].map((item) => (
                 <div key={item} className="flex items-center">
                   <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                      step >= item
-                        ? "bg-blue-600 text-white"
-                        : "bg-gray-200 text-gray-600"
-                    }`}
+                    className={`w-8 h-8 rounded-full flex items-center justify-center ${step >= item
+                      ? "bg-blue-600 text-white"
+                      : "bg-gray-200 text-gray-600"
+                      }`}
                   >
                     {item}
                   </div>
-                  {item < 3 && (
+                  {item && (
                     <div
-                      className={`h-1 w-24 ${
-                        step > item ? "bg-blue-600" : "bg-gray-200"
-                      }`}
+                      className={`h-1 w-24 ${step > item ? "bg-blue-600" : "bg-gray-200"
+                        }`}
                     />
                   )}
                 </div>
@@ -236,7 +278,7 @@ function BookAppointment() {
           </div>
           {/* Step 1: Department Selection */}
           {step === 1 && (
-            <div>
+            <div >
               <h2 className="text-lg font-semibold mb-4">Select Department</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {departments.map((dept) => (
@@ -247,54 +289,100 @@ function BookAppointment() {
                         ...prev,
                         department: dept,
                       }));
+
+                      setSelectedDept(dept)
+                      fetchDeptDoctors(dept)
                       setStep(2);
                     }}
-                    className={`p-4 border rounded-lg text-left hover:border-blue-600 ${
-                      formData.department === dept
-                        ? "border-blue-600 bg-blue-50"
-                        : "border-gray-200"
-                    }`}
+                    className={`p-4 border rounded-lg text-left hover:border-blue-600 ${formData.department === dept
+                      ? "border-blue-600 bg-blue-50"
+                      : "border-gray-200"
+                      }`}
                   >
                     {dept}
                   </button>
                 ))}
               </div>
+
             </div>
           )}
           {/* Step 2: Doctor and Time Selection */}
           {step === 2 && (
+
+
             <div>
-              <h2 className="text-lg font-semibold mb-4">
-                Choose Doctor & Time
-              </h2>
+
+              <div className="flex items-center py-4">
+                <button
+                  className="text-blue-500 hover:text-blue-600"
+                  onClick={() => setStep(1)}
+                >
+                  <ArrowCircleLeftIcon fontSize="large" />
+
+
+                </button>
+
+                <h2 className="text-lg font-semibold text-gray-800 mx-auto">
+                  Choose Doctor & Time
+                </h2>
+              </div>
+
+
               {/* Doctor Selection */}
               <div className="mb-6">
                 <h3 className="text-md font-medium mb-3">Select Doctor</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {doctors.map((doctor) => (
+                <div className={`${doctors.length > 0 ? 'grid grid-cols md:grid-cols-2 gap-4' : 'grid grid-cols'}`}>
+
+                  {
+                  loading ? (<LoadingSpinner/>):
+                  
+                  doctors.length > 0 ? (doctors.map((doctor) => (
                     <button
                       key={doctor.id}
                       onClick={() => handleDoctorSelect(doctor)}
-                      className={`p-4 border rounded-lg flex items-center space-x-4 hover:border-blue-600 ${
-                        formData.doctor?.id === doctor.id
-                          ? "border-blue-600 bg-blue-50"
-                          : "border-gray-200"
-                      }`}
+                      className={`p-4 border rounded-lg flex items-center space-x-4 hover:border-blue-600 ${formData.doctor?.doctor_name === doctor.doctor_name
+                        ? "border-blue-600 bg-blue-50"
+                        : "border-gray-200"
+                        }`}
+
+
                     >
                       <img
                         src={doctor.image}
-                        alt={doctor.name}
+                        alt={doctor.doctor_name}
                         className="w-16 h-16 rounded-full object-cover"
                       />
                       <div className="flex-1">
-                        <h4 className="font-medium">{doctor.name}</h4>
+                        <h4 className="font-medium">{doctor.doctor_name}</h4>
                         <p className="text-sm text-gray-600">
-                          {doctor.specialty}
+                          {doctor.department_name}
                         </p>
+                        <span className="text-md text-gray-700 font-medium">
+                          Available:
+                          <div className="flex flex-wrap gap-1 mt-1">
+                            {doctor.availability.map((a, index) => (
+                              <span
+                                key={index}
+                                className="bg-gray-200 text-gray-800 rounded-full px-3 py-1 text-xs"
+                              >
+                                {a}
+                              </span>
+                            ))}
+                          </div>
+                        </span>
+
+
                       </div>
                     </button>
-                  ))}
+                  ))) :
+                    <div className="flex justify-center">
+                      <Alert severity="warning">There are currently no doctors in this department.</Alert>
+                    </div>
+                  }
+
+
                 </div>
+                {errors.doctor && <p className="text-sm text-red-500 mt-1">{errors.doctor}</p>}
               </div>
               {/* Date Selection */}
               <div className="mb-6">
@@ -307,38 +395,103 @@ function BookAppointment() {
                   className="w-full p-2 border rounded-lg"
                   min={new Date().toISOString().split("T")[0]}
                 />
+                {errors.date && <p className="text-sm text-red-500 mt-1">{errors.date}</p>}
+
               </div>
               {/* Time Selection */}
               <div className="mb-6">
                 <h3 className="text-md font-medium mb-3">Select Time</h3>
-                <div className="grid grid-cols-3 gap-2">
-                  {timeSlots.map((time) => (
-                    <button
-                      key={time}
-                      onClick={() => handleTimeSelect(time)}
-                      className={`p-2 border rounded-lg text-center hover:border-blue-600 ${
-                        formData.time === time
-                          ? "border-blue-600 bg-blue-50"
-                          : "border-gray-200"
-                      }`}
-                    >
-                      {time}
-                    </button>
-                  ))}
+                <div className={`${timeslots.length > 0 ? 'grid grid-cols-3 gap-2' : 'grid grid-cols'}`}>
+
+                  {
+                    formData.date ? (
+
+                      loading ? (<LoadingSpinner/>):
+                      timeslots.length > 0 ? (
+                        timeslots.map((t) => (
+                          <button
+                            key={t.id}
+                            onClick={() => handleTimeSelect(t.id)}
+                            className={`p-2 border rounded-lg text-center hover:border-blue-600 ${formData.time === t.id
+                                ? "border-blue-600 bg-blue-50"
+                                : "border-gray-200"
+                              }`}
+                          >
+                            {convertTo12HourFormat(t.start_time)} - {convertTo12HourFormat(t.end_time)}
+                          </button>
+
+                        ))
+                      ) : (
+                        <div className="grid-cols">
+                          <Alert severity="warning">Oops! No time slots found. Make sure you've picked a date that matches the doctor’s available days.</Alert>
+                        </div>
+                      )
+                    ) : (
+                      <p className="text-gray-500">Please select a date to view time slots.</p>
+                    )
+                  }
+
+
+
+
+
+                  {errors.time && <p className="text-sm text-red-500 mt-1">{errors.time}</p>}
+
+
                 </div>
               </div>
               <button
-                onClick={() => setStep(3)}
+                onClick={() => {
+                  const newErrors = {};
+
+                  if (!formData.doctor) {
+                    newErrors.doctor = "Please select a doctor.";
+                  }
+                  if (!formData.date) {
+                    newErrors.date = "Please select a date.";
+                  }
+                  if (!formData.time) {
+                    newErrors.time = "Please select a time.";
+                  }
+
+                  if (Object.keys(newErrors).length > 0) {
+                    setErrors(newErrors);  // Make sure you're using a state variable called `errors`
+                    return; // Don't proceed to next step
+                  }
+
+                  // Clear previous errors
+                  setErrors({});
+                  setStep(3); // Proceed
+                }}
                 className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
               >
                 Continue
               </button>
+
             </div>
           )}
           {/* Step 3: Personal Information */}
           {step === 3 && (
+
+
+
             <form onSubmit={handleSubmit}>
-              <h2 className="text-lg font-semibold mb-4">Your Information</h2>
+
+              <div className="flex items-center py-4">
+                <button
+                  className="text-blue-500 hover:text-blue-600 "
+                  onClick={() => setStep(2)}
+                >
+                  <ArrowCircleLeftIcon fontSize="large" />
+
+                </button>
+
+                <h2 className="text-lg font-semibold text-gray-800 mx-auto">
+                  Your Information
+                </h2>
+              </div>
+
+
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -356,6 +509,7 @@ function BookAppointment() {
                       placeholder="John Doe"
                     />
                   </div>
+                  {errors.name && <p className="text-sm text-red-500 mt-1">{errors.name}</p>}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -373,6 +527,8 @@ function BookAppointment() {
                       placeholder="john@example.com"
                     />
                   </div>
+                {errors.email && <p className="text-sm text-red-500 mt-1">{errors.email}</p>}
+
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -390,6 +546,8 @@ function BookAppointment() {
                       placeholder="+1 (234) 567-8900"
                     />
                   </div>
+                {errors.phone && <p className="text-sm text-red-500 mt-1">{errors.phone}</p>}
+
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -406,6 +564,8 @@ function BookAppointment() {
                       placeholder="Please briefly describe your symptoms or reason for visit"
                     />
                   </div>
+                {errors.reason && <p className="text-sm text-red-500 mt-1">{errors.reason}</p>}
+
                 </div>
               </div>
               <button
@@ -417,9 +577,21 @@ function BookAppointment() {
             </form>
           )}
         </div>
-       <div>{!appointmentsuccess && appointfailure && <Alert severity="warning" >Failed to book the appointment. Please try again later.</Alert>}</div>
-       <div>{!appointfailure && appointmentsuccess && <Alert severity="success">Your appointment has been successfully booked! You will receive a confirmation email shortly.</Alert>}</div>
-      
+        <div>
+  {(appointmentsuccess && !appointfailure) && (
+    <Alert severity="success">
+      Your appointment has been successfully booked! You will receive a confirmation email shortly.
+    </Alert>
+  )}
+  {(appointfailure && !appointmentsuccess && !customError) && (
+    <Alert severity="warning">
+      Failed to book the appointment. Please try again later.
+    </Alert>
+  )}
+  {(appointfailure && customError) && (
+    <Alert severity="error">{customError}</Alert>
+  )}
+</div>
 
       </div>
       <Footer />

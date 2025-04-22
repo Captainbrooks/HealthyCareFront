@@ -12,9 +12,13 @@ import {
   MessageSquare,
 } from 'lucide-react';
 
+import Alert from "@mui/material/Alert";
+import AlertTitle from "@mui/material/AlertTitle";
+
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
+import axios from 'axios';
 // Fix for default marker icon in leaflet
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -27,18 +31,57 @@ L.Icon.Default.mergeOptions({
 });
 
 function Contact() {
+    const [messagesuccess,setMessageSuccess]=useState(false)
+    const [messageFailure,setMessageFailure]=useState(false)
   const [formData, setFormData] = useState({
-    name: '',
+    fullname: '',
     email: '',
     phone: '',
     department: '',
     message: '',
   });
 
+
+  const payload={
+    fullname:formData.fullname,
+    email:formData.email,
+    phone:formData.phone,
+    department:formData.department,
+    message:formData.message
+
+  }
+
   const handleSubmit = (e) => {
+    setMessageSuccess(false)
+    setMessageFailure(false)
     e.preventDefault();
     // Handle form submission here
-    console.log('Form submitted:', formData);
+
+    axios.post("http://127.0.0.1:8000/api/appointments/message/",payload)
+    .then((response)=>{
+
+
+      setMessageSuccess(true)
+      setMessageFailure(false)
+
+      setTimeout(()=>{
+        setFormData({
+          fullname:"",
+          email:"",
+          phone:"",
+          department:"",
+          message:""
+        });
+        setMessageSuccess(false)
+        setMessageFailure(false)
+      },5000)
+
+    }).catch((error)=>{
+      console.log("there was an error", error)
+     
+      setMessageFailure(true)
+      setMessageSuccess(false)
+    })
   };
 
   const handleChange = (e) => {
@@ -49,7 +92,7 @@ function Contact() {
   };
 
   const departments = [
-    'General Inquiry',
+    'General Medicine',
     'Cardiology',
     'Neurology',
     'Pediatrics',
@@ -67,7 +110,7 @@ function Contact() {
     {
       icon: <Mail className="w-6 h-6 text-blue-600" />,
       title: 'Email',
-      details: ['contact@medicare.com', 'support@medicare.com'],
+      details: ['contact@healthycare.com', 'support@healthycare.com'],
     },
     {
       icon: <MapPin className="w-6 h-6 text-blue-600" />,
@@ -136,7 +179,7 @@ function Contact() {
                 <input
                   type="text"
                   id="name"
-                  name="name"
+                  name="fullname"
                   value={formData.name}
                   onChange={handleChange}
                   required
@@ -222,6 +265,9 @@ function Contact() {
                 Send Message
               </button>
             </form>
+
+                   <div className='my-2'>{!messagesuccess && messageFailure && <Alert severity="warning" >Failed to send your message. Please try again later.</Alert>}</div>
+                   <div className='my-2'>{!messageFailure && messagesuccess && <Alert severity="success">Your message has been sent successfully! We will get back to you shortly via email.</Alert>}</div>
           </div>
           {/* Map */}
           <div className="bg-white p-8 rounded-lg shadow-sm">
@@ -278,10 +324,12 @@ function Contact() {
               <MessageSquare className="w-8 h-8 text-blue-600 mb-4" />
               <h3 className="text-xl font-semibold mb-2">General Inquiry</h3>
               <p className="text-gray-600 mb-4">Monday - Friday: 9:00 AM - 6:00 PM</p>
-              <p className="text-gray-600">Email: contact@medicare.com</p>
+              <p className="text-gray-600">Email: support@healthycare.com</p>
             </div>
           </div>
         </div>
+
+
       </div>
    
       <Footer />

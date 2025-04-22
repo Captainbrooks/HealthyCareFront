@@ -1,7 +1,9 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import  Header  from '../components/Header'
-import  Footer  from '../components/Footer'
+import Header from '../components/Header'
+import Footer from '../components/Footer'
+import axios from 'axios';
+import LoadingSpinner from '../components/LoadingSpinner';
 import {
   Calendar,
   FileText,
@@ -12,29 +14,55 @@ import {
   User,
   ClipboardCheck,
 } from 'lucide-react'
+
+import Alert from "@mui/material/Alert";
+import AlertTitle from "@mui/material/AlertTitle";
 export function PatientPortal() {
-  const upcomingAppointments = [
-    {
-      id: 1,
-      doctor: 'Dr. Sarah Wilson',
-      department: 'Cardiology',
-      date: '2024-02-15',
-      time: '10:00 AM',
-    },
-    {
-      id: 2,
-      doctor: 'Dr. Michael Chen',
-      department: 'General Check-up',
-      date: '2024-02-20',
-      time: '2:30 PM',
-    },
-  ]
+
+  const [upcomingAppointments, setUpComingAppointments] = useState([])
+  const [loading,setLoading]=useState(true)
+  const[message,setMessage]=useState('')
+
+
+  const today = new Date().toLocaleString('en-us', { weekday: 'long' });
+
+
+
+
+
+
+
+
+  useEffect(() => {
+    const fetchAvailavleDoctors = async () => {
+
+      axios.get("http://127.0.0.1:8000/api/doctors/list/availabletoday/", {
+        withCredentials: true
+      })
+        .then((response) => {
+          setUpComingAppointments(response.data)
+          setLoading(false)
+          if(response.data.length === 0){
+            setMessage("No Available Appointments")
+          }
+
+        }).catch((error)=>{
+          console.log(error)
+          setMessage("Failed to fetch the available appointments.Please try refreshing the page")
+          setLoading(false)
+        })
+
+
+    }
+
+    fetchAvailavleDoctors()
+  }, [])
   const availableServices = [
     {
       icon: <Calendar className="w-6 h-6 text-blue-600" />,
       title: 'Schedule Appointment',
       description: 'Book appointments with our healthcare professionals',
-      link: '/book-appointment',
+      link: '/bookappointment',
     },
     {
       icon: <MessageSquare className="w-6 h-6 text-blue-600" />,
@@ -64,12 +92,12 @@ export function PatientPortal() {
     {
       title: 'Find a Doctor',
       description: 'Search our network of specialists',
-      link: '/doctors',
+      link: '/find-doctors',
     },
     {
       title: 'Medical Records',
       description: 'Access your health information',
-      link: '/records',
+      link: '/health-records',
     },
     {
       title: 'Billing & Insurance',
@@ -79,9 +107,27 @@ export function PatientPortal() {
   ]
   return (
     <div className="min-h-screen bg-gray-50">
-    <Header/>
+      <Header />
+
+
+      <div className="flex justify-end max-w-7xl mx-auto px-4 py-4">
+        <button
+          onClick={() => {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("refresh_token");
+            window.location.href = "/login"; // or use useNavigate if you prefer
+          }}
+          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+        >
+          Logout
+        </button>
+      </div>
+
+
       <div className="bg-blue-600 text-white text-center">
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
           <h1 className="text-3xl md:text-4xl font-bold mb-4">
             Patient Portal
           </h1>
@@ -130,25 +176,64 @@ export function PatientPortal() {
             <h2 className="text-xl font-semibold mb-6">
               Available Appointments
             </h2>
-            <div className="space-y-4">
-              {upcomingAppointments.map((appointment) => (
-                <div
-                  key={appointment.id}
-                  className="border-b pb-4 last:border-0"
-                >
-                  <p className="font-medium">{appointment.doctor}</p>
-                  <p className="text-sm text-gray-600">
-                    {appointment.department}
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    {appointment.date} at {appointment.time}
-                  </p>
-                  <button className="mt-2 text-blue-600 text-sm hover:text-blue-700">
-                    Book this slot
-                  </button>
-                </div>
-              ))}
-            </div>
+            
+            <div className="space-y-6">
+
+  {
+  loading ? (<LoadingSpinner/>):(
+
+    upcomingAppointments.length > 0 ?
+  upcomingAppointments.map((appointment) => (
+    <div
+      key={appointment.doctor_name}
+      className="shadow-sm p-2 flex items-start space-x-4  pb-6 last:border-none"
+    >
+      <img
+        src={appointment.image}
+        alt={appointment.doctor_name}
+        className="w-16 h-16 rounded-full object-cover shadow"
+      />
+
+      <div className="flex-1">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-lg font-semibold">{appointment.doctor_name}</p>
+            <p className="text-sm text-gray-600">{appointment.department_name}</p>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <span className="w-2 h-2 bg-green-500 rounded-full" />
+            <span className="text-green-600 text-sm font-medium">Available today</span>
+          </div>
+        </div>
+
+        <div className="mt-4 flex space-x-3">
+          <Link
+            to={`/doctor/${appointment.doctor_name.replace(/\s+/g, '-')}`}
+            className="flex-1"
+          >
+            <button className="w-full bg-white border border-blue-600 text-blue-600 px-4 py-2 rounded-md text-sm hover:bg-blue-50 transition">
+              View Profile
+            </button>
+          </Link>
+
+          <Link
+            to={`/bookappointment/${appointment.department_name}/${appointment.doctor_name.replace(/\s+/g, '-')}`}
+            className="flex-1"
+          >
+            <button className="w-full bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700 transition flex items-center justify-center">
+              <Calendar className="w-4 h-4 mr-2" />
+              Book Now
+            </button>
+          </Link>
+        </div>
+      </div>
+    </div>
+  )):(<div>
+{message && <Alert severity='warning'>{message}</Alert>}
+  </div>))}
+</div>
+
           </div>
         </div>
         <div className="bg-blue-50 rounded-lg p-8 text-center">

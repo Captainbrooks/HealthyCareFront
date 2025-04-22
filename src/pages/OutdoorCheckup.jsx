@@ -11,6 +11,7 @@ import {
 } from 'lucide-react'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
+import { Link } from 'react-router-dom'
 const services = [
   {
     icon: Home,
@@ -178,9 +179,10 @@ export function OutdoorCheckup() {
             Book a home visit with our qualified medical professionals. We bring
             healthcare to your doorstep.
           </p>
-          <button className="bg-blue-600 text-white px-8 py-3 rounded-md hover:bg-blue-700 transition-colors">
+         <Link to='/bookappointment'> <button className="bg-blue-600 text-white px-8 py-3 rounded-md hover:bg-blue-700 transition-colors">
             Schedule Now
           </button>
+          </Link>
         </div>
       </div>
       <Footer />

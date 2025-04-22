@@ -15,6 +15,8 @@ import {
   ChevronRight
   
 } from 'lucide-react'
+import { FaNutritionix } from "react-icons/fa";
+import { MdHealthAndSafety } from "react-icons/md";
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 
@@ -203,21 +205,9 @@ function Services() {
                 <div className="mb-4 size-20 flex justify-start">{service.icon}</div>
                 <h3 className="text-xl font-semibold mb-2">{service.title}</h3>
                 <p className="text-gray-600 mb-4">{service.description}</p>
-                <Link
-                  to={service.link}
-                  className="text-blue-600 flex items-center"
-                >
-                  Learn More <ChevronRight className="w-4 h-4 ml-2" />
-                </Link>
+         
               </div>
             ))}
-          </div>
-          <div className="mt-12 text-center">
-            <Link to="/services/all">
-              <button className="bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700">
-                View All Departments
-              </button>
-            </Link>
           </div>
         </div>
       </div>
@@ -301,7 +291,7 @@ function Services() {
                     <p className="font-medium">Ambulance services</p>
                   </div>
                 </div>
-                <Link to="/emergency">
+                <Link to="/emergency-care">
                   <button className="bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700">
                     Learn More
                   </button>
@@ -326,7 +316,7 @@ function Services() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow text-center">
             <div className="bg-blue-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-        
+        <MdHealthAndSafety className="text-blue-600 w-8 h-8" />
             </div>
             <h3 className="font-semibold mb-2">Health Screenings</h3>
             <p className="text-gray-600">
@@ -344,7 +334,7 @@ function Services() {
           </div>
           <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow text-center">
             <div className="bg-blue-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-
+<FaNutritionix className="text-blue-600 w-8 h-8" />
             </div>
             <h3 className="font-semibold mb-2">Nutrition Counseling</h3>
             <p className="text-gray-600">

@@ -28,7 +28,7 @@ function Header() {
               <Link to="/" className="text-gray-600 hover:text-blue-600">
                 Home
               </Link>
-              <Link to="/doctors" className="text-gray-600 hover:text-blue-600">
+              <Link to="/find-doctors" className="text-gray-600 hover:text-blue-600">
                 Doctors
               </Link>
               <Link
