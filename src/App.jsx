@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Routes, Route, Router } from 'react-router-dom';
 
 import './App.css';
@@ -27,6 +27,9 @@ import BookSpecificDoctor from './components/BookSpecificDoctor';
 
 
 function App() {
+
+
+
   
 
   return (
@@ -40,6 +43,9 @@ function App() {
    
         <Route path="/services" element={<Services />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path='/login' element={<Login/>}/>
+
+
         <Route path="/patient-portal" element={
           <PrivateRoute>
               <PatientPortal/>
@@ -59,7 +65,6 @@ function App() {
         <Route path="/outdoor-checkup" element={<OutdoorCheckup />} />
         <Route path="/doctor/:doctor_name" element={<DoctorProfile />} />
         <Route path='bookappointment/:department/:doctorName' element={<BookSpecificDoctor/>}/>
-        <Route path='/login' element={<Login/>}/>
         <Route path='/register' element={<Register/>}/>
 
 

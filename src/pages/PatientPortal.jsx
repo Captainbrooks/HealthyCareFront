@@ -110,18 +110,7 @@ export function PatientPortal() {
       <Header />
 
 
-      <div className="flex justify-end max-w-7xl mx-auto px-4 py-4">
-        <button
-          onClick={() => {
-            localStorage.removeItem("access_token");
-            localStorage.removeItem("refresh_token");
-            window.location.href = "/login"; // or use useNavigate if you prefer
-          }}
-          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-        >
-          Logout
-        </button>
-      </div>
+
 
 
       <div className="bg-blue-600 text-white text-center">

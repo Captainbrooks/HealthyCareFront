@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Mail, Lock, User, Eye, EyeOff } from 'lucide-react';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { Mail, Lock, User, Eye, EyeOff,MailCheck, Loader2, AlertTriangle, CheckCircle2 ,Check} from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import axios from 'axios';
 import Alert from '@mui/material/Alert';
 import PasswordStrengthBar from 'react-password-strength-bar';
+import LoadingSpinner from './LoadingSpinner';
 
 function Register() {
   const navigate = useNavigate();
@@ -16,6 +17,14 @@ function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
   const [registerError, setRegisterError] = useState(null);
+  const[showemailverification,setShowEmailVerification]=useState(false)
+  const[showregisterform,setShowRegisterForm]=useState(true)
+
+  const[accesstoken,setAccessToken]=useState(null)
+  const[refreshtoken,setRefreshToken]=useState(null)
+  const[code,setCode]=useState('')
+  const [isSubmitting,setIsSubmitting]=useState(false)
+  const [message, setMessage] = useState({ type: '', text: '' });
 
   useEffect(() => {
     const accessToken = localStorage.getItem("access_token");
@@ -44,15 +53,19 @@ function Register() {
     return errors;
   };
 
+  const trimmedUsername = username.trim();
+  const trimmedEmail = email.trim();
+  const trimmedPassword = password.trim();
+  const trimmedCode=code.trim();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setFieldErrors({});
     setRegisterError(null);
+    setIsSubmitting(false)
 
-    const trimmedUsername = username.trim();
-    const trimmedEmail = email.trim();
-    const trimmedPassword = password.trim();
+
 
     const newErrors = {};
 
@@ -83,11 +96,15 @@ function Register() {
       }, {
         withCredentials: true
       });
+      
 
-      localStorage.setItem('access_token', response.data.access_token);
-      localStorage.setItem('refresh_token', response.data.refresh_token);
+    
+      setAccessToken(response.data.access_token)
+      setRefreshToken(response.data.access_token)
+      setShowEmailVerification(true)
+      setShowRegisterForm(false)
 
-      navigate("/patient-portal");
+      
     } catch (err) {
       if (err.response?.data?.email) {
         setRegisterError(err.response.data.email);
@@ -96,8 +113,55 @@ function Register() {
       } else {
         setRegisterError("Something went wrong. Please try again.");
       }
+      
     }
   };
+
+
+  const handleVerify=async(e)=>{
+    e.preventDefault();
+    setIsSubmitting(false)
+    setMessage({ type: '', text: '' });
+
+    try {
+      const response=await axios.post("http://127.0.0.1:8000/api/auth/verify-code/",{
+        
+        email: trimmedEmail,
+        code: trimmedCode
+      }, {
+        withCredentials: true
+      });
+
+      console.log("response",response.data)
+      console.log("a",accesstoken)
+      console.log("t",refreshtoken)
+
+      
+
+      localStorage.setItem('access_token',accesstoken);
+      localStorage.setItem('refresh_token',refreshtoken);
+
+      setMessage({type:'success',text:`${response.data.message}. Redirecting to Patient Portal`})
+
+      setTimeout(()=>{
+        navigate("/patient-portal")
+      },5000)
+
+    
+
+    } catch (error) {
+
+      if(error.response && error.response.data.error){
+        setMessage({ type: 'error', text: error.response.data.error });
+      }else{
+        setMessage({type:'error', text:'Something went wrong. Please resend the verification code.'})
+      }
+
+      
+    
+    }
+    
+  }
 
   return (
     <>
@@ -122,7 +186,7 @@ function Register() {
 
         <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
           <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-            <form className="space-y-6" onSubmit={handleSubmit}>
+          { !showemailverification && showregisterform &&  <form className="space-y-6" onSubmit={handleSubmit}>
               {/* Username */}
               <div>
                 <label htmlFor="username" className="block text-sm font-medium text-gray-700">Username</label>
@@ -195,7 +259,7 @@ function Register() {
 
               {/* Button */}
               <div>
-                <button type="submit" className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+               <button type="submit" className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                   Create Account
                 </button>
               </div>
@@ -207,6 +271,67 @@ function Register() {
                 </div>
               )}
             </form>
+}
+
+
+{ !showregisterform && showemailverification &&
+  <div>
+            <div className="flex justify-center">
+              <div className="rounded-full bg-blue-100 p-3">
+                <MailCheck className="h-8 w-8 text-blue-600" />
+              </div>
+            </div>
+            <h2 className="text-xl mb-2 font-semibold text-center text-gray-800">
+              Verify Your Email
+            </h2>
+            <p className="mb-2 text-sm text-gray-600 text-center">
+              A 6-digit verification code has been sent to <strong>{email}</strong>
+            </p>
+            <input
+              type="text"
+              placeholder="Enter 6-digit code"
+              maxLength={6}
+              className="w-full border p-2 mb-2 rounded text-center tracking-widest font-mono text-lg"
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+            />
+
+            <button
+              onClick={handleVerify}
+              className={`w-full flex justify-center items-center gap-2 py-2 px-4 rounded text-white mb-2 ${
+                isSubmitting ? 'bg-gray-400' : 'bg-green-600 hover:bg-green-700'
+              }`}
+              disabled={isSubmitting}
+            >
+              {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
+              Verify Email
+            </button>
+
+            </div>
+
+}
+       
+        
+
+{message.text && (
+          <div
+            className={`flex items-center text-center gap-2 text-sm px-3 py-2 rounded ${
+              message.type === 'error'
+                ? 'bg-red-100 text-red-700'
+                : 'bg-green-100 text-green-700'
+            }`}
+          >
+            {message.type === 'error' ? <AlertTriangle className="w-4 h-4 text-center" /> : <Check className="w-4 h-4" />
+           
+          }
+            {message.text}
+            <LoadingSpinner/>
+          </div>
+          
+        )}
+
+    
+            
 
             {/* Support section */}
             <div className="mt-6">

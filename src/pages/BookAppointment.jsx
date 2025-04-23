@@ -18,6 +18,8 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import LoadingSpinner from "../components/LoadingSpinner";
 
+
+
 const departments = [
   "Cardiology",
   "Neurology",
@@ -52,6 +54,43 @@ function BookAppointment() {
     reason: "",
   });
 
+  const handleStep=(stepnum)=>{
+
+    console.log("step",step)
+    console.log("stepnum",stepnum)
+
+    
+
+    if(step === 2 && stepnum === 1){
+   setFormData({
+    department: "",
+    doctor: "",
+    date: "",
+   })
+
+   return setStep(stepnum)
+
+    }
+
+    
+
+
+
+
+
+ 
+  }
+
+
+  useEffect(()=>{
+    console.log("department", formData.department)
+    console.log("doctor", formData.doctor)
+    console.log("date", formData.date)
+    console.log("time", formData.time)
+
+
+  })
+
 
 
 
@@ -61,7 +100,7 @@ function BookAppointment() {
 
 
   useEffect(() => {
-    stepcount.current?.scrollIntoView({ behaviour: 'smooth' });
+    stepcount.current?.scrollIntoView({ behavior: 'smooth' });
 
   }, [step])
 
@@ -120,6 +159,7 @@ function BookAppointment() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -143,6 +183,7 @@ function BookAppointment() {
 
 
   const handleSubmit = (e) => {
+    console.log("hey")
     e.preventDefault();
 
     const newErrors = {};
@@ -181,6 +222,10 @@ function BookAppointment() {
       patient_phone: formData.phone,
       reason_to_visit: formData.reason,
     };
+
+    console.log("payload", payload)
+
+
 
 
 
@@ -228,10 +273,10 @@ function BookAppointment() {
 
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div ref={stepcount} className="min-h-screen bg-gray-50">
       <Header />
       <div className="bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div   className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <Link
             to="/"
             className="flex items-center text-blue-600 hover:text-blue-700"
@@ -241,13 +286,13 @@ function BookAppointment() {
           </Link>
         </div>
       </div>
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div  className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="bg-white rounded-lg shadow-sm p-6">
           <h1 className="text-2xl font-bold text-gray-900 mb-6">
             Book an Appointment
           </h1>
           {/* Progress Steps */}
-          <div ref={stepcount} className="mb-8">
+          <div  className="mb-8">
             <div className="flex items-center justify-between">
               {[1, 2, 3].map((item) => (
                 <div key={item} className="flex items-center">
@@ -315,7 +360,7 @@ function BookAppointment() {
               <div className="flex items-center py-4">
                 <button
                   className="text-blue-500 hover:text-blue-600"
-                  onClick={() => setStep(1)}
+                  onClick={() => handleStep(1)}
                 >
                   <ArrowCircleLeftIcon fontSize="large" />
 
@@ -401,7 +446,8 @@ function BookAppointment() {
               {/* Time Selection */}
               <div className="mb-6">
                 <h3 className="text-md font-medium mb-3">Select Time</h3>
-                <div className={`${timeslots.length > 0 ? 'grid grid-cols-3 gap-2' : 'grid grid-cols'}`}>
+                <div className={`${formData.date && timeslots.length > 0 ? 'grid grid-cols-3 gap-2' : 'block'}`}>
+
 
                   {
                     formData.date ? (
@@ -427,7 +473,9 @@ function BookAppointment() {
                         </div>
                       )
                     ) : (
-                      <p className="text-gray-500">Please select a date to view time slots.</p>
+                    <div>
+                      <p className={`${timeslots.length < 0 ? 'grid grid-cols':''}`}>Please select a date to view time slots.</p>
+                      </div>
                     )
                   }
 
@@ -435,10 +483,11 @@ function BookAppointment() {
 
 
 
-                  {errors.time && <p className="text-sm text-red-500 mt-1">{errors.time}</p>}
+               
 
 
                 </div>
+                {errors.time && <p className="text-sm text-red-500 mt-1">{errors.time}</p>}
               </div>
               <button
                 onClick={() => {
@@ -461,7 +510,7 @@ function BookAppointment() {
 
                   // Clear previous errors
                   setErrors({});
-                  setStep(3); // Proceed
+                  setStep(3);
                 }}
                 className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
               >
