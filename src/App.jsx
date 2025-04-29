@@ -23,6 +23,8 @@ import Login from './components/Login';
 import Register from './components/Register';
 import PrivateRoute from './components/PrivateRoute';
 import BookSpecificDoctor from './components/BookSpecificDoctor';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 
 
 
@@ -66,6 +68,10 @@ function App() {
         <Route path="/doctor/:doctor_name" element={<DoctorProfile />} />
         <Route path='bookappointment/:department/:doctorName' element={<BookSpecificDoctor/>}/>
         <Route path='/register' element={<Register/>}/>
+        <Route path='/forgot-password' element={<ForgotPassword/>}/>
+        <Route path='/reset-password/:token' element={<ResetPassword/>}/>
+
+
 
 
       

@@ -10,14 +10,14 @@ import AlertTitle from "@mui/material/AlertTitle";
 function Login() {
     const navigate=useNavigate()
 
-    // useEffect(() => {
-    //     const accessToken = localStorage.getItem("access_token");
-    //     if (accessToken) {
-    //       navigate("/patient-portal");
-    //     }else{
-    //       navigate("/login")
-    //     }
-    //   }, [navigate]);
+    useEffect(() => {
+        const accessToken = localStorage.getItem("access_token");
+        if (accessToken) {
+          navigate("/patient-portal");
+        }else{
+          navigate("/login")
+        }
+      }, [navigate]);
 
 
   
