@@ -26,11 +26,21 @@ function Register() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [message, setMessage] = useState({ type: '', text: '' });
 
+
+
   useEffect(() => {
     const accessToken = localStorage.getItem("access_token");
     if (accessToken) {
       navigate("/patient-portal");
     }
+
+
+
+
+
+
+
+
   }, [navigate]);
 
   const passwordRules = {
@@ -63,7 +73,6 @@ function Register() {
     setError('');
     setFieldErrors({});
     setRegisterError(null);
-    setIsSubmitting(false)
 
 
 
@@ -87,6 +96,8 @@ function Register() {
       setFieldErrors(newErrors);
       return;
     }
+
+    setIsSubmitting(true)
 
     try {
       const response = await axios.post("http://127.0.0.1:8000/api/auth/register/", {
@@ -114,7 +125,11 @@ function Register() {
         setRegisterError("Something went wrong. Please try again.");
       }
 
+    }finally{
+      setIsSubmitting(false)   
     }
+
+
   };
 
 
@@ -122,6 +137,8 @@ function Register() {
     e.preventDefault();
     setIsSubmitting(false)
     setMessage({ type: '', text: '' });
+
+    setIsSubmitting(true)
 
     try {
       const response = await axios.post("http://127.0.0.1:8000/api/auth/verify-code/", {
@@ -145,9 +162,7 @@ function Register() {
 
       setTimeout(() => {
         navigate("/patient-portal")
-      }, 5000)
-
-
+      }, 3000)
 
     } catch (error) {
 
@@ -159,6 +174,8 @@ function Register() {
 
 
 
+    }finally{
+      setIsSubmitting(false)
     }
 
 
@@ -166,7 +183,7 @@ function Register() {
   }
 
 
-  const handleResend= async(e)=>{
+  const handleResend = async (e) => {
 
     setCode("")
 
@@ -178,18 +195,18 @@ function Register() {
 
     try {
 
-      const response=await axios.post("http://127.0.0.1:8000/api/auth/resend-code/",{
+      const response = await axios.post("http://127.0.0.1:8000/api/auth/resend-code/", {
         email: trimmedEmail,
-         
-          withCredentials: true
+
+        withCredentials: true
       });
 
       console.log(response.data)
       setMessage({ type: 'success', text: `${response.data.message}` })
-        
 
-      
-      
+
+
+
     } catch (error) {
       console.log("error", error)
       if (error.response && error.response.data.error) {
@@ -197,7 +214,7 @@ function Register() {
       } else {
         setMessage({ type: 'error', text: 'Something went wrong. Please try again later' })
       }
-    } 
+    }
   }
 
 
@@ -301,10 +318,17 @@ function Register() {
 
               {/* Button */}
               <div>
-                <button type="submit" className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                  Create Account
-                </button>
-              </div>
+  <button
+    type="submit"
+    disabled={isSubmitting}
+    className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white 
+      ${isSubmitting ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'} 
+      focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500`}
+  >
+    {isSubmitting ? 'Creating...' : 'Create account'}
+  </button>
+</div>
+
 
               {/* General registration error */}
               {registerError && (
@@ -347,7 +371,7 @@ function Register() {
                   {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
                   Verify Email
                 </button>
-                
+
 
 
 
@@ -361,40 +385,39 @@ function Register() {
             {message.text && (
               <div
                 className={`flex items-center text-center gap-2 text-sm px-3 py-2 rounded ${message.type === 'error'
-                    ? 'bg-red-100 text-red-700'
-                    : 'bg-green-50 text-green-700 text-lg'
+                  ? 'bg-red-100 text-red-700'
+                  : 'bg-green-50 text-green-700 text-lg'
                   }`}
               >
                 {message.type === 'error' ? <div>
-                  
+
                   <AlertTriangle className="w-4 h-4 text-center" />
 
-
-
-
+                </div> :
                 
-                
-                </div> : <div> 
+                <div>
                   <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
-                <svg
-                  className="h-6 w-6 text-green-900"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-              </div>
+                    <svg
+                      className="h-6 w-6 text-green-900"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                  </div>
                 </div>
                 }
 
                 {message.text}
+             
+
 
               </div>
 
@@ -405,21 +428,23 @@ function Register() {
 
 
             {
-              <div className="flex flex-col items-center mt-4">
-  <p className="text-sm text-gray-600 mb-2">
-    Didn't get a code?
-  </p>
+              !showregisterform && showemailverification &&
 
-  <button
-    onClick={handleResend}
-    disabled={isSubmitting}
-    className={`w-full flex justify-center items-center gap-2 py-2 px-4 rounded text-white mb-2 transition-all duration-200 ${
-      isSubmitting ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
-    }`}
-  >
-    Resend
-  </button>
-</div>
+
+              <div className="flex flex-col items-center mt-4">
+                <p className="text-sm text-gray-600 mb-2">
+                  Didn't get a code?
+                </p>
+
+                <button
+                  onClick={handleResend}
+                  disabled={isSubmitting}
+                  className={`w-full flex justify-center items-center gap-2 py-2 px-4 rounded text-white mb-2 transition-all duration-200 ${isSubmitting ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+                    }`}
+                >
+                 {isSubmitting ? 'Resending...':'Resend'}
+                </button>
+              </div>
 
             }
 

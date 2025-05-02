@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Mail, Lock, User } from 'lucide-react'
 import Header from '../components/Header'
@@ -8,58 +8,104 @@ import { useNavigate } from 'react-router-dom'
 import Alert from "@mui/material/Alert";
 import AlertTitle from "@mui/material/AlertTitle";
 function Login() {
-    const navigate=useNavigate()
+  const navigate = useNavigate()
 
-    useEffect(() => {
-        const accessToken = localStorage.getItem("access_token");
-        if (accessToken) {
-          navigate("/patient-portal");
-        }else{
-          navigate("/login")
-        }
-      }, [navigate]);
+  useEffect(() => {
+    const accessToken = localStorage.getItem("access_token");
+    if (accessToken) {
+      navigate("/patient-portal");
+    } else {
+      navigate("/login")
+    }
 
 
-  
+  }, [navigate]);
+
+
+
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState()
   const [loginError, setLoginError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [fieldErrors, setFieldErrors] = useState({});
 
-  const handleSubmit = (e) => {
+  const [rememberMe, setRememberMe] = useState(false)
+
+
+  const trimmedEmail=email.trim();
+  const trimmedPassword = password.trim();
+  
+
+
+  const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
     // Basic validation
-    if (!email || !password) {
-      setError('Please fill in all fields')
-      return
+
+    setFieldErrors({});
+
+
+    const newErrors={};
+
+    if (!trimmedEmail) newErrors.email = "Email is required.";
+    if (!trimmedPassword) newErrors.password = ["Password is required."];
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (trimmedEmail && !emailRegex.test(trimmedEmail)) {
+      newErrors.email = "Enter a valid email address.";
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setFieldErrors(newErrors);
+      return;
     }
 
 
-    const payload={
-        email:email,
-        password:password
-    }
 
-    axios.post("http://127.0.0.1:8000/api/auth/login/",payload,{
-        withCredentials:true
-    })
-    .then((response)=>{
-        console.log("response", response.data)
-        localStorage.setItem('access_token',response.data.access_token);
-        localStorage.setItem('refresh_token',response.data.refresh_token);
+    
 
-        navigate("/patient-portal")
 
-    }).catch((error) => {
-        if (error.response && error.response.data.error) {
-          setLoginError(error.response.data.error);
-        } else {
-          setLoginError("Something went wrong. Please try again.");
-        }
+    setIsSubmitting(true)
+
+    console.log(email, password)
+
+    try {
+      const response = await axios.post("http://127.0.0.1:8000/api/auth/login/", {
+        email: trimmedEmail,
+        password: trimmedPassword,
+
+        withCredentials: true
       });
 
+      console.log("response", response.data)
+      localStorage.setItem('access_token', response.data.access_token);
+      localStorage.setItem('refresh_token', response.data.refresh_token);
+
+      if (rememberMe) {
+        localStorage.setItem('remember_email', email)
+      } else {
+        localStorage.removeItem('remember_email')
+      }
+
+      
+      navigate("/patient-portal")
+
+
+
+    } catch (error) {
+      console.log("error", error)
+      if (error.response && error.response.data.error) {
+        setLoginError(error.response.data.error);
+      } else {
+        setLoginError("Something went wrong. Please try again.");
+      }
+    } finally {
+      setIsSubmitting(false)
+    }
   }
+
+
   return (
     <>
       <Header />
@@ -107,14 +153,15 @@ function Login() {
                     name="email"
                     type="email"
                     autoComplete="email"
-                    required
-                    className="appearance-none block w-full pl-10 px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    className={`appearance-none block w-full pl-10 px-3 py-2 border ${fieldErrors.email ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500`}
                     placeholder="Enter your email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                   />
                 </div>
+                {fieldErrors.email && <p className="text-sm text-red-600 mt-1">{fieldErrors.email}</p>}
               </div>
+
               <div>
                 <label
                   htmlFor="password"
@@ -131,13 +178,14 @@ function Login() {
                     name="password"
                     type="password"
                     autoComplete="current-password"
-                    required
-                    className="appearance-none block w-full pl-10 px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    
+                    className={`appearance-none block w-full pl-10 pr-10 py-2 border ${fieldErrors.password ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500`}
                     placeholder="Enter your password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
                 </div>
+                {fieldErrors.password && <p className="text-sm text-red-600 mt-1">{fieldErrors.password}</p>}
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
@@ -145,6 +193,8 @@ function Login() {
                     id="remember-me"
                     name="remember-me"
                     type="checkbox"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
                     className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                   />
                   <label
@@ -154,6 +204,7 @@ function Login() {
                     Remember me
                   </label>
                 </div>
+
                 <div className="text-sm">
                   <Link
                     to="/forgot-password"
@@ -166,14 +217,40 @@ function Login() {
               <div>
                 <button
                   type="submit"
-                  className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white 
+                    ${isSubmitting ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'} 
+                    focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500`}
                 >
-                  Sign in
+                  {isSubmitting ? 'Logging in...' : 'Log In'}
                 </button>
 
-               
+
               </div>
               <div>{loginError && <Alert severity="error" >{loginError}</Alert>}</div>
+
+              {
+                loginError.toLowerCase().includes("verify your email before logging in") ? (
+
+                  <div>
+
+                    <p className="text-sm text-gray-600">
+                      Your email has not been verified yet.
+                      Please click the button below to verify
+                      your email and complete the verification process.
+                    </p>
+                    <Link
+                      to={`/verify-email/${email}`}
+                      className="mt-3 inline-block px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+                    >
+                      Verify Email
+                    </Link>
+                  </div>
+
+                ) :
+
+
+                  ("")
+              }
 
             </form>
             <div className="mt-6">

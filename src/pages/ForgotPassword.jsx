@@ -33,7 +33,6 @@ export function ForgotPassword() {
         withCredentials: true
       });
 
-      console.log(email);
       console.log(response.data)
       setMessage({ type: 'success', text: `${response.data.message}`})
 
@@ -114,62 +113,99 @@ export function ForgotPassword() {
               </div>
             </form>
           ) : (
-            <div className="text-center py-4">
-              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
-                <svg
-                  className="h-6 w-6 text-green-600"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-              </div>
-              <h3 className="mt-3 text-xl font-medium text-gray-900">
-                Check your email
-              </h3>
-              <p className="mt-2 text-sm text-gray-500">
-                We've sent a password reset link to {email}
-              </p>
-              <div className="mt-6">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsSubmitted(false)
-                    setEmail('')
-                  }}
-                  className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                >
-                  Try another email
-                </button>
-              </div>
-            </div>
-          )}
-          <div className="mt-6">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300" />
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">Or</span>
-              </div>
-            </div>
-            <div className="mt-6">
-              <a
-                href="#"
-                className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
-              >
-                <ArrowLeftIcon className="mr-2 h-5 w-5 text-gray-400" />
-                Back to login
-              </a>
-            </div>
-          </div>
+
+
+
+
+<div className="text-center py-4">
+  <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full 
+      ${message.type === 'success' ? 'bg-green-100' : 'bg-red-100'}">
+    
+    {message.type === 'success' ? (
+      <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
+      <svg
+        className="h-6 w-6 text-gray-900"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M5 13l4 4L19 7"
+        />
+      </svg>
+    </div>
+    ) : (
+     
+      <svg
+        className="h-8 w-8 text-red-600"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M12 8v4m0 4h.01M12 2a10 10 0 100 20 10 10 0 000-20z"
+        />
+      </svg>
+    )}
+  </div>
+
+  <h3 className="mt-3 text-xl font-medium text-gray-900">
+    {message.type === 'success' ? 'Check your email' : ''}
+  </h3>
+
+  <p className={`mt-2 text-md ${message.type === 'success' ? 'text-green-600' : 'text-red-600'}`}>
+    {message.text}
+  </p>
+
+  <div className="mt-6">
+    <button
+      type="button"
+      onClick={() => {
+        setIsSubmitted(false);
+        setEmail('');
+        setMessage({ type: '', text: '' });
+      }}
+      className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+    >
+      Try another email
+    </button>
+  </div>
+
+  <div className="mt-6">
+    <div className="relative">
+      <div className="absolute inset-0 flex items-center">
+        <div className="w-full border-t border-gray-300" />
+      </div>
+      <div className="relative flex justify-center text-sm">
+        <span className="px-2 bg-white text-gray-500">Or</span>
+      </div>
+    </div>
+    <div className="mt-6">
+      <a
+        href="#"
+        className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
+      >
+        <ArrowLeftIcon className="mr-2 h-5 w-5 text-gray-400" />
+        Back to login
+      </a>
+    </div>
+  </div>
+</div>
+
+
+
+          )
+         
+          }
+  
         </div>
       </div>
     </div>
