@@ -1,21 +1,21 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Star, Calendar } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import DoctorProfile from '../pages/DoctorProfile';
+import { useAuthContext } from '../hooks/useAuthContext';
 
 const DoctorCard = ({ doctor }) => {
-  // Ensure doctor.availability is an array
+
+  const {user}=useAuthContext()
+
   const availability = Array.isArray(doctor.availability) ? doctor.availability : [];
   console.log("AVAIL:",availability,doctor.doctor_name)
 
-  // Get today's day (e.g., "Monday", "Tuesday", etc.)
   const today = new Date().toLocaleString('en-us', { weekday: 'long' });
   console.log(today)
 
-  // Format the doctor's availability (e.g., "Monday, Wednesday")
   const formattedAvailability = availability.join(', ');
 
-  // Check if the doctor is available today
   const isAvailableToday = availability.includes(today);
   console.log(isAvailableToday)
 
@@ -65,12 +65,20 @@ const DoctorCard = ({ doctor }) => {
 
 
 
-              <Link to={`/bookappointment/${doctor.department_name}/${doctor.doctor_name.replace(/\s+/g, '-')}`} className="flex-1">
-                <button className="w-full bg-blue-600 text-white px-3 py-2 rounded text-sm hover:bg-blue-700 transition-colors flex items-center justify-center">
-                  <Calendar className="w-4 h-4 mr-1" />
-                  Book Now
-                </button>
-              </Link>
+<Link
+  to={
+    user
+      ? `/bookappointment/${doctor.department_name}/${doctor.doctor_name.replace(/\s+/g, '-')}`
+      : '/login'
+  }
+  className="flex-1"
+>
+  <button className="w-full bg-blue-600 text-white px-3 py-2 rounded text-sm hover:bg-blue-700 transition-colors flex items-center justify-center">
+    <Calendar className="w-4 h-4 mr-1" />
+    Book Now
+  </button>
+</Link>
+
             </div>
           </div>
         </div>

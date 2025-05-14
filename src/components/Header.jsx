@@ -16,6 +16,7 @@ function Header() {
   const [user, setUser] = useState('')
   const navigate=useNavigate()
   const location = useLocation()
+  const [isDoctor,setIsDoctor]=useState(false)
 
 
   useEffect(() => {
@@ -24,8 +25,15 @@ function Header() {
     try {
       if(accessToken){
         const decoded=jwtDecode(accessToken)
+        if(decoded.role==="Doctor"){
+          setIsDoctor(true)
+          setUser(decoded.username)
+          return
+        }
+
         setUser(decoded.username)
-        return
+        setIsDoctor(false)
+  
       }
     } catch (error) {
       localStorage.removeItem('access_token')
@@ -85,8 +93,10 @@ function Header() {
               <Link to="/contact" className="text-gray-600 hover:text-blue-600">
                 Contact
               </Link>
-              {!isPatientPortal ? (<Link to="/patient-portal">  <button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
-                Patient Portal
+
+              
+              {!isPatientPortal ? (<Link to={!isDoctor ? "/patient-portal":"/dashboard"}>  <button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
+               {isDoctor ? "Doctor Dashboard":"Patient Portal"}
               </button></Link>)
                 :
                 (<div className="flex items-center space-x-4">
@@ -102,10 +112,10 @@ function Header() {
                   <button onClick={() => {
                     localStorage.removeItem("access_token");
                     localStorage.removeItem("refresh_token");
+                    localStorage.removeItem('user')
                     window.location.href = "/login";
                   }} className="ml-2 px-4 py-2 text-white  bg-red-400 hover:bg-red-600 hover:text-white rounded-2xl flex items-center transition-colors">
                     <LogOut className="h-4 w-4 mr-2" />
-
                     Logout
                   </button>
                 </div>)

@@ -17,6 +17,8 @@ import { Link } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import LoadingSpinner from "../components/LoadingSpinner";
+import { jwtDecode } from "jwt-decode";
+import { useNavigate } from "react-router-dom";
 
 
 
@@ -37,11 +39,35 @@ function BookAppointment() {
   const [selecteddept, setSelectedDept] = useState("")
   const [appointmentsuccess, setAppointmentSuccess] = useState(false)
   const [appointfailure, setAppointmentFailure] = useState(false)
-  const [customError,setCustomError]=useState('')
+  const [customError, setCustomError] = useState('')
   const [timeslots, setTimeSlots] = useState([])
   const [errors, setErrors] = useState({})
   const stepcount = useRef(null)
-  const [loading,setLoading]=useState(true)
+  const [loading, setLoading] = useState(true)
+  const [user_id, setUser_ID] = useState(null)
+
+  const navigate = useNavigate()
+
+
+
+
+  useEffect(() => {
+    const token = localStorage.getItem('access_token')
+
+    if (!token) {
+      navigate("/login")
+      return
+    }
+
+    const decodedToken = jwtDecode(token)
+    console.log("decodedtoken at book", decodedToken)
+
+
+
+    if (decodedToken.id) {
+      setUser_ID(decodedToken.id)
+    }
+  })
 
   const [formData, setFormData] = useState({
     department: "",
@@ -54,35 +80,35 @@ function BookAppointment() {
     reason: "",
   });
 
-  const handleStep=(stepnum)=>{
+  const handleStep = (stepnum) => {
 
-    console.log("step",step)
-    console.log("stepnum",stepnum)
+    console.log("step", step)
+    console.log("stepnum", stepnum)
 
-    
 
-    if(step === 2 && stepnum === 1){
-   setFormData({
-    department: "",
-    doctor: "",
-    date: "",
-   })
 
-   return setStep(stepnum)
+    if (step === 2 && stepnum === 1) {
+      setFormData({
+        department: "",
+        doctor: "",
+        date: "",
+      })
+
+      return setStep(stepnum)
 
     }
 
-    
 
 
 
 
 
- 
+
+
   }
 
 
-  useEffect(()=>{
+  useEffect(() => {
     console.log("department", formData.department)
     console.log("doctor", formData.doctor)
     console.log("date", formData.date)
@@ -134,15 +160,15 @@ function BookAppointment() {
 
     try {
       const response = await axios.get(`http://127.0.0.1:8000/api/doctors/list/${selecteddept}`);
-     
-        setDoctors(response.data)
-        setLoading(false)
-      
-    }catch (error) {
+
+      setDoctors(response.data)
+      setLoading(false)
+
+    } catch (error) {
       console.log("There was an error", error)
       setLoading(false)
     }
-  
+
   }
 
   const handleDoctorSelect = (doctor) => {
@@ -159,7 +185,7 @@ function BookAppointment() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    
+
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -217,9 +243,7 @@ function BookAppointment() {
       doctor: formData.doctor.id ? formData.doctor.id : "",
       appointment_date: formData.date,
       timeslot: formData.time,
-      patient_name: formData.name,
-      patient_email: formData.email,
-      patient_phone: formData.phone,
+      patient: user_id,
       reason_to_visit: formData.reason,
     };
 
@@ -255,8 +279,9 @@ function BookAppointment() {
 
       })
       .catch((error) => {
+        console.log("Error", error)
         const errorMsg = error.response?.data?.non_field_errors?.[0];
-        console.log("Error message:",errorMsg)
+        console.log("Error message:", errorMsg)
         if (errorMsg?.includes("must make a unique set")) {
           setCustomError("The selected time slot has already been booked. Please refresh the page & choose a different time.");
         } else {
@@ -276,7 +301,7 @@ function BookAppointment() {
     <div ref={stepcount} className="min-h-screen bg-gray-50">
       <Header />
       <div className="bg-white">
-        <div   className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <Link
             to="/"
             className="flex items-center text-blue-600 hover:text-blue-700"
@@ -286,13 +311,13 @@ function BookAppointment() {
           </Link>
         </div>
       </div>
-      <div  className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="bg-white rounded-lg shadow-sm p-6">
           <h1 className="text-2xl font-bold text-gray-900 mb-6">
             Book an Appointment
           </h1>
           {/* Progress Steps */}
-          <div  className="mb-8">
+          <div className="mb-8">
             <div className="flex items-center justify-between">
               {[1, 2, 3].map((item) => (
                 <div key={item} className="flex items-center">
@@ -379,50 +404,71 @@ function BookAppointment() {
                 <div className={`${doctors.length > 0 ? 'grid grid-cols md:grid-cols-2 gap-4' : 'grid grid-cols'}`}>
 
                   {
-                  loading ? (<LoadingSpinner/>):
-                  
-                  doctors.length > 0 ? (doctors.map((doctor) => (
-                    <button
-                      key={doctor.id}
-                      onClick={() => handleDoctorSelect(doctor)}
-                      className={`p-4 border rounded-lg flex items-center space-x-4 hover:border-blue-600 ${formData.doctor?.doctor_name === doctor.doctor_name
-                        ? "border-blue-600 bg-blue-50"
-                        : "border-gray-200"
-                        }`}
+                    loading ? (<LoadingSpinner />) :
 
-
-                    >
-                      <img
-                        src={doctor.image}
-                        alt={doctor.doctor_name}
-                        className="w-16 h-16 rounded-full object-cover"
-                      />
-                      <div className="flex-1">
-                        <h4 className="font-medium">{doctor.doctor_name}</h4>
-                        <p className="text-sm text-gray-600">
-                          {doctor.department_name}
-                        </p>
-                        <span className="text-md text-gray-700 font-medium">
-                          Available:
-                          <div className="flex flex-wrap gap-1 mt-1">
-                            {doctor.availability.map((a, index) => (
-                              <span
-                                key={index}
-                                className="bg-gray-200 text-gray-800 rounded-full px-3 py-1 text-xs"
-                              >
-                                {a}
-                              </span>
-                            ))}
+                      doctors.length > 0 ? (doctors.map((doctor) => (
+                        <button
+                          key={doctor.id}
+                          onClick={() => handleDoctorSelect(doctor)}
+                          disabled={doctor.availability.length === 0}  // Disable the button if no availability
+                          className={`p-4 border rounded-lg flex items-center space-x-4 ${formData.doctor?.doctor_name === doctor.doctor_name
+                            ? "border-blue-600 bg-blue-50"
+                            : "border-gray-200"
+                            } ${doctor.availability.length === 0 ? 'cursor-not-allowed border-gray-200 bg-gray-50 opacity-75:' : 'hover:border-blue-600 '}`}  // Adjust styling for disabled button
+                        >
+                          <div className="flex-shrink-0">
+                            <img
+                              src={doctor.image}
+                              alt={doctor.doctor_name}
+                              className="w-20 h-20 rounded-full object-cover border-2 border-white shadow-sm"
+                            />
                           </div>
-                        </span>
+                          <div className="flex-1 text-left">
+                            <h4 className="font-semibold text-lg text-gray-800">
+                              {doctor.doctor_name}
+                            </h4>
+                            <p className="text-sm text-blue-600 font-medium mb-2">
+                              {doctor.department_name}
+                            </p>
+                            <div className="space-y-1">
+                              <p className="text-sm text-gray-700 font-medium">Available:</p>
+                              <div className="flex flex-wrap gap-1.5">
+                         
 
 
-                      </div>
-                    </button>
-                  ))) :
-                    <div className="flex justify-center">
-                      <Alert severity="warning">There are currently no doctors in this department.</Alert>
-                    </div>
+                               {(()=>{
+                                let availability=doctor.availability;
+
+                                if(typeof availability === "string"){
+                                  availability=[availability]
+                                }else if(!Array.isArray(availability)){
+                                  availability=[]
+                                }
+
+                                return availability.length > 0 ? (
+                                  availability.map((slot, index) => (
+                                    <span
+                                      key={index}
+                                      className="bg-blue-50 text-blue-700 border border-blue-200 rounded-full px-3 py-0.5 text-xs font-medium"
+                                    >
+                                      {slot}
+                                    </span>
+                                  ))
+                                ) : (
+                                  <div className="text-sm font-medium text-gray-700">
+                                    No Availability
+                                  </div>
+                                );
+
+                               })()}
+                              </div>
+                            </div>
+                          </div>
+                        </button>
+                      ))) :
+                        <div className="flex justify-center">
+                          <Alert severity="warning">There are currently no doctors in this department.</Alert>
+                        </div>
                   }
 
 
@@ -452,29 +498,29 @@ function BookAppointment() {
                   {
                     formData.date ? (
 
-                      loading ? (<LoadingSpinner/>):
-                      timeslots.length > 0 ? (
-                        timeslots.map((t) => (
-                          <button
-                            key={t.id}
-                            onClick={() => handleTimeSelect(t.id)}
-                            className={`p-2 border rounded-lg text-center hover:border-blue-600 ${formData.time === t.id
+                      loading ? (<LoadingSpinner />) :
+                        timeslots.length > 0 ? (
+                          timeslots.map((t) => (
+                            <button
+                              key={t.id}
+                              onClick={() => handleTimeSelect(t.id)}
+                              className={`p-2 border rounded-lg text-center hover:border-blue-600 ${formData.time === t.id
                                 ? "border-blue-600 bg-blue-50"
                                 : "border-gray-200"
-                              }`}
-                          >
-                            {convertTo12HourFormat(t.start_time)} - {convertTo12HourFormat(t.end_time)}
-                          </button>
+                                }`}
+                            >
+                              {convertTo12HourFormat(t.start_time)} - {convertTo12HourFormat(t.end_time)}
+                            </button>
 
-                        ))
-                      ) : (
-                        <div className="grid-cols">
-                          <Alert severity="warning">Oops! No time slots found. Make sure you've picked a date that matches the doctor’s available days.</Alert>
-                        </div>
-                      )
+                          ))
+                        ) : (
+                          <div className="grid-cols">
+                            <Alert severity="warning">Oops! No time slots found. Make sure you've picked a date that matches the doctor’s available days.</Alert>
+                          </div>
+                        )
                     ) : (
-                    <div>
-                      <p className={`${timeslots.length < 0 ? 'grid grid-cols':''}`}>Please select a date to view time slots.</p>
+                      <div>
+                        <p className={`${timeslots.length < 0 ? 'grid grid-cols' : ''}`}>Please select a date to view time slots.</p>
                       </div>
                     )
                   }
@@ -483,7 +529,7 @@ function BookAppointment() {
 
 
 
-               
+
 
 
                 </div>
@@ -576,7 +622,7 @@ function BookAppointment() {
                       placeholder="john@example.com"
                     />
                   </div>
-                {errors.email && <p className="text-sm text-red-500 mt-1">{errors.email}</p>}
+                  {errors.email && <p className="text-sm text-red-500 mt-1">{errors.email}</p>}
 
                 </div>
                 <div>
@@ -595,7 +641,7 @@ function BookAppointment() {
                       placeholder="+1 (234) 567-8900"
                     />
                   </div>
-                {errors.phone && <p className="text-sm text-red-500 mt-1">{errors.phone}</p>}
+                  {errors.phone && <p className="text-sm text-red-500 mt-1">{errors.phone}</p>}
 
                 </div>
                 <div>
@@ -613,7 +659,7 @@ function BookAppointment() {
                       placeholder="Please briefly describe your symptoms or reason for visit"
                     />
                   </div>
-                {errors.reason && <p className="text-sm text-red-500 mt-1">{errors.reason}</p>}
+                  {errors.reason && <p className="text-sm text-red-500 mt-1">{errors.reason}</p>}
 
                 </div>
               </div>
@@ -627,20 +673,20 @@ function BookAppointment() {
           )}
         </div>
         <div>
-  {(appointmentsuccess && !appointfailure) && (
-    <Alert severity="success">
-      Your appointment has been successfully booked! You will receive a confirmation email shortly.
-    </Alert>
-  )}
-  {(appointfailure && !appointmentsuccess && !customError) && (
-    <Alert severity="warning">
-      Failed to book the appointment. Please try again later.
-    </Alert>
-  )}
-  {(appointfailure && customError) && (
-    <Alert severity="error">{customError}</Alert>
-  )}
-</div>
+          {(appointmentsuccess && !appointfailure) && (
+            <Alert severity="success">
+              Your appointment has been successfully booked! You will receive a confirmation email shortly.
+            </Alert>
+          )}
+          {(appointfailure && !appointmentsuccess && !customError) && (
+            <Alert severity="warning">
+              Failed to book the appointment. Please try again later.
+            </Alert>
+          )}
+          {(appointfailure && customError) && (
+            <Alert severity="error">{customError}</Alert>
+          )}
+        </div>
 
       </div>
       <Footer />

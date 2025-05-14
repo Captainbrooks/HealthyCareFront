@@ -7,19 +7,30 @@ import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import Alert from "@mui/material/Alert";
 import AlertTitle from "@mui/material/AlertTitle";
+import { jwtDecode } from 'jwt-decode';
+import { useAuthContext } from '../hooks/useAuthContext'
 function Login() {
   const navigate = useNavigate()
+  const {dispatch}=useAuthContext()
 
   useEffect(() => {
     const accessToken = localStorage.getItem("access_token");
+
     if (accessToken) {
+      const decoded = jwtDecode(accessToken);
+      console.log("Doctor role match:", decoded.role === "Doctor");
+
+      if (decoded.role === "Doctor") {
+        navigate("/dashboard");
+        return; 
+      }
+
       navigate("/patient-portal");
     } else {
-      navigate("/login")
+      navigate("/login");
     }
-
-
   }, [navigate]);
+  ;
 
 
 
@@ -33,20 +44,19 @@ function Login() {
   const [rememberMe, setRememberMe] = useState(false)
 
 
-  const trimmedEmail=email.trim();
+  const trimmedEmail = email.trim();
   const trimmedPassword = password.trim();
-  
+
 
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
-    // Basic validation
 
     setFieldErrors({});
 
 
-    const newErrors={};
+    const newErrors = {};
 
     if (!trimmedEmail) newErrors.email = "Email is required.";
     if (!trimmedPassword) newErrors.password = ["Password is required."];
@@ -63,7 +73,7 @@ function Login() {
 
 
 
-    
+
 
 
     setIsSubmitting(true)
@@ -78,9 +88,24 @@ function Login() {
         withCredentials: true
       });
 
-      console.log("response", response.data)
-      localStorage.setItem('access_token', response.data.access_token);
-      localStorage.setItem('refresh_token', response.data.refresh_token);
+
+      const token=response.data.access_token;
+
+      const userInfo = jwtDecode(token);
+      dispatch({type:"Login",payload:userInfo})
+
+
+
+
+
+      localStorage.setItem('user', JSON.stringify(userInfo));
+      localStorage.setItem('access_token', token);
+      localStorage.setItem('refresh_token',response.data.refresh_token)
+
+    
+
+
+
 
       if (rememberMe) {
         localStorage.setItem('remember_email', email)
@@ -88,9 +113,19 @@ function Login() {
         localStorage.removeItem('remember_email')
       }
 
-      
-      navigate("/patient-portal")
 
+
+      
+
+   
+
+      if (userInfo.role === "Doctor") {
+
+        navigate("/dashboard");
+        return;
+      } else {
+        navigate("/patient-portal");
+      }
 
 
     } catch (error) {
@@ -178,7 +213,7 @@ function Login() {
                     name="password"
                     type="password"
                     autoComplete="current-password"
-                    
+
                     className={`appearance-none block w-full pl-10 pr-10 py-2 border ${fieldErrors.password ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500`}
                     placeholder="Enter your password"
                     value={password}

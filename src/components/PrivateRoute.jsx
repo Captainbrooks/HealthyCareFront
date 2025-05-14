@@ -2,31 +2,27 @@ import React, {  useEffect, useState } from 'react'
 import Login from './Login';
 import { useNavigate } from 'react-router-dom';
 import { Navigate } from 'react-router-dom';
+import { useAuthContext } from '../hooks/useAuthContext';
 
 function PrivateRoute({children}) {
-    const [isAuthenticated,setIsAuthenticated]=useState(false)
-    const  navigate =useNavigate()
+  const {user,loading}=useAuthContext();
+
+  if(loading){
+    return <div>Loading...</div>
+  }
+
+  if(user && user.role !== "Doctor"){
+    Navigate("/")
+    return
+  }
 
 
-    useEffect(()=>{
-        const accessToken=localStorage.getItem("access_token");
 
-        if(accessToken){
-            setIsAuthenticated(true)
-        }
-    },[])
 
-    useEffect(() => {
-        if (isAuthenticated) {
-            navigate("/patient-portal"); 
-        }
-    }, [isAuthenticated, navigate]);
 
-  return (
-    <div>
-      {isAuthenticated ? children : <Navigate to="/login" replace /> }
-    </div>
-  )
+  return children
+
+   
 }
 
 export default PrivateRoute
