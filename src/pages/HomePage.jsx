@@ -25,9 +25,10 @@ export function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="lg:flex lg:items-center lg:justify-between">
             <div className="lg:w-1/2">
-              <h1 className="text-4xl font-bold text-gray-900 mb-4">
-                Your Health Is Our Priority
-              </h1>
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-red-500 via-pink-500 to-yellow-500 bg-clip-text text-transparent mb-4">
+  Your Health Is Our Priority
+</h1>
+
               <p className="text-gray-600 mb-8">
                 Access world-class healthcare services with our easy-to-use
                 patient portal. Book appointments, view medical records, and

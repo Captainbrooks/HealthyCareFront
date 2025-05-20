@@ -34,13 +34,6 @@ function Register() {
       navigate("/patient-portal");
     }
 
-
-
-
-
-
-
-
   }, [navigate]);
 
   const passwordRules = {
@@ -148,11 +141,6 @@ function Register() {
       }, {
         withCredentials: true
       });
-
-      console.log("response", response.data)
-      console.log("a", accesstoken)
-      console.log("t", refreshtoken)
-
 
 
       localStorage.setItem('access_token', accesstoken);

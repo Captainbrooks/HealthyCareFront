@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
+import useDoctor from '../hooks/useDoctor'
 
 import {
 
@@ -13,38 +14,26 @@ import {
 } from "lucide-react";
 
 function Header() {
-  const [user, setUser] = useState('')
   const navigate=useNavigate()
   const location = useLocation()
+  const [username,setUserName]=useState("Guest")
   const [isDoctor,setIsDoctor]=useState(false)
 
 
-  useEffect(() => {
-    const accessToken = localStorage.getItem('access_token')
-
-    try {
-      if(accessToken){
-        const decoded=jwtDecode(accessToken)
-        if(decoded.role==="Doctor"){
-          setIsDoctor(true)
-          setUser(decoded.username)
-          return
-        }
-
-        setUser(decoded.username)
+  useEffect(()=>{
+    const user=JSON.parse(localStorage.getItem('user'))
+    if(user){
+      if(user.role==="Doctor"){
+        setUserName(user.username)
+        setIsDoctor(true)
+        return
+      }else{
+        setUserName(user.username)
         setIsDoctor(false)
-  
       }
-    } catch (error) {
-      localStorage.removeItem('access_token')
-      localStorage.removeItem('refresh_token')
     }
-
    
-   
-
-  });
-
+  },[username])
 
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -106,7 +95,7 @@ function Header() {
                       <User className="h-5 w-5 text-blue-600" />
                     </div>
                     <span className="text-sm font-medium text-gray-700 hidden md:inline-block">
-                      {user ? user : ""}
+                      {username ? username : ""}
                     </span>
                   </div>
                   <button onClick={() => {
@@ -119,10 +108,6 @@ function Header() {
                     Logout
                   </button>
                 </div>)
-
-
-
-
               }
             </div>
             <div className="md:hidden flex items-center">

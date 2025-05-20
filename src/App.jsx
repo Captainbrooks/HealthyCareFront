@@ -5,7 +5,7 @@ import './App.css';
 import { HomePage } from './pages/HomePage';
 import BookAppointment from './pages/BookAppointment';
 import EmergencyContacts from './pages/EmergencyContacts';
-import { Toaster } from 'react-hot-toast';
+import toast, { Toaster } from 'react-hot-toast';
 
 
 import Services from './pages/Services';
@@ -43,6 +43,7 @@ import { useLocation } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 
 import { Loader } from 'lucide-react';
+import ProtectedDoctorRoute from './components/ProtectedDoctorRoute';
 
 
 
@@ -50,88 +51,21 @@ function App() {
 
 
 
-  const location = useLocation()
 
 
 
-  const { user, loading } = useAuthContext();
+  const { user} = useAuthContext();
 
 
 
-  const [isDoctor, setIsDoctor] = useState(true)
-  const [email, setEmail] = useState()
-  const [role, setRole] = useState()
+
+  const [isDoctor, setIsDoctor] = useState(false)
+  const [email, setEmail] = useState("")
+  const [role, setRole] = useState("")
   const [hasCheckedAccess, setHasCheckedAccess] = useState(false);
 
   const access_token = localStorage.getItem('access_token')
 
-  useEffect(() => {
-    if (!access_token) return;
-
-    console.log(access_token)
-
-
-
-    const decoded = jwtDecode(access_token)
-    setEmail(decoded.email)
-    setRole(decoded.role)
-
-
-
-
-
-  }, [])
-
-
-
-
-
-
-
-  useEffect(() => {
-
-
-
-
-    if ((email && role && !hasCheckedAccess)) {
-      const checkDoctorAccess = async () => {
-        console.log(email, role)
-        try {
-          const response = await axios.post(
-            "http://localhost:8000/api/auth/dashboard-access-check/",
-            { email, role }, // send email and role in POST body
-            { withCredentials: true }
-          );
-
-
-
-          if (response.data.allowed === true) {
-            setIsDoctor(true);
-          } else {
-            setIsDoctor(false);
-          }
-          setHasCheckedAccess(true);
-
-        } catch (error) {
-          const detail = error.response?.data?.detail;
-          const status = error.response?.status;
-          if (
-            detail === "Access denied. Not a doctor." ||
-            detail === "Doctor profile not found." ||
-            status === 403
-          ) {
-            setIsDoctor(false);
-
-          }
-          setHasCheckedAccess(true);
-
-        }
-      };
-
-      checkDoctorAccess();
-    }
-  }
-    , [email, role, hasCheckedAccess]);
 
 
 
@@ -145,15 +79,24 @@ function App() {
 
 
 
-    if (loading) {
-      return <div className='flex justify-center items-center'>
-        <Loader className='w-6 h-6' />
-      </div>
-    }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
   return (
     <>
+
+    <div className='min-h-screen bg-gradient-to-br from-blue-50 via-teal-50 to-white'>
 
 <Toaster />
       <ScrollToTop />
@@ -206,13 +149,10 @@ function App() {
           path="/dashboard"
           element={
 
-            ((user && user.role === "Doctor") && isDoctor) ?
-
-              <DashboardLayout />
-              :
-
-              <Navigate to="/unauthorized" />
-
+              <ProtectedDoctorRoute>
+                 <DashboardLayout />
+              </ProtectedDoctorRoute>
+             
           }
         >
           <Route index element={<DashboardHome />} />
@@ -222,17 +162,20 @@ function App() {
         </Route>
 
         <Route path="/patient/:patientId" element={
-          <PatientHistory />
-        } />
-
-
-
+        <ProtectedDoctorRoute>
+          <PatientHistory />  
+          </ProtectedDoctorRoute>
+          
+          } />
+       
+      
+  
         {/*Doctor Dashboard */}
-
-
         <Route path="*" element={<NotFound />} />
       </Routes>
+      </div>
     </>
+    
   );
 }
 

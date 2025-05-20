@@ -60,7 +60,7 @@ const DashboardLayout = () => {
     localStorage.removeItem('access_token')
     localStorage.removeItem('refresh_token')
     localStorage.removeItem('user')
-    navigate('/')
+    navigate('/login')
   }
 
   return (
@@ -147,29 +147,29 @@ const DashboardLayout = () => {
       </div>
 
       {showLogoutModal && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm transition-opacity duration-300">
-    <div className="bg-white p-6 rounded-xl shadow-2xl w-[90%] max-w-md animate-fadeIn">
-      <h2 className="text-xl font-bold text-gray-800 mb-3">Confirm Sign Out</h2>
-      <p className="text-sm text-gray-600 mb-6">
-        Are you sure you want to sign out? You will be returned to the login page.
-      </p>
-      <div className="flex justify-end gap-3">
-        <button
-          onClick={() => setShowLogoutModal(false)}
-          className="px-4 py-2 text-sm rounded-md border border-gray-300 hover:bg-gray-100 transition"
-        >
-          Cancel
-        </button>
-        <button
-          onClick={handleLogout}
-          className="px-4 py-2 text-sm rounded-md bg-red-500 text-white hover:bg-red-600 transition"
-        >
-          Sign Out
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm transition-opacity duration-300">
+          <div className="bg-white p-6 rounded-xl shadow-2xl w-[90%] max-w-md animate-fadeIn">
+            <h2 className="text-xl font-bold text-gray-800 mb-3">Confirm Sign Out</h2>
+            <p className="text-sm text-gray-600 mb-6">
+              Are you sure you want to sign out? You will be returned to the login page.
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setShowLogoutModal(false)}
+                className="px-4 py-2 text-sm rounded-md border border-gray-300 hover:bg-gray-100 transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleLogout}
+                className="px-4 py-2 text-sm rounded-md bg-red-500 text-white hover:bg-red-600 transition"
+              >
+                Sign Out
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   )

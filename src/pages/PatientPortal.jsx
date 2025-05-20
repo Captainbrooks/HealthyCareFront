@@ -57,6 +57,8 @@ export function PatientPortal() {
 
     fetchAvailavleDoctors()
   }, [])
+
+  
   const availableServices = [
     {
       icon: <Calendar className="w-6 h-6 text-blue-600" />,

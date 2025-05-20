@@ -12,38 +12,7 @@ import { Link } from 'react-router-dom'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import axios from 'axios'
-// const featuredDoctors = [
-//   {
-//     name: 'Dr. Sarah Johnson',
-//     specialty: 'Cardiology',
-//     image:
-//       'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80',
-//     qualifications: 'MD, FACC, PhD',
-//     experience: '15+ years',
-//     awards: ['Best Cardiologist 2023', 'Research Excellence Award'],
-//     publications: 45,
-//   },
-//   {
-//     name: 'Dr. Michael Chen',
-//     specialty: 'Neurosurgery',
-//     image:
-//       'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80',
-//     qualifications: 'MD, FAANS, DNB',
-//     experience: '20+ years',
-//     awards: ['Neurosurgery Innovation Award', 'Excellence in Patient Care'],
-//     publications: 72,
-//   },
-//   {
-//     name: 'Dr. Emily Rodriguez',
-//     specialty: 'Pediatrics',
-//     image:
-//       'https://images.unsplash.com/photo-1594824476967-48c8b964273f?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80',
-//     qualifications: 'MD, FAAP, DCH',
-//     experience: '12+ years',
-//     awards: ['Child Healthcare Excellence', 'Community Service Award'],
-//     publications: 28,
-//   },
-// ]
+
 const specializations = [
   'Cardiology',
   'Neurology',

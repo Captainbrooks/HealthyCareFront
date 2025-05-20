@@ -9,9 +9,12 @@ import Alert from "@mui/material/Alert";
 import AlertTitle from "@mui/material/AlertTitle";
 import { jwtDecode } from 'jwt-decode';
 import { useAuthContext } from '../hooks/useAuthContext'
+import useDoctor from '../hooks/useDoctor'
 function Login() {
   const navigate = useNavigate()
   const {dispatch}=useAuthContext()
+  
+  const { checkDoctorAccess } = useDoctor();
 
   useEffect(() => {
     const accessToken = localStorage.getItem("access_token");
@@ -90,21 +93,27 @@ function Login() {
 
 
       const token=response.data.access_token;
+      const userInfo = jwtDecode(token);  // firstly we will convert the token
+ 
+      
 
-      const userInfo = jwtDecode(token);
-      dispatch({type:"Login",payload:userInfo})
-
-
-
-
-
+      // explicitly set the information at the localStorage
       localStorage.setItem('user', JSON.stringify(userInfo));
       localStorage.setItem('access_token', token);
       localStorage.setItem('refresh_token',response.data.refresh_token)
+      
 
-    
+      // navigate according to the User type
+      if (userInfo.role === "Doctor") {
+        navigate("/dashboard");
+        return;
+      } else {
+        navigate("/patient-portal");
+      }
 
 
+      // update the react state 
+      dispatch({type:"Login",payload:userInfo})
 
 
       if (rememberMe) {
@@ -112,21 +121,6 @@ function Login() {
       } else {
         localStorage.removeItem('remember_email')
       }
-
-
-
-      
-
-   
-
-      if (userInfo.role === "Doctor") {
-
-        navigate("/dashboard");
-        return;
-      } else {
-        navigate("/patient-portal");
-      }
-
 
     } catch (error) {
       console.log("error", error)

@@ -1,11 +1,30 @@
-import React, { useState } from 'react'
+import React, {useEffect, useState } from 'react'
 import { SearchIcon, FilterIcon } from 'lucide-react'
 import AppointmentsList from './AppointmentList'
 import { useNavigate } from 'react-router-dom'
+import { jwtDecode } from 'jwt-decode'
+import axios from 'axios'
 const AppointmentsPage = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [filterOpen, setFilterOpen] = useState(false)
+   const [doctor_id, setDoctor_id] = useState(null)
   const navigate=useNavigate()
+
+
+    useEffect(() => {
+      const accessToken = localStorage.getItem('access_token')
+  
+      if (accessToken) {
+        const decoded = jwtDecode(accessToken)
+  
+        if (decoded.username) {
+          setDoctor_id(decoded.id)
+          return
+        }
+      }
+    }, [doctor_id])
+
+
   return (
     <div className="space-y-6">
       <div>

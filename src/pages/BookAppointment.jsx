@@ -34,6 +34,12 @@ const departments = [
 ];
 
 function BookAppointment() {
+
+
+  const[fullName,setFullName]=useState("")
+  const[email,setEmail]=useState("")
+
+
   const [step, setStep] = useState(1);
   const [doctors, setDoctors] = useState([])
   const [selecteddept, setSelectedDept] = useState("")
@@ -48,9 +54,10 @@ function BookAppointment() {
 
   const navigate = useNavigate()
 
+  const today = new Date().toISOString().split('T')[0];
 
 
-
+  
   useEffect(() => {
     const token = localStorage.getItem('access_token')
 
@@ -60,14 +67,18 @@ function BookAppointment() {
     }
 
     const decodedToken = jwtDecode(token)
-    console.log("decodedtoken at book", decodedToken)
-
-
-
     if (decodedToken.id) {
       setUser_ID(decodedToken.id)
+      setFullName(decodedToken.username)
+      setEmail(decodedToken.email)
+      
     }
+    
   })
+
+
+
+
 
   const [formData, setFormData] = useState({
     department: "",
@@ -81,49 +92,15 @@ function BookAppointment() {
   });
 
   const handleStep = (stepnum) => {
-
-    console.log("step", step)
-    console.log("stepnum", stepnum)
-
-
-
     if (step === 2 && stepnum === 1) {
       setFormData({
         department: "",
         doctor: "",
         date: "",
       })
-
       return setStep(stepnum)
-
     }
-
-
-
-
-
-
-
-
   }
-
-
-  useEffect(() => {
-    console.log("department", formData.department)
-    console.log("doctor", formData.doctor)
-    console.log("date", formData.date)
-    console.log("time", formData.time)
-
-
-  })
-
-
-
-
-
-
-
-
 
   useEffect(() => {
     stepcount.current?.scrollIntoView({ behavior: 'smooth' });
@@ -209,7 +186,6 @@ function BookAppointment() {
 
 
   const handleSubmit = (e) => {
-    console.log("hey")
     e.preventDefault();
 
     const newErrors = {};
@@ -218,13 +194,6 @@ function BookAppointment() {
     if (!formData.doctor) newErrors.doctor = "Please select a doctor";
     if (!formData.date) newErrors.date = "Please select a date";
     if (!formData.time) newErrors.time = "Please select a time slot.";
-    if (!formData.name.trim()) newErrors.name = "Please enter your name.";
-    if (!formData.email.trim()) {
-      newErrors.email = "Please enter your email.";
-    } else if (!/^\S+@\S+\.\S+$/.test(formData.email)) {
-      newErrors.email = "Please enter a valid email.";
-    }
-    if (!formData.phone.trim()) newErrors.phone = "Please enter your phone number";
     if (!formData.reason.trim()) newErrors.reason = "Please mention your reason for appointment.";
 
     if (Object.keys(newErrors).length > 0) {
@@ -241,13 +210,12 @@ function BookAppointment() {
     const payload = {
       department_name: formData.department,
       doctor: formData.doctor.id ? formData.doctor.id : "",
-      appointment_date: formData.date,
+      booking_date: today,
       timeslot: formData.time,
       patient: user_id,
       reason_to_visit: formData.reason,
     };
 
-    console.log("payload", payload)
 
 
 
@@ -256,10 +224,7 @@ function BookAppointment() {
     axios
       .post("http://127.0.0.1:8000/api/appointments/create/", payload)
       .then((response) => {
-        console.log("response", response)
 
-        console.log("Before sendinf", payload)
-        console.log("Form submitted successfully:", response.data);
         setAppointmentSuccess(true)
         setAppointmentFailure(false)
 
@@ -279,9 +244,8 @@ function BookAppointment() {
 
       })
       .catch((error) => {
-        console.log("Error", error)
         const errorMsg = error.response?.data?.non_field_errors?.[0];
-        console.log("Error message:", errorMsg)
+        console.log(error)
         if (errorMsg?.includes("must make a unique set")) {
           setCustomError("The selected time slot has already been booked. Please refresh the page & choose a different time.");
         } else {
@@ -524,14 +488,6 @@ function BookAppointment() {
                       </div>
                     )
                   }
-
-
-
-
-
-
-
-
                 </div>
                 {errors.time && <p className="text-sm text-red-500 mt-1">{errors.time}</p>}
               </div>
@@ -598,10 +554,11 @@ function BookAppointment() {
                       type="text"
                       name="name"
                       required
-                      value={formData.name}
+                      value={fullName}
                       onChange={handleInputChange}
-                      className="w-full pl-10 pr-4 py-2 border rounded-lg"
+                      className="w-full pl-10 pr-4 py-2 border rounded-lg opacity-50 cursor-not-allowed"
                       placeholder="John Doe"
+                      disabled
                     />
                   </div>
                   {errors.name && <p className="text-sm text-red-500 mt-1">{errors.name}</p>}
@@ -616,32 +573,14 @@ function BookAppointment() {
                       type="email"
                       name="email"
                       required
-                      value={formData.email}
+                      value={email}
                       onChange={handleInputChange}
-                      className="w-full pl-10 pr-4 py-2 border rounded-lg"
+                      className="w-full pl-10 pr-4 py-2 border rounded-lg opacity-50 cursor-not-allowed"
                       placeholder="john@example.com"
+                      disabled
                     />
                   </div>
-                  {errors.email && <p className="text-sm text-red-500 mt-1">{errors.email}</p>}
-
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Phone Number
-                  </label>
-                  <div className="relative">
-                    <Phone className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                    <input
-                      type="tel"
-                      name="phone"
-                      required
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                      className="w-full pl-10 pr-4 py-2 border rounded-lg"
-                      placeholder="+1 (234) 567-8900"
-                    />
-                  </div>
-                  {errors.phone && <p className="text-sm text-red-500 mt-1">{errors.phone}</p>}
+                  
 
                 </div>
                 <div>

@@ -5,7 +5,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import DoctorCard from '../components/DoctorCard';
 import SearchFilters from '../components/SearchFilters';
-import LoadingSpinner from "../components/LoadingSpinner";
+import Loader from "../components/Loader"
 import axios from 'axios';
 
 // Specialty options for filter
@@ -79,8 +79,8 @@ export function FindDoctors() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen bg-gray-100">
-        <LoadingSpinner size={60} color="#0d6efd" />
+      <div className="flex justify-center items-center h-screen">
+        <Loader size={60} />
       </div>
     );
   }
@@ -115,6 +115,9 @@ export function FindDoctors() {
               <p className="text-gray-600">
                 No doctors match your search criteria. Please try different
                 filters.
+              </p>
+              <p className="my-4 text-red-600">
+                Something went wrong. Please try again.
               </p>
             </div>
           )}

@@ -6,18 +6,15 @@ import { useAuthContext } from '../hooks/useAuthContext';
 
 const DoctorCard = ({ doctor }) => {
 
-  const {user}=useAuthContext()
+  const { user } = useAuthContext()
 
   const availability = Array.isArray(doctor.availability) ? doctor.availability : [];
-  console.log("AVAIL:",availability,doctor.doctor_name)
 
   const today = new Date().toLocaleString('en-us', { weekday: 'long' });
-  console.log(today)
 
   const formattedAvailability = availability.join(', ');
 
   const isAvailableToday = availability.includes(today);
-  console.log(isAvailableToday)
 
   return (
     <div className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden">
@@ -44,9 +41,8 @@ const DoctorCard = ({ doctor }) => {
           <div className="p-4">
             <div className="flex items-center text-sm">
               <div
-                className={`w-2 h-2 rounded-full mr-2 ${
-                  isAvailableToday ? 'bg-green-500' : 'bg-yellow-500'
-                }`}
+                className={`w-2 h-2 rounded-full mr-2 ${isAvailableToday ? 'bg-green-500' : 'bg-yellow-500'
+                  }`}
               ></div>
               <span
                 className={`${isAvailableToday ? 'text-green-700' : 'text-yellow-700'}`}
@@ -57,27 +53,27 @@ const DoctorCard = ({ doctor }) => {
               </span>
             </div>
             <div className="mt-4 flex space-x-3">
-            <Link to={`/doctor/${doctor.doctor_name.replace(/\s+/g, '-')}`} className="flex-1">
-  <button className="w-full bg-white border border-blue-600 text-blue-600 px-3 py-2 rounded text-sm hover:bg-blue-50 transition-colors">
-    View Profile
-  </button>
-</Link>
+              <Link to={`/doctor/${doctor.doctor_name.replace(/\s+/g, '-')}`} className="flex-1">
+                <button className="w-full bg-white border border-blue-600 text-blue-600 px-3 py-2 rounded text-sm hover:bg-blue-50 transition-colors">
+                  View Profile
+                </button>
+              </Link>
 
 
 
-<Link
-  to={
-    user
-      ? `/bookappointment/${doctor.department_name}/${doctor.doctor_name.replace(/\s+/g, '-')}`
-      : '/login'
-  }
-  className="flex-1"
->
-  <button className="w-full bg-blue-600 text-white px-3 py-2 rounded text-sm hover:bg-blue-700 transition-colors flex items-center justify-center">
-    <Calendar className="w-4 h-4 mr-1" />
-    Book Now
-  </button>
-</Link>
+              <Link
+                to={
+                  user
+                    ? `/bookappointment/${doctor.department_name}/${doctor.doctor_name.replace(/\s+/g, '-')}`
+                    : '/login'
+                }
+                className="flex-1"
+              >
+                <button className="w-full bg-blue-600 text-white px-3 py-2 rounded text-sm hover:bg-blue-700 transition-colors flex items-center justify-center">
+                  <Calendar className="w-4 h-4 mr-1" />
+                  Book Now
+                </button>
+              </Link>
 
             </div>
           </div>
