@@ -16,11 +16,10 @@ import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
 import { Link } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import LoadingSpinner from "../components/LoadingSpinner";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 
-
+import Loader from '../components/Loader'
 
 const departments = [
   "Cardiology",
@@ -36,8 +35,8 @@ const departments = [
 function BookAppointment() {
 
 
-  const[fullName,setFullName]=useState("")
-  const[email,setEmail]=useState("")
+  const [fullName, setFullName] = useState("")
+  const [email, setEmail] = useState("")
 
 
   const [step, setStep] = useState(1);
@@ -49,15 +48,20 @@ function BookAppointment() {
   const [timeslots, setTimeSlots] = useState([])
   const [errors, setErrors] = useState({})
   const stepcount = useRef(null)
-  const [loading, setLoading] = useState(true)
+
   const [user_id, setUser_ID] = useState(null)
+  const [confirmLoading, setConfirmLoading] = useState(false)
+  const [timeloading, setTimeLoading] = useState(false)
+  const [doctorLoading, setDoctorLoading] = useState(false)
+  const [doctorAvailabilityError, setDoctorAvailabilityError] = useState('');
+
 
   const navigate = useNavigate()
 
   const today = new Date().toISOString().split('T')[0];
 
 
-  
+
   useEffect(() => {
     const token = localStorage.getItem('access_token')
 
@@ -71,10 +75,10 @@ function BookAppointment() {
       setUser_ID(decodedToken.id)
       setFullName(decodedToken.username)
       setEmail(decodedToken.email)
-      
+
     }
-    
-  })
+
+  }, [])
 
 
 
@@ -109,6 +113,7 @@ function BookAppointment() {
 
 
   const fetchTimeSlots = async (doctor_id, date) => {
+    setTimeLoading(true)
     try {
       const response = await axios.get(`http://127.0.0.1:8000/api/doctors/timeslots/${doctor_id}/?appointment_date=${date}`, {
         withCredentials: true
@@ -116,10 +121,12 @@ function BookAppointment() {
 
 
       setTimeSlots(response.data)
-      setLoading(false)
+      setTimeLoading(false)
     } catch (error) {
       console.error('Failed to fetch time slots:', error);
-      setLoading(false)
+
+    } finally {
+      setTimeLoading(false)
     }
   }
 
@@ -134,30 +141,22 @@ function BookAppointment() {
 
 
   const fetchDeptDoctors = async (selecteddept) => {
+    setDoctorLoading(true)
 
     try {
       const response = await axios.get(`http://127.0.0.1:8000/api/doctors/list/${selecteddept}`);
 
       setDoctors(response.data)
-      setLoading(false)
+      setDoctorLoading(false)
 
     } catch (error) {
       console.log("There was an error", error)
-      setLoading(false)
+
+    } finally {
+      setDoctorLoading(false)
     }
 
   }
-
-  const handleDoctorSelect = (doctor) => {
-    setFormData((prev) => ({
-      ...prev,
-      doctor
-    }));
-
-    if (formData.date) {
-      fetchTimeSlots(doctor.id, formData.date)
-    }
-  };
 
 
   const handleInputChange = (e) => {
@@ -169,10 +168,51 @@ function BookAppointment() {
     }));
 
     if (name === 'date' && formData.doctor) {
-      fetchTimeSlots(formData.doctor.id, value);
+      const selectedDate = new Date(value);
+      const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+      const selectedDay = days[selectedDate.getUTCDay()];
+
+      const doctor = formData.doctor;
+      if (Array.isArray(doctor.availability)) {
+        const isAvailable = doctor.availability.includes(selectedDay);
+        if (isAvailable) {
+          fetchTimeSlots(doctor.id, value);
+          setDoctorAvailabilityError('');
+        } else {
+          // 🧹 Clear previous time slots if doctor is not available
+          setTimeSlots([]);
+          setDoctorAvailabilityError(`This doctor is not available on ${selectedDay}. Please choose another date.`);
+          console.log(`Doctor not available on ${selectedDay}`);
+        }
+      }
     }
   };
 
+
+  const handleDoctorSelect = (doctor) => {
+    setFormData((prev) => ({
+      ...prev,
+      doctor,
+    }));
+
+    if (formData.date) {
+      const selectedDate = new Date(formData.date);
+      const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+      const selectedDay = days[selectedDate.getUTCDay()];
+
+      if (Array.isArray(doctor.availability)) {
+        const isAvailable = doctor.availability.includes(selectedDay);
+        if (isAvailable) {
+          fetchTimeSlots(doctor.id, formData.date);
+          setDoctorAvailabilityError('');
+        } else {
+          setTimeSlots([]);
+          console.log(`Doctor not available on ${selectedDay}`);
+          setDoctorAvailabilityError(`This doctor is not available on ${selectedDay}. Please choose another date.`);
+        }
+      }
+    }
+  };
 
 
   const handleTimeSelect = (time) => {
@@ -186,12 +226,12 @@ function BookAppointment() {
 
 
   const handleSubmit = (e) => {
+
     e.preventDefault();
 
     const newErrors = {};
 
     if (!formData.department) newErrors.department = "Please select a department";
-    if (!formData.doctor) newErrors.doctor = "Please select a doctor";
     if (!formData.date) newErrors.date = "Please select a date";
     if (!formData.time) newErrors.time = "Please select a time slot.";
     if (!formData.reason.trim()) newErrors.reason = "Please mention your reason for appointment.";
@@ -217,7 +257,7 @@ function BookAppointment() {
     };
 
 
-
+    setConfirmLoading(true)
 
 
 
@@ -227,6 +267,7 @@ function BookAppointment() {
 
         setAppointmentSuccess(true)
         setAppointmentFailure(false)
+        setConfirmLoading(false)
 
         setTimeout(() => {
           setFormData({
@@ -240,7 +281,7 @@ function BookAppointment() {
             reason: "",
           });
           setAppointmentSuccess(false);
-        }, 3000);
+        }, 500);
 
       })
       .catch((error) => {
@@ -253,6 +294,7 @@ function BookAppointment() {
         }
         setAppointmentSuccess(false)
         setAppointmentFailure(true)
+        setConfirmLoading(false)
       });
   };
 
@@ -344,6 +386,8 @@ function BookAppointment() {
           {step === 2 && (
 
 
+
+
             <div>
 
               <div className="flex items-center py-4">
@@ -365,10 +409,17 @@ function BookAppointment() {
               {/* Doctor Selection */}
               <div className="mb-6">
                 <h3 className="text-md font-medium mb-3">Select Doctor</h3>
-                <div className={`${doctors.length > 0 ? 'grid grid-cols md:grid-cols-2 gap-4' : 'grid grid-cols'}`}>
+
+
+
+
+                <div className={`${doctors.length > 0 ? 'grid grid-cols md:grid-cols-2 gap-4' : 'block'}`}>
 
                   {
-                    loading ? (<LoadingSpinner />) :
+                    doctorLoading ? (
+
+                      <Loader />
+                    ) :
 
                       doctors.length > 0 ? (doctors.map((doctor) => (
                         <button
@@ -397,34 +448,34 @@ function BookAppointment() {
                             <div className="space-y-1">
                               <p className="text-sm text-gray-700 font-medium">Available:</p>
                               <div className="flex flex-wrap gap-1.5">
-                         
 
 
-                               {(()=>{
-                                let availability=doctor.availability;
 
-                                if(typeof availability === "string"){
-                                  availability=[availability]
-                                }else if(!Array.isArray(availability)){
-                                  availability=[]
-                                }
+                                {(() => {
+                                  let availability = doctor.availability;
 
-                                return availability.length > 0 ? (
-                                  availability.map((slot, index) => (
-                                    <span
-                                      key={index}
-                                      className="bg-blue-50 text-blue-700 border border-blue-200 rounded-full px-3 py-0.5 text-xs font-medium"
-                                    >
-                                      {slot}
-                                    </span>
-                                  ))
-                                ) : (
-                                  <div className="text-sm font-medium text-gray-700">
-                                    No Availability
-                                  </div>
-                                );
+                                  if (typeof availability === "string") {
+                                    availability = [availability]
+                                  } else if (!Array.isArray(availability)) {
+                                    availability = []
+                                  }
 
-                               })()}
+                                  return availability.length > 0 ? (
+                                    availability.map((slot, index) => (
+                                      <span
+                                        key={index}
+                                        className="bg-blue-50 text-blue-700 border border-blue-200 rounded-full px-3 py-0.5 text-xs font-medium"
+                                      >
+                                        {slot}
+                                      </span>
+                                    ))
+                                  ) : (
+                                    <div className="text-sm font-medium text-gray-700">
+                                      No Availability
+                                    </div>
+                                  );
+
+                                })()}
                               </div>
                             </div>
                           </div>
@@ -437,33 +488,64 @@ function BookAppointment() {
 
 
                 </div>
+                {doctors.length === 1 && !formData.doctor && (
+
+                  <Alert severity="info" className="my-2">
+                    Please click the doctor to select before choosing date and time.
+                  </Alert>
+
+                )}
                 {errors.doctor && <p className="text-sm text-red-500 mt-1">{errors.doctor}</p>}
               </div>
               {/* Date Selection */}
-              <div className="mb-6">
-                <h3 className="text-md font-medium mb-3">Select Date</h3>
-                <input
-                  type="date"
-                  name="date"
-                  value={formData.date}
-                  onChange={handleInputChange}
-                  className="w-full p-2 border rounded-lg"
-                  min={new Date().toISOString().split("T")[0]}
-                />
-                {errors.date && <p className="text-sm text-red-500 mt-1">{errors.date}</p>}
 
-              </div>
-              {/* Time Selection */}
+              {
+                formData.doctor && 
+
+                <>
+                     <div className="mb-6">
+                  <h3 className="text-md font-medium mb-3">Select Date</h3>
+                  <input
+                    type="date"
+                    name="date"
+                    value={formData.date}
+                    onChange={handleInputChange}
+                    className="w-full p-2 border rounded-lg"
+                    min={new Date().toISOString().split("T")[0]}
+                  />
+                  {errors.date && <p className="text-sm text-red-500 mt-1">{errors.date}</p>}
+
+                </div>
+              
+
+
+           
+
+
+
+              
+
+
+
+            
               <div className="mb-6">
                 <h3 className="text-md font-medium mb-3">Select Time</h3>
+                <div className={`${timeloading ? 'block' : 'hidden'}`}>
+                </div>
                 <div className={`${formData.date && timeslots.length > 0 ? 'grid grid-cols-3 gap-2' : 'block'}`}>
-
 
                   {
                     formData.date ? (
 
-                      loading ? (<LoadingSpinner />) :
-                        timeslots.length > 0 ? (
+
+                      timeloading ? (
+                        <div className="border-2"><Loader /></div>
+                      ) :
+                        doctorAvailabilityError ? (
+                          <div className="mt-2">
+                            <Alert severity="warning">{doctorAvailabilityError}</Alert>
+                          </div>
+                        ) : (timeslots && timeslots.length > 0 ? (
                           timeslots.map((t) => (
                             <button
                               key={t.id}
@@ -478,11 +560,11 @@ function BookAppointment() {
 
                           ))
                         ) : (
-                          <div className="grid-cols">
-                            <Alert severity="warning">Oops! No time slots found. Make sure you've picked a date that matches the doctor’s available days.</Alert>
-                          </div>
+                          <Alert severity="info">
+                            All time slots for this doctor on the selected date are fully booked. Please try another day.
+                          </Alert>
                         )
-                    ) : (
+                        )) : (
                       <div>
                         <p className={`${timeslots.length < 0 ? 'grid grid-cols' : ''}`}>Please select a date to view time slots.</p>
                       </div>
@@ -491,7 +573,11 @@ function BookAppointment() {
                 </div>
                 {errors.time && <p className="text-sm text-red-500 mt-1">{errors.time}</p>}
               </div>
+</>
+                }
+
               <button
+              className={`${formData.doctor ? 'w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700' :'w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 opacity-50 cursor-not-allowed'}`}
                 onClick={() => {
                   const newErrors = {};
 
@@ -514,7 +600,6 @@ function BookAppointment() {
                   setErrors({});
                   setStep(3);
                 }}
-                className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
               >
                 Continue
               </button>
@@ -580,7 +665,7 @@ function BookAppointment() {
                       disabled
                     />
                   </div>
-                  
+
 
                 </div>
                 <div>
@@ -604,9 +689,9 @@ function BookAppointment() {
               </div>
               <button
                 type="submit"
-                className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 mt-6"
+                className={`w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 mt-6 ${confirmLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
-                Confirm Appointment
+                {confirmLoading ? 'Confirming....' : 'Confirm Appointment'}
               </button>
             </form>
           )}

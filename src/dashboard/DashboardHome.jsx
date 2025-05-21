@@ -26,23 +26,7 @@ const DashboardHome = () => {
     const[error,setError]=useState("")
 
 
-    const{doctorName,doctorId}=useDoctor()
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
+    const{doctorName,doctorId}=useDoctor();
 
 
     useEffect(() => {
@@ -58,6 +42,8 @@ const DashboardHome = () => {
                     const response = await axios.get(`http://localhost:8000/api/appointments/list/?doctor=${doctorId}`, {
                         withCredentials: true
                     })
+
+                    
                     const todaysAppCount = []
 
                     const today = new Date().toISOString().split('T')[0];
@@ -67,7 +53,7 @@ const DashboardHome = () => {
                     const patientIDs = new Set() // making memory for list of patientNames I have already initally none
 
                     response.data.forEach((appointment) => {
-                        const patientID = appointment.patient.id  // each patient id when loop through
+                        const patientID = appointment.patient_data.id  // each patient id when loop through
 
                         if (!patientIDs.has(patientID)) {
                             patientIDs.add(patientID)
@@ -78,7 +64,7 @@ const DashboardHome = () => {
                     setTotalPatients(uniqueAppointments.length)
 
                     response.data.map((m) => {
-                        if (m.timeslot.appointment_date === today) {
+                        if (m.timeslot_data.appointment_date === today) {
                             todaysAppCount.push(m)
                         }
                     })
@@ -99,6 +85,7 @@ const DashboardHome = () => {
                     setError("")
 
                 } catch (error) {
+                    console.log(error)
                     setLoading(false)
                     setError("We couldn’t reach the server. Please check your internet connection or try again shortly.")
                 }finally{

@@ -11,45 +11,75 @@ import {
 } from "lucide-react";
 import Alert from "@mui/material/Alert";
 import AlertTitle from "@mui/material/AlertTitle";
-import LoadingSpinner from "./LoadingSpinner";
 
 import { Link } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { useParams } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
+import Loader from "./Loader";
+import toast from "react-hot-toast";
 
 
 
 
 function BookSpecificDoctor() {
 
+  const[fullName,setFullName]=useState("")
+  const[email,setEmail]=useState("")
+  const [user_id, setUser_ID] = useState(null)
+  
+
 
 const {department,doctorName}=useParams()
 const [timeslots,setTimeSlots]=useState([])
 const [errors,setErrors]=useState([])
-const [loading,setLoading]=useState(true)
+const [loading,setLoading]=useState(false)
 const[doctor_id,setDoctor_Id]=useState()
 const[doctor,setDoctor]=useState()
 const[available,setAvailable]=useState([])
-  const [customError,setCustomError]=useState('')
+const [customError,setCustomError]=useState('')
+const [doctorAvailabilityError, setDoctorAvailabilityError] = useState('');
+  
+
+      const today = new Date().toISOString().split('T')[0];
 
 
 
-
-useEffect(()=>{
+  useEffect(()=>{
   axios.get(`http://127.0.0.1:8000/api/doctors/detail/${doctorName}`,{
     withCredentials:true
   }).then((response)=>{
     setDoctor(response.data)
    setDoctor_Id(response.data.id)
-   console.log(response.data.availability)
    setAvailable(response.data.availability)
   })
 
 
 
 },[doctorName])
+
+  useEffect(() => {
+      const token = localStorage.getItem('access_token')
+  
+      if (!token) {
+        navigate("/login")
+        return
+      }
+  
+      const decodedToken = jwtDecode(token)
+      console.log(decodedToken)
+      if (decodedToken.id) {
+        setUser_ID(decodedToken.user_id)
+        setFullName(decodedToken.username)
+        setEmail(decodedToken.email)   
+      }
+      
+  },[])
+
+
+
 
 
 
@@ -73,9 +103,6 @@ useEffect(()=>{
     reason: "",
   });
 
-
-
-
   const convertTo12HourFormat = (timeStr) => {
     const [hour, minute] = timeStr.split(':');
     const hourInt = parseInt(hour);
@@ -87,6 +114,7 @@ useEffect(()=>{
 
   const fetchTimeSlots=async(doctor_id,date)=>{
     console.log("fetch time slots reached", doctor_id, date)
+    setLoading(true)
     try {
       const response = await axios.get(`http://127.0.0.1:8000/api/doctors/timeslots/${doctor_id}/?appointment_date=${date}`, {
         withCredentials: true
@@ -94,11 +122,12 @@ useEffect(()=>{
 
 
       setTimeSlots(response.data)
-      console.log(response.data)
       setLoading(false)
     } catch (error) {
       console.error('Failed to fetch time slots:', error);
-      setLoading(false)
+     
+    }finally{
+       setLoading(false)
     }
   }
 
@@ -111,7 +140,23 @@ useEffect(()=>{
     }));
 
     if(name==='date' && doctor_id){
-      fetchTimeSlots(doctor_id,value)
+      const selectedDate= new Date(value)
+      const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+      const selectedDay = days[selectedDate.getUTCDay()];
+
+      if(Array.isArray(available)){
+        const isAvailable=available.includes(selectedDay);
+        if(isAvailable){
+        fetchTimeSlots(doctor_id,value)
+        setDoctorAvailabilityError('');
+        
+        }else{
+          setTimeSlots([]);
+          setDoctorAvailabilityError(`This doctor is not available on ${selectedDay}. Please choose another date.`);
+        }
+      }
+
+     
     }
   };
 
@@ -122,11 +167,15 @@ useEffect(()=>{
       ...prev,
       time,
     }));
+
   };
 
 
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
+   
+
+    console.log("handle submit is clicked")
     e.preventDefault();
 
 
@@ -135,17 +184,12 @@ useEffect(()=>{
 
     if (!formData.date) newErrors.date = "Please select a date";
     if (!formData.time) newErrors.time = "Please select a time slot.";
-    if (!formData.name.trim()) newErrors.name = "Please enter your name.";
-    if (!formData.email.trim()) {
-      newErrors.email = "Please enter your email.";
-    } else if (!/^\S+@\S+\.\S+$/.test(formData.email)) {
-      newErrors.email = "Please enter a valid email.";
-    }
-    if (!formData.phone.trim()) newErrors.phone = "Please enter your phone number";
+   
     if (!formData.reason.trim()) newErrors.reason = "Please mention your reason for appointment.";
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors)
+      SetErrorMessage("You have errors.Please check those and try again.")
       return;
     }
 
@@ -158,66 +202,63 @@ useEffect(()=>{
     
   
   
+  // Prepare payload to match your Django model's expected fields
+const payload = {
+  department_name: department,
+  doctor: doctor_id,
+  patient: user_id,
+  booking_date: today,
+  timeslot: formData.time,
+  reason_to_visit: formData.reason,
+};
+
+ setLoading(true)
+try {
+  console.log("Before sending", payload);
   
-    // Prepare payload to match your Django model's expected fields
-    const payload = {
-      department_name: department,
-      doctor: doctor_id,
-      appointment_date: formData.date,
-      timeslot: formData.time,
-      patient_name: formData.name,
-      patient_email: formData.email,
-      patient_phone: formData.phone,
-      reason_to_visit: formData.reason,
-    };
-
-     console.log("Payload before sending:", payload);
-
-
-
+  const response = await axios.post("http://127.0.0.1:8000/api/appointments/create/", payload);
   
-    // API call to your Django backend (adjust URL as necessary)
-    axios
-      .post("http://127.0.0.1:8000/api/appointments/create/", payload)
-      .then((response) => {
-        console.log("Before sendinf", payload)
-        console.log("Form submitted successfully:", response.data);
-        setAppointmentSuccess(true)
-        setAppointmentFailure(false)
+  console.log("Form submitted successfully:", response.data);
+  setAppointmentSuccess(true);
+  setAppointmentFailure(false);
+  setLoading(false)
 
-        setTimeout(() => {
-          setFormData({
-            department: "",
-          doctor: "",
-          date: "",
-          time: "",
-          name: "",
-          email: "",
-          phone: "",
-          reason: "",
-          });
-          setAppointmentSuccess(false);
-        }, 10000);
+  setTimeout(() => {
+    setFormData({
+      department: "",
+      doctor: "",
+      date: "",
+      time: "",
+      reason: "",
+    });
+    setAppointmentSuccess(false);
+  }, 10000);
 
-        
-        // Optionally, you could redirect or show a success message here.
-      })
-      .catch((error) => {
-        const errorMsg = error.response?.data?.non_field_errors?.[0];
-        console.log("Error message:",errorMsg)
-        if (errorMsg?.includes("must make a unique set")) {
-          setCustomError("The selected time slot has already been booked. Please refresh the page & choose a different time.");
-        } else {
-          setCustomError("Something went wrong while booking. Please try again.");
-        }
-        setAppointmentSuccess(false)
-        setAppointmentFailure(true)
-      });
-  };
+} catch (error) {
+  console.log("Error:", error);
+  const errorMsg = error.response?.data?.non_field_errors?.[0];
+  console.log("Error message:", errorMsg);
+
+  if (errorMsg?.includes("must make a unique set")) {
+    setCustomError("The selected time slot has already been booked. Please refresh the page & choose a different time.");
+  } else {
+    setCustomError("Something went wrong while booking. Please try again.");
+  }
+
+  setAppointmentSuccess(false);
+  setAppointmentFailure(true);
+}finally{
+  setLoading(false)
+}
+
+
+ };
 
 
 
-
+  const handleGoBack = () => {
+    window.history.back()
+  }
   
 
   return (
@@ -225,13 +266,13 @@ useEffect(()=>{
       <Header />
       <div className="bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <Link
-            to="/"
-            className="flex items-center text-blue-600 hover:text-blue-700"
+          <button
+            onClick={handleGoBack}
+          className="p-1 flex items-center text-blue-600 hover:text-blue-700 hover:bg-blue-50 hover:rounded-md"
           >
             <ChevronLeft className="w-5 h-5 mr-2" />
-            Back to Home
-          </Link>
+            Back
+          </button>
         </div>
       </div>
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -239,7 +280,6 @@ useEffect(()=>{
           <h1 className="text-2xl font-bold text-gray-900 mb-6">
             Book an Appointment
           </h1>
-          {/* Progress Steps */}
           <div className="mb-8">
           <div className="mb-4">
         <label className="block text-gray-700 font-medium mb-2">Department</label>
@@ -296,7 +336,7 @@ useEffect(()=>{
  
           </div>
 
-       
+             <form onSubmit={handleSubmit}>
           
             <div>
           
@@ -308,7 +348,7 @@ useEffect(()=>{
                   name="date"
                   value={formData.date}
                   onChange={handleInputChange}
-                  className="w-full p-2 border rounded-lg"
+                  className={`w-full p-2 border rounded-lg ${errors.date && 'border-red-500'}`}
                   min={new Date().toISOString().split("T")[0]}
                 />
                       {errors.date && <p className="text-sm text-red-500 mt-1">{errors.date}</p>}
@@ -320,7 +360,13 @@ useEffect(()=>{
                 {
                     formData.date ? (
 
-                      loading ? (<LoadingSpinner/>):
+                      loading ? (<Loader/>):
+
+                      doctorAvailabilityError ? (
+                         <div className="mt-2">
+                                                    <Alert severity="warning">{doctorAvailabilityError}</Alert>
+                                                  </div>
+                      ):
                       timeslots.length > 0 ? (
                         timeslots.map((t) => (
                           <button
@@ -336,10 +382,10 @@ useEffect(()=>{
 
                         ))
                       ) : (
-                        <div className="grid-cols">
-                          <Alert severity="warning">Oops! No time slots found. Make sure you've picked a date that matches the doctor’s available days.</Alert>
-                        </div>
-                      )
+                                                <Alert severity="info">
+                                                  All time slots for this doctor on the selected date are fully booked. Please try another day.
+                                                </Alert>
+                                              )
                     ) : (
                       <p className="text-gray-500">Please select a date to view time slots.</p>
                     )
@@ -353,7 +399,7 @@ useEffect(()=>{
         
         
          
-            <form onSubmit={handleSubmit}>
+      
               <h2 className="text-lg font-semibold mb-4">Your Information</h2>
               <div className="space-y-4">
                 <div>
@@ -366,13 +412,11 @@ useEffect(()=>{
                       type="text"
                       name="name"
                       required
-                      value={formData.name}
-                      onChange={handleInputChange}
-                      className="w-full pl-10 pr-4 py-2 border rounded-lg"
-                      placeholder="John Doe"
+                      value={fullName}
+                      className="w-full pl-10 pr-4 py-2 border rounded-lg opacity-50 cursor-not-allowed"
+                      disabled
                     />
                   </div>
-                  {errors.name && <p className="text-sm text-red-500 mt-1">{errors.name}</p>}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -384,37 +428,17 @@ useEffect(()=>{
                       type="email"
                       name="email"
                       required
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      className="w-full pl-10 pr-4 py-2 border rounded-lg"
-                      placeholder="john@example.com"
+                      value={email}
+                      className="w-full pl-10 pr-4 py-2 border rounded-lg opacity-50 cursor-not-allowed"
+                      disabled
                     />
                   </div>
-                  {errors.email && <p className="text-sm text-red-500 mt-1">{errors.email}</p>}
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Phone Number
-                  </label>
-                  <div className="relative">
-                    <Phone className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                    <input
-                      type="tel"
-                      name="phone"
-                      required
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                      className="w-full pl-10 pr-4 py-2 border rounded-lg"
-                      placeholder="+1 (234) 567-8900"
-                    />
-                  </div>
-                {errors.phone && <p className="text-sm text-red-500 mt-1">{errors.phone}</p>}
-
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Reason for Visit
                   </label>
+                 
                   <div className="relative">
                     <MessageSquare className="w-5 h-5 absolute left-3 top-3 text-gray-400" />
                     <textarea
@@ -422,20 +446,23 @@ useEffect(()=>{
                       rows={4}
                       value={formData.reason}
                       onChange={handleInputChange}
-                      className="w-full pl-10 pr-4 py-2 border rounded-lg"
+                      className={`w-full pl-10 pr-4 py-2 border rounded-lg ${errors.reason && 'border-red-700'}`}
                       placeholder="Please briefly describe your symptoms or reason for visit"
                     />
                   </div>
-                {errors.reason && <p className="text-sm text-red-500 mt-1">{errors.reason}</p>}
+                    {errors.reason && <p className="text-sm text-red-500 mt-1">{errors.reason}</p>}
+               
 
                 </div>
               </div>
+             
               <button
                 type="submit"
-                className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 mt-6"
+                className={`${loading && 'opacity-50 cursor-not-allowed'} w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 mt-6`}
               >
-                Confirm Appointment
+                {loading ? 'Confirming....':'Confirm Appointment'}
               </button>
+
             </form>
         
         </div>

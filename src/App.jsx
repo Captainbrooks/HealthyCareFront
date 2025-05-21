@@ -59,44 +59,14 @@ function App() {
 
 
 
-  const [isDoctor, setIsDoctor] = useState(false)
-  const [email, setEmail] = useState("")
-  const [role, setRole] = useState("")
-  const [hasCheckedAccess, setHasCheckedAccess] = useState(false);
+
 
   const access_token = localStorage.getItem('access_token')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
   return (
     <>
 
-    <div className='min-h-screen bg-gradient-to-br from-blue-50 via-teal-50 to-white'>
 
 <Toaster />
       <ScrollToTop />
@@ -173,7 +143,6 @@ function App() {
         {/*Doctor Dashboard */}
         <Route path="*" element={<NotFound />} />
       </Routes>
-      </div>
     </>
     
   );
