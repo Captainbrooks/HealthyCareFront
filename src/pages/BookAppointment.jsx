@@ -8,6 +8,7 @@ import {
   Phone,
   Mail,
   MessageSquare,
+  ArrowLeftIcon,
 } from "lucide-react";
 import Alert from "@mui/material/Alert";
 import AlertTitle from "@mui/material/AlertTitle";
@@ -115,7 +116,7 @@ function BookAppointment() {
   const fetchTimeSlots = async (doctor_id, date) => {
     setTimeLoading(true)
     try {
-      const response = await axios.get(`http://127.0.0.1:8000/api/doctors/timeslots/${doctor_id}/?appointment_date=${date}`, {
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/doctors/timeslots/${doctor_id}/?appointment_date=${date}`, {
         withCredentials: true
       });
 
@@ -144,7 +145,7 @@ function BookAppointment() {
     setDoctorLoading(true)
 
     try {
-      const response = await axios.get(`http://127.0.0.1:8000/api/doctors/list/${selecteddept}`);
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/doctors/list/${selecteddept}`);
 
       setDoctors(response.data)
       setDoctorLoading(false)
@@ -262,7 +263,7 @@ function BookAppointment() {
 
 
     axios
-      .post("http://127.0.0.1:8000/api/appointments/create/", payload)
+      .post(`${import.meta.env.VITE_API_URL}/api/appointments/create/`, payload)
       .then((response) => {
 
         setAppointmentSuccess(true)
@@ -275,18 +276,17 @@ function BookAppointment() {
             doctor: "",
             date: "",
             time: "",
-            name: "",
-            email: "",
             phone: "",
             reason: "",
           });
           setAppointmentSuccess(false);
-        }, 500);
+        }, 2000);
 
       })
       .catch((error) => {
         const errorMsg = error.response?.data?.non_field_errors?.[0];
         console.log(error)
+        
         if (errorMsg?.includes("must make a unique set")) {
           setCustomError("The selected time slot has already been booked. Please refresh the page & choose a different time.");
         } else {
@@ -307,24 +307,26 @@ function BookAppointment() {
     <div ref={stepcount} className="min-h-screen bg-gray-50">
       <Header />
       <div className="bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <Link
-            to="/"
-            className="flex items-center text-blue-600 hover:text-blue-700"
+        <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+           <div className="px-4 py-3">
+          <button
+            onClick={() => navigate(-1)}
+            className="p-0.5 flex items-center justify-between text-sm text-blue-600 hover:text-blue-700 hover:bg-blue-100 hover:rounded-full"
           >
-            <ChevronLeft className="w-5 h-5 mr-2" />
-            Back to Home
-          </Link>
+            <ArrowLeftIcon className="w-6 h-6" />
+          
+          </button>
+        </div>
         </div>
       </div>
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-3xl mx-auto px-1 sm:px-6 lg:px-8 py-4">
         <div className="bg-white rounded-lg shadow-sm p-6">
-          <h1 className="text-2xl font-bold text-gray-900 mb-6">
+          <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-6">
             Book an Appointment
           </h1>
           {/* Progress Steps */}
           <div className="mb-8">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between p-1">
               {[1, 2, 3].map((item) => (
                 <div key={item} className="flex items-center">
                   <div
@@ -337,26 +339,26 @@ function BookAppointment() {
                   </div>
                   {item && (
                     <div
-                      className={`h-1 w-24 ${step > item ? "bg-blue-600" : "bg-gray-200"
+                      className={`h-1 w-5 sm:w-10 lg:w-24 ${step > item ? "bg-blue-600" : "bg-gray-200"
                         }`}
                     />
                   )}
                 </div>
               ))}
             </div>
-            <div className="flex justify-between mt-2">
-              <span className="text-sm text-gray-600">Select Department</span>
-              <span className="text-sm text-gray-600">
+            <div className="flex justify-between items-center mt-2 p-0.5 text-left">
+              <span className="text-xs sm:text-sm md:text-md lg:text-base text-gray-600">Select Department</span>
+              <span className="text-xs sm:text-sm md:text-md lg:text-base text-gray-600">
                 Choose Doctor & Time
               </span>
-              <span className="text-sm text-gray-600">Your Information</span>
+              <span className="text-xs sm:text-sm md:text-md lg:text-base text-gray-600">Your Information</span>
             </div>
           </div>
           {/* Step 1: Department Selection */}
           {step === 1 && (
             <div >
               <h2 className="text-lg font-semibold mb-4">Select Department</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="p-0.5 grid grid-cols-2 md:grid-cols-2 gap-4  lg:gap-5">
                 {departments.map((dept) => (
                   <button
                     key={dept}
@@ -370,7 +372,7 @@ function BookAppointment() {
                       fetchDeptDoctors(dept)
                       setStep(2);
                     }}
-                    className={`p-4 border rounded-lg text-left hover:border-blue-600 ${formData.department === dept
+                    className={`p-2 border text-nowrap border-gray-300 rounded-lg text-center text-base hover:cursor-pointer hover:bg-gray-100 font-medium ${formData.department === dept
                       ? "border-blue-600 bg-blue-50"
                       : "border-gray-200"
                       }`}
@@ -395,7 +397,7 @@ function BookAppointment() {
                   className="text-blue-500 hover:text-blue-600"
                   onClick={() => handleStep(1)}
                 >
-                  <ArrowCircleLeftIcon fontSize="large" />
+                  <ArrowLeftIcon className="w-6 h-6" />
 
 
                 </button>
@@ -413,7 +415,7 @@ function BookAppointment() {
 
 
 
-                <div className={`${doctors.length > 0 ? 'grid grid-cols md:grid-cols-2 gap-4' : 'block'}`}>
+                <div className={`${doctors.length > 0 ? 'grid grid-cols-1 sm:grid-cols-2 gap-4' : 'block'} ${!formData.doctor && errors.doctor && 'border border-red-500'}`}>
 
                   {
                     doctorLoading ? (
@@ -421,14 +423,16 @@ function BookAppointment() {
                       <Loader />
                     ) :
 
+
                       doctors.length > 0 ? (doctors.map((doctor) => (
                         <button
                           key={doctor.id}
                           onClick={() => handleDoctorSelect(doctor)}
                           disabled={doctor.availability.length === 0}  // Disable the button if no availability
-                          className={`p-4 border rounded-lg flex items-center space-x-4 ${formData.doctor?.doctor_name === doctor.doctor_name
+                          className={`p-2 border rounded-lg flex items-center space-x-4 ${formData.doctor?.doctor_name === doctor.doctor_name
                             ? "border-blue-600 bg-blue-50"
                             : "border-gray-200"
+                            
                             } ${doctor.availability.length === 0 ? 'cursor-not-allowed border-gray-200 bg-gray-50 opacity-75:' : 'hover:border-blue-600 '}`}  // Adjust styling for disabled button
                         >
                           <div className="flex-shrink-0">
@@ -495,7 +499,7 @@ function BookAppointment() {
                   </Alert>
 
                 )}
-                {errors.doctor && <p className="text-sm text-red-500 mt-1">{errors.doctor}</p>}
+                {!formData.doctor && errors.doctor && <p className="text-sm text-red-500 mt-1">{errors.doctor}</p>}
               </div>
               {/* Date Selection */}
 
@@ -510,10 +514,10 @@ function BookAppointment() {
                     name="date"
                     value={formData.date}
                     onChange={handleInputChange}
-                    className="w-full p-2 border rounded-lg"
+                    className={`w-full p-2 border rounded-lg ${!formData.date && errors.date && 'border-red-500'}`}
                     min={new Date().toISOString().split("T")[0]}
                   />
-                  {errors.date && <p className="text-sm text-red-500 mt-1">{errors.date}</p>}
+                   {!formData.date && errors.date && <p className="text-sm text-red-500 mt-1">{errors.date}</p>}
 
                 </div>
               
@@ -532,7 +536,7 @@ function BookAppointment() {
                 <h3 className="text-md font-medium mb-3">Select Time</h3>
                 <div className={`${timeloading ? 'block' : 'hidden'}`}>
                 </div>
-                <div className={`${formData.date && timeslots.length > 0 ? 'grid grid-cols-3 gap-2' : 'block'}`}>
+                <div className={`${formData.date && timeslots.length > 0 ? 'grid grid-cols-2 gap-2' : 'block'}`}>
 
                   {
                     formData.date ? (
@@ -550,9 +554,9 @@ function BookAppointment() {
                             <button
                               key={t.id}
                               onClick={() => handleTimeSelect(t.id)}
-                              className={`p-2 border rounded-lg text-center hover:border-blue-600 ${formData.time === t.id
+                              className={`p-2 border rounded-lg text-center hover:bg-gray-100 hover:cursor-pointer text-black font-medium ${formData.time === t.id
                                 ? "border-blue-600 bg-blue-50"
-                                : "border-gray-200"
+                                : "border-gray-300"
                                 }`}
                             >
                               {convertTo12HourFormat(t.start_time)} - {convertTo12HourFormat(t.end_time)}
@@ -571,7 +575,7 @@ function BookAppointment() {
                     )
                   }
                 </div>
-                {errors.time && <p className="text-sm text-red-500 mt-1">{errors.time}</p>}
+             {!formData.time && errors.time && <p className="text-sm text-red-500 mt-1">{errors.time}</p>}
               </div>
 </>
                 }
@@ -618,7 +622,7 @@ function BookAppointment() {
                   className="text-blue-500 hover:text-blue-600 "
                   onClick={() => setStep(2)}
                 >
-                  <ArrowCircleLeftIcon fontSize="large" />
+                  <ArrowLeftIcon className="w-6 h-6" />
 
                 </button>
 
@@ -679,11 +683,11 @@ function BookAppointment() {
                       rows={4}
                       value={formData.reason}
                       onChange={handleInputChange}
-                      className="w-full pl-10 pr-4 py-2 border rounded-lg"
+                      className={`${!(formData.reason || "").trim() && errors.reason && 'border-red-700'} w-full pl-10 pr-4 py-2 border rounded-lg`}
                       placeholder="Please briefly describe your symptoms or reason for visit"
                     />
                   </div>
-                  {errors.reason && <p className="text-sm text-red-500 mt-1">{errors.reason}</p>}
+                   {!(formData.reason || "") && errors.reason && <p className="text-sm text-red-500 mt-1">{errors.reason}</p>}
 
                 </div>
               </div>

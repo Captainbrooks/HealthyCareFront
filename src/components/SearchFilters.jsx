@@ -13,7 +13,7 @@ const SearchFilters = ({
   specialties,
 }) => {
   return (
-    <div className="bg-white rounded-lg shadow-sm p-6 -mt-12">
+    <div className="bg-white rounded-lg shadow-sm p-3 md:p-4 -mt-12">
      
       <div className="flex flex-col lg:flex-row gap-4">
         <div className="flex-1">
@@ -56,12 +56,6 @@ const SearchFilters = ({
             />
             <span className="ml-2 text-gray-700">Available Today</span>
           </label>
-        </div>
-        <div className="lg:w-auto">
-          <button className="w-full lg:w-auto bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 flex items-center justify-center">
-            <Filter className="w-4 h-4 mr-2" />
-            Apply Filters
-          </button>
         </div>
       </div>
     </div>

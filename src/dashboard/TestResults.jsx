@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { SearchIcon, UploadIcon, FileTextIcon, CheckCircle2} from 'lucide-react'
+import { SearchIcon, UploadIcon, FileTextIcon, CheckCircle2 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { jwtDecode } from 'jwt-decode'
 import axios from 'axios'
@@ -7,11 +7,11 @@ import toast from 'react-hot-toast'
 import Loader from '../components/Loader'
 
 
-const TestResultsPage = ({}) => {
+const TestResultsPage = ({ }) => {
 
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
-  const[error,setError]=useState("")
+  const [error, setError] = useState("")
 
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedPatient, setSelectedPatient] = useState(null)
@@ -27,7 +27,7 @@ const TestResultsPage = ({}) => {
   const [date, setDate] = useState('')
   const [result, setResult] = useState('')
   const [file, setFile] = useState(null)
-  
+
 
 
 
@@ -54,11 +54,11 @@ const TestResultsPage = ({}) => {
   useEffect(() => {
     if (doctor_id) {
       setLoading(true)
-      const status='completed'
+      const status = 'completed'
       setError("")
       setLoading(true)
-      const url=`http://localhost:8000/api/appointments/all/?doctor=${doctor_id}&status=${status}`;
-      console.log("Fetching",url)
+      const url = `${import.meta.env.VITE_API_URL}/api/appointments/all/?doctor=${doctor_id}&status=${status}`;
+      console.log("Fetching", url)
       const fetchAllAppointments = async () => {
         try {
           const response = await axios.get(url, {
@@ -72,7 +72,8 @@ const TestResultsPage = ({}) => {
           const patientIDs = new Set() // making memory for list of patientNames I have already initally none
 
           response.data.forEach((appointment) => {
-            const patientID = appointment.patient.id  // each patient id when loop through
+            const patientID = appointment.patient_data.id
+            // each patient id when loop through
 
             if (!patientIDs.has(patientID)) {
               patientIDs.add(patientID)
@@ -80,8 +81,8 @@ const TestResultsPage = ({}) => {
             }
           })
 
-          console.log("unique",uniqueAppointments.length)
-          
+          console.log("unique", uniqueAppointments.length)
+
 
 
 
@@ -90,6 +91,16 @@ const TestResultsPage = ({}) => {
 
 
           setAppointments(uniqueAppointments)
+
+
+          let filtered = []
+          uniqueAppointments.filter((u) => {
+            u.patient_data.full_name.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase())
+            filtered.push(u)
+
+          })
+
+          console.log("filtered", filtered)
           setLoading(false)
 
 
@@ -137,7 +148,7 @@ const TestResultsPage = ({}) => {
     formData.append('report_file', file);
     formData.append('patient', patientId);
     try {
-      const response = await axios.post(`http://localhost:8000/api/patients/add-test-results/${patientId}/`,
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/patients/add-test-results/${patientId}/`,
         formData, {
         headers: {
 
@@ -152,13 +163,15 @@ const TestResultsPage = ({}) => {
       toast.success("Test Results Added Successfully")
 
 
+
+
       setAppointments((prevAppointments) =>
         prevAppointments.map((appt) =>
-          appt.patient.id === updatedPatient.id
+          appt.patient_data.id === updatedPatient.id
             ? {
               ...appt,
-              patient: {
-                ...appt.patient,
+              patient_data: {
+                ...appt.patient_data,
                 test_results: updatedPatient.test_results,
               },
             }
@@ -197,7 +210,7 @@ const TestResultsPage = ({}) => {
             d="M12 9v4m0 4h.01M4.93 4.93l14.14 14.14M4.93 19.07L19.07 4.93"
           />
         </svg>
-  
+
         {/* Message */}
         <p className="text-sm font-medium text-red-700">
           {error}
@@ -207,6 +220,12 @@ const TestResultsPage = ({}) => {
   }
 
 
+
+
+  const filteredPatients = searchTerm
+    ? appointments.filter(appt => appt.patient_data.full_name.toLowerCase().includes(searchTerm.toLowerCase()))
+    : []
+
   return (
     <div className="space-y-6">
       <div>
@@ -214,116 +233,112 @@ const TestResultsPage = ({}) => {
         <p className="text-gray-600">Upload and manage patient test results</p>
       </div>
 
-      {
-        loading ? <div className='my-10 p-10'><Loader /> </div> :
-          <div className="bg-white rounded-lg shadow">
-            <div className="p-6 border-b border-gray-200">
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <SearchIcon className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  type="text"
-                  placeholder="Search patients..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                />
-              </div>
+
+
+
+
+      <div className="bg-white rounded-lg shadow">
+
+        <div className="p-6 border-b border-gray-200">
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <SearchIcon className="h-5 w-5 text-gray-400" />
             </div>
-            <div>
+            <input
+              type="text"
+              placeholder="Search patients..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            />
+          </div>
+        </div>
 
-              <div>
-                <div className={`w-full flex justify-center items-center my-4 ${appointments && appointments.length > 0 ? 'hidden' : 'block'} py-4`}>
-                <div className="inline-flex items-center space-x-2 bg-green-50 border border-green-200 text-green-700 px-3 py-2 rounded-full shadow-sm">
-    <CheckCircle2 className="w-5 h-5" />
-    <span className="text-sm font-semibold">
-      Only completed appointment patients will appear here
-    </span>
-  </div>
-                </div>
+        {searchTerm && filteredPatients.length > 0 && (
+          <div className="flex items-center justify-center my-2 p-2">
 
-                <div className={`${appointments && appointments.length > 0 ? 'block' : 'hidden'} overflow-x-auto`}>
+            <div className="text-sm font-medium">
+              🔍 {filteredPatients.length} result{filteredPatients.length !== 1 ? 's' : ''} found
+            </div>
+          </div>
+        )}
+
+
+        {
+          searchTerm ? (
+
+            filteredPatients.length > 0 ? (
+              <>
+                <div className="overflow-x-auto hidden sm:block">
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>
-                        <th
-                          scope="col"
-                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                        >
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Patient
                         </th>
-                        <th
-                          scope="col"
-                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                        >
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Last Test
                         </th>
-                        <th
-                          scope="col"
-                          className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
-                        >
+                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Actions
                         </th>
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                      {appointments && appointments.length > 0 && appointments.map((patient) => (
-                        <tr key={patient.id}>
-                 
+
+                      {filteredPatients.map((patient) => (
+                        <tr key={patient.patient_data.id}>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="flex items-center">
                               <div className="h-10 w-10 flex-shrink-0">
                                 <img
                                   className="h-10 w-10 rounded-full"
-                                  src={`https://api.dicebear.com/6.x/initials/svg?seed=${patient.patient.full_name}`}
+                                  src={`https://api.dicebear.com/6.x/initials/svg?seed=${patient.patient_data.full_name}`}
                                   alt=""
                                 />
                               </div>
                               <div className="ml-4">
                                 <div className="text-sm font-medium text-gray-900">
-                                  {patient.patient.full_name}
+                                  {patient.patient_data.full_name}
                                 </div>
-
-                       
-
                                 <div className="text-sm text-gray-500">
-                        {patient.patient.age} years old
-                      </div>
+                                  {patient.patient_data.age ?? "xx"} years old
+                                </div>
                               </div>
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="text-sm text-gray-500">
-                              {patient.patient.test_results > 0 ? (
-                                <div key={patient.patient.test_results.id}>
-                                  {patient.patient.test_results[0].test_type}
-
-                                  <span className='gap-2 font-bold'> ({patient.patient.test_results[0].result})</span>
+                              {patient.patient_data.test_results.length > 0 ? (
+                                <div key={patient.patient_data.test_results.id}>
+                                  {patient.patient_data.test_results[0].test_type}
+                                  <span className="gap-2 font-bold">
+                                    {" "}
+                                    ({patient.patient_data.test_results[0].result})
+                                  </span>
                                 </div>
-                              ) :
-                                (<div className='text-sm text-red-400  p-2 rounded-md italic gap-2'>
-                                  <span>⚠️</span>
-                                  No test results yet
-                                </div>)
-                              }
+                              ) : (
+                                <div className="text-sm text-red-400 p-2 rounded-md italic gap-2">
+                                  <span>⚠️</span> No test results yet
+                                </div>
+                              )}
                             </div>
-
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                             <div className="flex justify-end space-x-2">
                               <button
                                 onClick={() => {
-                                  setUploadModalOpen(true)
-                                  PassPatientId(patient.patient.id)
+                                  setUploadModalOpen(true);
+                                  PassPatientId(patient.patient_data.id);
                                 }}
                                 className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                               >
                                 <UploadIcon className="h-4 w-4 mr-1" />
                                 Upload Results
                               </button>
-                              <button className="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                                onClick={() => handleViewHistory(patient.patient.id)}
+                              <button
+                                className="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                onClick={() => handleViewHistory(patient.patient_data.id)}
                               >
                                 <FileTextIcon className="h-4 w-4 mr-1" />
                                 View History
@@ -331,20 +346,314 @@ const TestResultsPage = ({}) => {
                             </div>
                           </td>
                         </tr>
-                      ))
-
-                      }
+                      ))}
                     </tbody>
                   </table>
                 </div>
 
 
 
+
+{/* mobile view for search start */}
+
+
+                                      <div className={`${filteredPatients && filteredPatients.length > 0 && 'block'} sm:hidden my-2 p-2`}>
+                        {
+                          filteredPatients && filteredPatients.length > 0 && filteredPatients.map((patient) => (
+                            <div key={patient.patient_data.id}
+                              className={`rounded-xl shadow-sm transition-all duration-200 hover:shadow-md`}
+                            >
+                              <div className="flex items-center p-3 pb-3">
+                                <div className="h-14 w-14 flex-shrink-0">
+                                  <img
+                                    className="h-14 w-14 rounded-full cursor-pointer ring-2 ring-gray-100 hover:ring-gray-200 transition-all duration-200"
+                                    src={`https://api.dicebear.com/6.x/initials/svg?seed=${patient.patient_data.full_name}`}
+                                    alt=""
+
+                                  />
+                                </div>
+                                <div
+                                  className="ml-4 flex-1 cursor-pointer"
+                                >
+                                  <div className="text-lg font-semibold text-gray-900 mb-1">
+                                    {patient.patient_data.full_name}
+                                  </div>
+                                  <div className="text-sm text-gray-600">
+                                    {patient.patient_data.age ?? "xx"} years old
+                                  </div>
+                                </div>
+                              </div>
+
+                                    {/* Test Result Info */}
+      <div className="px-4 pb-2 text-sm text-gray-500">
+        {patient.patient_data.test_results.length > 0 ? (
+          <div>
+            Last test:{" "}
+            <span className="font-medium text-gray-700">
+              {patient.patient_data.test_results[0].test_type}
+            </span>{" "}
+            <span className="font-semibold text-gray-800">
+              ({patient.patient_data.test_results[0].result})
+            </span>
+          </div>
+        ) : (
+          <div className="text-sm text-red-500 italic">
+            ⚠️ No test results yet
+          </div>
+        )}
+      </div>
+
+                              <div className="flex flex-wrap gap-2 p-2 justify-center w-full">
+                                <div className="flex justify-end space-x-2">
+                                  <button
+                                    onClick={() => {
+                                      setUploadModalOpen(true)
+                                      PassPatientId(patient.patient_data.id)
+                                    }}
+                                    className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                  >
+                                    <UploadIcon className="h-4 w-4 mr-1" />
+                                    Upload Results
+                                  </button>
+                                  <button className="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                    onClick={() => handleViewHistory(patient.patient_data.id)}
+                                  >
+                                    <FileTextIcon className="h-4 w-4 mr-1" />
+                                    View History
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+
+                          ))
+                        }
+                      </div>
+
+{/* mobile view end */}
+              </>
+            ) :
+
+              (
+                <div className="p-4 text-center text-gray-500">No Patient found for <span className='text-red-400 font-medium text-lg'>"{searchTerm}"</span></div>
+              )
+
+          ) : (
+            // ⬇️ Your full original layout here as it is
+            <div>
+
+              {
+                
+
+                loading ? <div className='my-10 p-10'><Loader /></div> :
+
+
+                appointments && appointments.length > 0 ? (
+                  
+
+                  <div>
+                      {/* desktop */}
+                      <div className='hidden sm:block'>
+
+                        <table className="min-w-full divide-y divide-gray-200">
+                          <thead className="bg-gray-50">
+                            <tr>
+                              <th
+                                scope="col"
+                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                              >
+                                Patient
+                              </th>
+                              <th
+                                scope="col"
+                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                              >
+                                Last Test
+                              </th>
+                              <th
+                                scope="col"
+                                className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
+                              >
+                                Actions
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody className="bg-white divide-y divide-gray-200">
+                            {appointments && appointments.length > 0 && appointments.map((patient) => (
+                              <tr key={patient.id}>
+
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                  <div className="flex items-center">
+                                    <div className="h-10 w-10 flex-shrink-0">
+                                      <img
+                                        className="h-10 w-10 rounded-full"
+                                        src={`https://api.dicebear.com/6.x/initials/svg?seed=${patient.patient_data.full_name}`}
+                                        alt=""
+                                      />
+                                    </div>
+                                    <div className="ml-4">
+                                      <div className="text-sm font-medium text-gray-900">
+                                        {patient.patient_data.full_name}
+                                      </div>
+
+
+
+                                      <div className="text-sm text-gray-500">
+                                        {patient.patient_data.age ?? "xx"} years old
+                                      </div>
+                                    </div>
+                                  </div>
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                  <div className="text-sm text-gray-500">
+                                    {patient.patient_data.test_results.length > 0 ? (
+                                      <div key={patient.patient_data.test_results.id}>
+                                        {patient.patient_data.test_results[0].test_type}
+
+                                        <span className='gap-2 font-bold'> ({patient.patient_data.test_results[0].result})</span>
+                                      </div>
+                                    ) :
+                                      (<div className='text-sm text-red-400  p-2 rounded-md italic gap-2'>
+                                        <span>⚠️</span>
+                                        No test results yet
+                                      </div>)
+                                    }
+                                  </div>
+
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                  <div className="flex justify-end space-x-2">
+                                    <button
+                                      onClick={() => {
+                                        setUploadModalOpen(true)
+                                        PassPatientId(patient.patient_data.id)
+                                      }}
+                                      className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                    >
+                                      <UploadIcon className="h-4 w-4 mr-1" />
+                                      Upload Results
+                                    </button>
+                                    <button className="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                      onClick={() => handleViewHistory(patient.patient_data.id)}
+                                    >
+                                      <FileTextIcon className="h-4 w-4 mr-1" />
+                                      View History
+                                    </button>
+                                  </div>
+                                </td>
+                              </tr>
+                            ))
+
+                            }
+                          </tbody>
+                        </table>
+
+                      </div>
+                      {/* desktop */}
+
+                      {/* mobile */}
+                      <div className="sm:hidden my-2 p-2">
+                        {
+                          appointments && appointments.length > 0 && appointments.map((patient) => (
+                            <div key={patient.patient_data.id}
+                              className={`rounded-xl shadow-sm transition-all duration-200 hover:shadow-md`}
+                            >
+                              <div className="flex items-center p-3 pb-3">
+                                <div className="h-14 w-14 flex-shrink-0">
+                                  <img
+                                    className="h-14 w-14 rounded-full cursor-pointer ring-2 ring-gray-100 hover:ring-gray-200 transition-all duration-200"
+                                    src={`https://api.dicebear.com/6.x/initials/svg?seed=${patient.patient_data.full_name}`}
+                                    alt=""
+
+                                  />
+                                </div>
+                                <div
+                                  className="ml-4 flex-1 cursor-pointer"
+                                >
+                                  <div className="text-lg font-semibold text-gray-900 mb-1">
+                                    {patient.patient_data.full_name}
+                                  </div>
+                                  <div className="text-sm text-gray-600">
+                                    {patient.patient_data.age ?? "xx"} years old
+                                  </div>
+                                </div>
+                              </div>
+                              {/* Test Result Info */}
+                              <div className="px-4 pb-2 text-sm text-gray-500">
+                                {patient.patient_data.test_results.length > 0 ? (
+                                  <div>
+                                    Last test:{" "}
+                                    <span className="font-medium text-gray-700">
+                                      {patient.patient_data.test_results[0].test_type}
+                                    </span>{" "}
+                                    <span className="font-semibold text-gray-800">
+                                      ({patient.patient_data.test_results[0].result})
+                                    </span>
+                                  </div>
+                                ) : (
+                                  <div className="text-sm text-red-500 italic">
+                                    ⚠️ No test results yet
+                                  </div>
+                                )}
+                              </div>
+
+                              <div className="flex flex-wrap gap-2 p-2 justify-center w-full">
+                                <div className="flex justify-end space-x-2">
+                                  <button
+                                    onClick={() => {
+                                      setUploadModalOpen(true)
+                                      PassPatientId(patient.patient_data.id)
+                                    }}
+                                    className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                  >
+                                    <UploadIcon className="h-4 w-4 mr-1" />
+                                    Upload Results
+                                  </button>
+                                  <button className="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                    onClick={() => handleViewHistory(patient.patient_data.id)}
+                                  >
+                                    <FileTextIcon className="h-4 w-4 mr-1" />
+                                    View History
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+
+                          ))
+                        }
+                      </div>
+
+                      {/* mobile */}
+               </div>
+                )
+                
+                :
+                
+                (
+
+                  // if 0 completed appointments
+                
+                <div className={`w-full flex justify-center items-center my-4  py-4`}>
+                <div className="inline-flex items-center space-x-2 bg-green-50 border border-green-200 text-green-700 px-3 py-2 rounded-full shadow-sm">
+                  <CheckCircle2 className="w-5 h-5" />
+                  <span className="text-sm font-semibold">
+                    Only completed appointment patients will appear here
+                  </span>
+                </div>
               </div>
+                
+              )
+
+
+
+              }
+
+
             </div>
 
-          </div>
-      }
+            // full layout ends here
+          )}
+      </div>
+
       {/* Upload Modal */}
       {/* Test Results Upload Modal */}
       {uploadModalOpen && (

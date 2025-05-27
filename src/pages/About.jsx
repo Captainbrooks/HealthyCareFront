@@ -77,19 +77,18 @@ const leadership = [
 export function About() {
   return (
     <div className="w-full min-h-screen bg-gray-50">
-      <Header />
-      <div className="bg-blue-600 py-12">
+      <div className="bg-blue-600 py-4 md:py-6 lg:py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-3xl font-bold text-white mb-4">
-            About HealthCare
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
+            About HealthyCare
           </h1>
-          <p className="text-blue-100 max-w-3xl mx-auto">
+          <p className="text-blue-100 text-base text-center">
             Delivering exceptional healthcare services with compassion and
             excellence for over 25 years.
           </p>
         </div>
       </div>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8 py-8">
         {/* Mission Statement */}
         <div className="bg-white rounded-lg shadow-sm p-8 mb-12">
           <div className="max-w-3xl mx-auto text-center">
@@ -185,7 +184,7 @@ export function About() {
           </a>
         </div>
       </div>
-      <Footer />
+    
     </div>
   )
 }

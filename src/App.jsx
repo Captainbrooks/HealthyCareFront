@@ -14,7 +14,6 @@ import PatientPortal from './pages/PatientPortal';
 import FindDoctors from './pages/FindDoctors';
 import Departments from './pages/Departments';
 import OpeningHours from './pages/OpeningHours';
-import About from './pages/About';
 import EmergencyCare from './pages/EmergencyCare';
 import QualifiedDoctors from './pages/QualifiedDoctors';
 import Services247 from './pages/Services247';
@@ -23,7 +22,6 @@ import DoctorProfile from './pages/DoctorProfile';
 import ScrollToTop from './components/ScrollTop';
 import Login from './components/Login';
 import Register from './components/Register';
-import PrivateRoute from './components/PrivateRoute';
 import BookSpecificDoctor from './components/BookSpecificDoctor';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
@@ -44,6 +42,8 @@ import { jwtDecode } from 'jwt-decode';
 
 import { Loader } from 'lucide-react';
 import ProtectedDoctorRoute from './components/ProtectedDoctorRoute';
+import PatientTest from './pages/PatientTest';
+import PatientHealth from './pages/PatientHealth';
 
 
 
@@ -66,6 +66,7 @@ function App() {
 
   return (
     <>
+    
 
 
 <Toaster />
@@ -99,7 +100,6 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/find-doctors" element={<FindDoctors />} />
         <Route path="/departments" element={<Departments />} />
-        <Route path="/about" element={<About />} />
 
         <Route path="/opening-hours" element={<OpeningHours />} />
         <Route path="/emergency-care" element={<EmergencyCare />} />
@@ -107,12 +107,14 @@ function App() {
         <Route path="/24-7-services" element={<Services247 />} />
         <Route path="/outdoor-checkup" element={<OutdoorCheckup />} />
         <Route path="/doctor/:doctor_name" element={<DoctorProfile />} />
-        <Route path='bookappointment/:department/:doctorName' element={user ? <BookSpecificDoctor /> : <Navigate to="/login" />} />
+        <Route path='bookappointment/:department/:doctorName' element={<BookSpecificDoctor />} />
         <Route path='/register' element={<Register />} />
         <Route path='/forgot-password' element={<ForgotPassword />} />
         <Route path='/reset-password/:token' element={<ResetPassword />} />
         <Route path='/verify-email/:email' element={<VerifyEmail />} />
         <Route path='/unauthorized' element={<Unauthorized />} />
+        <Route path='/test-results/:patientId' element={<PatientTest />} />
+        <Route path='/health-records/:patientId' element={<PatientHealth />} />
 
         {/*Doctor Dashboard */}
         <Route

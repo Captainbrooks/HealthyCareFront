@@ -32,7 +32,7 @@ export function FindDoctors() {
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        const response = await axios.get('http://127.0.0.1:8000/api/doctors/list/');
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/doctors/list/`);
         console.log(response.data);
         setFilteredDoctors(response.data);
         setDoctorsData(response.data);
@@ -89,7 +89,7 @@ export function FindDoctors() {
     <div className="w-full min-h-screen bg-gray-50">
       <Header />
 
-      <div className="mt-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="mt-6 md:mt-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <SearchFilters
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
@@ -99,13 +99,13 @@ export function FindDoctors() {
           setAvailabilityToday={setAvailabilityToday}
           specialties={specialties}
         />
-        <div className="mt-8">
+        <div className="mt-6">
           <h2 className="text-xl font-semibold text-gray-800 mb-6">
             {filteredDoctors.length}{' '}
             {filteredDoctors.length === 1 ? 'Doctor' : 'Doctors'} Found
           </h2>
-          {filteredDoctors.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredDoctors && filteredDoctors.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               {filteredDoctors.map((doctor) => (
                 <DoctorCard key={doctor.doctor_name} doctor={doctor} />
               ))}

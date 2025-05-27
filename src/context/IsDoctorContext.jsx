@@ -65,7 +65,7 @@ export const IsDoctorContextProvider=({children}) => {
 
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/auth/dashboard-access-check/",
+        `${import.meta.env.VITE_API_URL}/api/auth/dashboard-access-check/`,
         { email, role },
         { withCredentials: true }
       );

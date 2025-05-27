@@ -64,6 +64,7 @@ const DashboardLayout = () => {
   }
 
   return (
+    <>
     <div className="flex h-screen bg-gray-50">
       {/* Sidebar */}
       <aside
@@ -119,29 +120,18 @@ const DashboardLayout = () => {
                 </div>
                 <button
                   onClick={() => setShowLogoutModal(true)}
-                  className="hidden sm:flex items-center text-sm text-gray-700 hover:text-red-600"
+                  className="sm:flex items-center text-sm text-gray-700 hover:text-red-600"
                 >
                   <LogOutIcon className="w-4 h-4 mr-1" />
-                  Sign Out
+                 <span className='hidden sm:block'>Sign Out</span> 
                 </button>
               </div>
             </div>
           </div>
-
-          {/* Mobile-only logout */}
-          <div className="block sm:hidden px-4 pb-2">
-            <button
-              onClick={() => setShowLogoutModal(true)}
-              className="flex items-center text-sm text-gray-700 hover:text-red-600 w-full"
-            >
-              <LogOutIcon className="w-4 h-4 mr-2" />
-              Sign Out
-            </button>
-          </div>
         </header>
 
         {/* Page content */}
-        <main className="flex-1 overflow-auto bg-gray-50 p-6">
+        <main className="flex-1 overflow-auto bg-gray-50 p-3">
           <Outlet />
         </main>
       </div>
@@ -172,6 +162,7 @@ const DashboardLayout = () => {
       )}
 
     </div>
+    </>
   )
 }
 

@@ -9,14 +9,17 @@ function ProtectedDoctorRoute({ children }) {
         const [hasCheckedAccess, setHasCheckedAccess] = useState(false);
             const [verified,setVerified]=useState(false)
         
-            const [verifying,setVerifying]=useState(false)
+            const [verifying,setVerifying]=useState(true)
 
 
     useEffect(() => {
         const access_token = localStorage.getItem('access_token');
         const user = JSON.parse(localStorage.getItem('user'));
       
-        if (!user || !access_token) return;
+        if (!user || !access_token){
+          setVerifying(false)
+          return;
+        }
       
         const email = user.email;
         const role = user.role;
@@ -24,14 +27,14 @@ function ProtectedDoctorRoute({ children }) {
         if (role === "Doctor" && email && !hasCheckedAccess) {
             setVerifying(true)
           const checkDoctorAccess = async () => {
+             console.log("API:", import.meta.env.VITE_API_URL);
             try {
               const response = await axios.post(
-                "http://localhost:8000/api/auth/dashboard-access-check/",
+                `${import.meta.env.VITE_API_URL}/api/auth/dashboard-access-check/`,
                 { email, role },
                 { withCredentials: true }
               );
       
-              console.log("response", response);
       
               if (response.data.allowed === true) {
                 setHasCheckedAccess(true);
@@ -43,10 +46,14 @@ function ProtectedDoctorRoute({ children }) {
               setHasCheckedAccess(false);
               setVerified(false)
               setVerifying(false)
-            }
+            }finally {
+            setVerifying(false);
+        }
           };
       
           checkDoctorAccess();
+        }else{
+          setVerifying(false);
         }
       }, [hasCheckedAccess]);
 

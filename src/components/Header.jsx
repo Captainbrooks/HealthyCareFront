@@ -1,115 +1,102 @@
 import React, { useEffect, useState } from 'react'
-import { Link, useLocation } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode';
-import { useNavigate } from 'react-router-dom';
-import useDoctor from '../hooks/useDoctor'
-
-import {
-
-  Menu,
-  X,
-  Bell,
-  User,
-  LogOut
-} from "lucide-react";
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { User, LogOut, Bell, Menu, X } from "lucide-react";
 
 function Header() {
-  const navigate=useNavigate()
-  const location = useLocation()
-  const [username,setUserName]=useState("Guest")
-  const [isDoctor,setIsDoctor]=useState(false)
-
-
-  useEffect(()=>{
-    const user=JSON.parse(localStorage.getItem('user'))
-    if(user){
-      if(user.role==="Doctor"){
-        setUserName(user.username)
-        setIsDoctor(true)
-        return
-      }else{
-        setUserName(user.username)
-        setIsDoctor(false)
-      }
-    }
-   
-  },[username])
-
-
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [username, setUserName] = useState("Guest");
+  const [isDoctor, setIsDoctor] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isPatientPortal, setIsPatientPortal] = useState(false)
+  const [isPatientPortal, setIsPatientPortal] = useState(false);
 
   useEffect(() => {
-
-
-    if (location.pathname === "/patient-portal") {
-      setIsPatientPortal(true)
-      return
-    } else {
-      setIsPatientPortal(false)
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (user) {
+      setUserName(user.username);
+      setIsDoctor(user.role === "Doctor");
     }
-  }, [location.pathname])
+  }, [navigate]);
 
+  useEffect(() => {
+    setIsPatientPortal(location.pathname === "/patient-portal");
+  }, [location.pathname]);
+
+  const navItems = [
+    { name: 'Home', path: '/', activeColor: 'text-orange-500' },
+    { name: 'Doctors', path: '/find-doctors', activeColor: 'text-orange-500' },
+    { name: 'Services', path: '/services', activeColor: 'text-orange-500' },
+    { name: 'Contact', path: '/contact', activeColor: 'text-orange-500' },
+  ];
+
+  const handleLogout = () => {
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+    localStorage.removeItem("user");
+    window.location.href = "/login";
+  };
 
   return (
     <div>
-      <nav className="bg-white  mb-2">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <Link to="/">   <div className="flex items-center">
-              <span className="text-blue-600 text-xl font-bold">HealthyCare</span>
-              <img
-                src="https://cdn-icons-png.flaticon.com/512/2966/2966327.png"
-                alt=""
-                className="ml-2 w-10 h-10"
-              />
-            </div>
+      <nav className="bg-white mb-2">
+        <div className="max-w-7xl mx-auto px-4 sm:px-3 lg:px-6">
+          <div className="flex justify-between items-center h-16">
+            <Link to="/">
+              <div className="flex items-center">
+                <span className="text-blue-600 text-xl font-bold">HealthyCare</span>
+                <img
+                  src="https://cdn-icons-png.flaticon.com/512/2966/2966327.png"
+                  alt="logo"
+                  className="ml-2 w-10 h-10"
+                />
+              </div>
             </Link>
 
-            <div className="hidden md:flex items-center space-x-8">
-              <Link to="/" className="text-gray-600 hover:text-blue-600">
-                Home
-              </Link>
-              <Link to="/find-doctors" className="text-gray-600 hover:text-blue-600">
-                Doctors
-              </Link>
-              <Link
-                to="/services"
-                className="text-gray-600 hover:text-blue-600"
-              >
-                Services
-              </Link>
-              <Link to="/contact" className="text-gray-600 hover:text-blue-600">
-                Contact
-              </Link>
+            <div className={`hidden md:flex md:items-center  lg:space-x-10 ${isPatientPortal ? 'space-x-0 md:justify-between' : 'space-x-5'}`}>
+              {navItems.map((item) => {
+                const isActive = location.pathname === item.path;
+                return (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    className={`transition-colors duration-200 rounded-md px-3 py-1 ${isActive
+                      ? `font-medium ${item.activeColor} rounded-full bg-gray-600 text-white`
+                      : 'text-gray-600'
+                      }`}
+                  >
+                    {item.name}
+                  </Link>
+                );
+              })}
 
-              
-              {!isPatientPortal ? (<Link to={!isDoctor ? "/patient-portal":"/dashboard"}>  <button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
-               {isDoctor ? "Doctor Dashboard":"Patient Portal"}
-              </button></Link>)
-                :
-                (<div className="flex items-center space-x-4">
+              {!isPatientPortal ? (
+                <Link to={!isDoctor ? "/patient-portal" : "/dashboard"}>
+                  <button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
+                    {isDoctor ? "Doctor Dashboard" : "Patient Portal"}
+                  </button>
+                </Link>
+              ) : (
+                <div className="flex items-center space-x-4">
                   <div className="border-l h-6 border-gray-200 mx-2"></div>
                   <div className="flex items-center space-x-3">
                     <div className="bg-blue-100 p-2 rounded-full">
                       <User className="h-5 w-5 text-blue-600" />
                     </div>
                     <span className="text-sm font-medium text-gray-700 hidden md:inline-block">
-                      {username ? username : ""}
+                      {username}
                     </span>
                   </div>
-                  <button onClick={() => {
-                    localStorage.removeItem("access_token");
-                    localStorage.removeItem("refresh_token");
-                    localStorage.removeItem('user')
-                    window.location.href = "/login";
-                  }} className="ml-2 px-4 py-2 text-white  bg-red-400 hover:bg-red-600 hover:text-white rounded-2xl flex items-center transition-colors">
+                  <button
+                    onClick={handleLogout}
+                    className="ml-2 px-4 py-2 text-white bg-red-400 hover:bg-red-600 rounded-2xl flex items-center transition-colors"
+                  >
                     <LogOut className="h-4 w-4 mr-2" />
                     Logout
                   </button>
-                </div>)
-              }
+                </div>
+              )}
             </div>
+
             <div className="md:hidden flex items-center">
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -120,22 +107,31 @@ function Header() {
             </div>
           </div>
         </div>
-        {isMenuOpen && (
-          <div className="md:hidden">
-            <div className="px-2 pt-2 pb-3 space-y-1">
-              <Link to="/" className="block px-3 py-2 text-gray-600">
-                Home
-              </Link>
-              <Link to="/doctors" className="block px-3 py-2 text-gray-600">
-                Doctors
-              </Link>
-              <Link to="/services" className="block px-3 py-2 text-gray-600">
-                Services
-              </Link>
-              <Link to="/contact" className="block px-3 py-2 text-gray-600">
-                Contact
-              </Link>
-              {isPatientPortal ? (<div className="flex items-center space-x-4">
+
+        <div
+          className={`overflow-hidden transition-all duration-500 ease-in-out md:hidden ${isMenuOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
+            }`}
+        >
+          <div className="px-2 pt-2 pb-3 space-y-2">
+
+            {navItems.map((item) => {
+              const isActive = location.pathname === item.path;
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={` block px-3 py-2 transition-colors duration-200 rounded-md ${isActive
+                    ? `font-medium ${item.activeColor} rounded-full text-orange-500`
+                    : 'text-gray-600'
+                    }`}
+                >
+                  {item.name}
+                </Link>
+              );
+            })}
+
+            {isPatientPortal ? (
+              <div className="flex space-x-4 p-2 rounded-md bg-gray-50">
                 <button className="p-2 rounded-full hover:bg-gray-100 relative">
                   <Bell className="h-5 w-5 text-gray-500" />
                   <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-white"></span>
@@ -145,26 +141,28 @@ function Header() {
                   <div className="bg-blue-100 p-2 rounded-full">
                     <User className="h-5 w-5 text-blue-600" />
                   </div>
-                  <span className="text-sm font-medium text-gray-700 hidden md:inline-block">
-                    {user ? user : "" }
-                  </span>
+                  <span className="text-sm font-medium text-gray-700">{username}</span>
                 </div>
-                <button className="ml-2 px-4 py-2 bg-red-50 text-red-600 rounded-md hover:bg-red-100 flex items-center transition-colors">
+                <button
+                  onClick={handleLogout}
+                  className="ml-2 px-4 py-2 text-white bg-red-400 hover:bg-red-600 rounded-2xl flex items-center transition-colors"
+                >
                   <LogOut className="h-4 w-4 mr-2" />
-                  <span>Logout</span>
+                  Logout
                 </button>
-              </div>) : (<Link to="/patient-portal"><button className="w-full text-left px-3 py-2 text-blue-600">
-                Patient Portal
-              </button>
+              </div>
+            ) : (
+              <Link to={!isDoctor ? "/patient-portal" : "/dashboard"}>
+                <button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 w-full">
+                  {isDoctor ? "Doctor Dashboard" : "Patient Portal"}
+                </button>
               </Link>
-              )
-              }
-            </div>
+            )}
           </div>
-        )}
+        </div>
       </nav>
     </div>
-  )
+  );
 }
 
-export default Header
+export default Header;

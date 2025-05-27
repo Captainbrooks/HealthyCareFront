@@ -31,7 +31,7 @@ export default function DoctorProfile() {
     console.log(doctor_name)
 
     const fetchDoctorDetail=async()=>{
-        const response=await axios.get(`http://127.0.0.1:8000/api/doctors/detail/${doctor_name}`);
+        const response=await axios.get(`${import.meta.env.VITE_API_URL}/api/doctors/detail/${doctor_name}`);
         setDoctorData(response.data)
         setSpecializations(response.data.specializations)
         setCertifications(response.data.certifications)

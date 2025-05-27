@@ -57,7 +57,7 @@ function Contact() {
     e.preventDefault();
     // Handle form submission here
 
-    axios.post("http://127.0.0.1:8000/api/appointments/message/",payload)
+    axios.post(`${import.meta.env.VITE_API_URL}/api/appointments/message/`,payload)
     .then((response)=>{
 
 

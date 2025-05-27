@@ -6,7 +6,9 @@ import Footer from '../components/Footer';
 import axios from 'axios';
 import Alert from '@mui/material/Alert';
 import PasswordStrengthBar from 'react-password-strength-bar';
-import LoadingSpinner from './LoadingSpinner';
+import { jwtDecode } from 'jwt-decode';
+import { useAuthContext } from '../hooks/useAuthContext';
+import Loader from "../components/Loader"
 
 function Register() {
   const navigate = useNavigate();
@@ -24,17 +26,32 @@ function Register() {
   const [refreshtoken, setRefreshToken] = useState(null)
   const [code, setCode] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isResending, setIsResending] = useState(false)
+
   const [message, setMessage] = useState({ type: '', text: '' });
 
 
+  const { dispatch } = useAuthContext();
 
   useEffect(() => {
     const accessToken = localStorage.getItem("access_token");
-    if (accessToken) {
-      navigate("/patient-portal");
-    }
 
+    if (accessToken) {
+      const decoded = jwtDecode(accessToken);
+      if (decoded.role === "Doctor") {
+        navigate("/dashboard");
+        return;
+      }
+
+      navigate("/patient-portal");
+    } else {
+      navigate("/register");
+    }
   }, [navigate]);
+  ;
+
+
+
 
   const passwordRules = {
     uppercase: /[A-Z]/,
@@ -93,7 +110,7 @@ function Register() {
     setIsSubmitting(true)
 
     try {
-      const response = await axios.post("http://127.0.0.1:8000/api/auth/register/", {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/register/`, {
         username: trimmedUsername,
         email: trimmedEmail,
         password: trimmedPassword
@@ -118,8 +135,8 @@ function Register() {
         setRegisterError("Something went wrong. Please try again.");
       }
 
-    }finally{
-      setIsSubmitting(false)   
+    } finally {
+      setIsSubmitting(false)
     }
 
 
@@ -128,13 +145,31 @@ function Register() {
 
   const handleVerify = async (e) => {
     e.preventDefault();
+
+
+    if (!trimmedCode) {
+      setMessage({ type: 'error', text: 'Cannot accept empty code' })
+      return
+    }
+
+    if (!/^\d+$/.test(trimmedCode)) {
+      setMessage({ type: 'error', text: 'Code must be a number.' })
+      return;
+    }
+
+    if (trimmedCode.length < 6) {
+      setMessage({ type: 'error', text: 'Code must be a 6 digit long number.' })
+      return;
+
+    }
+
     setIsSubmitting(false)
     setMessage({ type: '', text: '' });
 
     setIsSubmitting(true)
 
     try {
-      const response = await axios.post("http://127.0.0.1:8000/api/auth/verify-code/", {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/verify-code/`, {
 
         email: trimmedEmail,
         code: trimmedCode
@@ -142,17 +177,35 @@ function Register() {
         withCredentials: true
       });
 
+      console.log("response", response.data)
 
+      const userInfo = jwtDecode(accesstoken)
+
+      localStorage.setItem('user', JSON.stringify(userInfo));
       localStorage.setItem('access_token', accesstoken);
       localStorage.setItem('refresh_token', refreshtoken);
 
       setMessage({ type: 'success', text: `${response.data.message}. Redirecting to Patient Portal` })
 
-      setTimeout(() => {
-        navigate("/patient-portal")
-      }, 3000)
+
+      if (userInfo.role === "Doctor") {
+        setTimeout(() => {
+          navigate("/dashboard");
+        }, 3000)
+        return;
+      } else {
+        setTimeout(() => {
+          navigate("/patient-portal");
+        }, 3000)
+      }
+
+      dispatch({ type: "Register", payload: userInfo })
+
+
+
 
     } catch (error) {
+      console.log(error)
 
       if (error.response && error.response.data.error) {
         setMessage({ type: 'error', text: error.response.data.error });
@@ -162,7 +215,7 @@ function Register() {
 
 
 
-    }finally{
+    } finally {
       setIsSubmitting(false)
     }
 
@@ -177,13 +230,12 @@ function Register() {
 
     e.preventDefault()
 
-    setIsSubmitting(false)
+    setIsResending(true)
     setMessage({ type: '', text: '' });
-    console.log(trimmedEmail)
 
     try {
 
-      const response = await axios.post("http://127.0.0.1:8000/api/auth/resend-code/", {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/resend-code/`, {
         email: trimmedEmail,
 
         withCredentials: true
@@ -191,6 +243,7 @@ function Register() {
 
       console.log(response.data)
       setMessage({ type: 'success', text: `${response.data.message}` })
+      setIsResending(false)
 
 
 
@@ -202,6 +255,8 @@ function Register() {
       } else {
         setMessage({ type: 'error', text: 'Something went wrong. Please try again later' })
       }
+    } finally {
+      setIsResending(false)
     }
   }
 
@@ -306,16 +361,16 @@ function Register() {
 
               {/* Button */}
               <div>
-  <button
-    type="submit"
-    disabled={isSubmitting}
-    className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white 
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white 
       ${isSubmitting ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'} 
       focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500`}
-  >
-    {isSubmitting ? 'Creating...' : 'Create account'}
-  </button>
-</div>
+                >
+                  {isSubmitting ? 'Registering...' : 'Register'}
+                </button>
+              </div>
 
 
               {/* General registration error */}
@@ -330,38 +385,41 @@ function Register() {
 
             {!showregisterform && showemailverification &&
               <div>
-                <div className="flex justify-center">
-                  <div className="rounded-full bg-blue-100 p-3">
-                    <MailCheck className="h-8 w-8 text-blue-600" />
+                <form onSubmit={handleVerify}>
+
+
+                  <div className="flex justify-center">
+                    <div className="rounded-full bg-blue-100 p-3">
+                      <MailCheck className="h-8 w-8 text-blue-600" />
+                    </div>
                   </div>
-                </div>
-                <h2 className="text-xl mb-2 font-semibold text-center text-gray-800">
-                  Verify Your Email
-                </h2>
-                <p className="mb-2 text-sm text-gray-600 text-center">
-                  A 6-digit verification code has been sent to <strong>{email}</strong>
-                </p>
-                <input
-                  type="text"
-                  placeholder="Enter 6-digit code"
-                  maxLength={6}
-                  className="w-full border p-2 mb-2 rounded text-center tracking-widest font-mono text-lg"
-                  value={code}
-                  onChange={(e) => setCode(e.target.value)}
-                />
-
-                <button
-                  onClick={handleVerify}
-                  className={`w-full flex justify-center items-center gap-2 py-2 px-4 rounded text-white mb-2 ${isSubmitting ? 'bg-gray-400' : 'bg-green-600 hover:bg-green-700'
-                    }`}
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
-                  Verify Email
-                </button>
+                  <h2 className="text-xl mb-2 font-semibold text-center text-gray-800">
+                    Verify Your Email
+                  </h2>
+                  <p className="mb-2 text-sm text-gray-600 text-center">
+                    A 6-digit verification code has been sent to <strong>{email}</strong>
+                  </p>
+                  <input
+                    type="text"
+                    placeholder="Enter 6-digit code"
+                    maxLength={6}
+                    className={`w-full border p-2 mb-2 rounded text-center tracking-widest font-mono text-lg border ${!trimmedCode.length > 0 ? '' : 'border-red-500'}`}
+                    value={code}
+                    onChange={(e) => setCode(e.target.value)}
+                  />
 
 
+                  <button
+                    className={`w-full flex justify-center items-center gap-2 py-2 px-4 rounded text-white mb-2 font-medium bg-green-600 ${isSubmitting && 'opacity-50 cursor-not-allowed'
+                      }`}
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? 'Verifying...' : 'Verify Email'}
 
+                  </button>
+
+
+                </form>
 
 
               </div>
@@ -374,37 +432,26 @@ function Register() {
               <div
                 className={`flex items-center text-center gap-2 text-sm px-3 py-2 rounded ${message.type === 'error'
                   ? 'bg-red-100 text-red-700'
-                  : 'bg-green-50 text-green-700 text-lg'
+                  : 'bg-green-50 text-green-900 font-medium  text-lg'
                   }`}
               >
-                {message.type === 'error' ? <div>
+                {  message.type === 'error' ? <div>
 
                   <AlertTriangle className="w-4 h-4 text-center" />
 
                 </div> :
-                
-                <div>
-                  <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
-                    <svg
-                      className="h-6 w-6 text-green-900"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
+
+                  <div>
+                    <div className="mx-auto flex items-center justify-center p-3 rounded-full bg-green-200">
+                      <Check className='w-6 h-6'/>
+                    </div>
                   </div>
-                </div>
                 }
 
+
                 {message.text}
-             
+
+
 
 
               </div>
@@ -426,18 +473,15 @@ function Register() {
 
                 <button
                   onClick={handleResend}
-                  disabled={isSubmitting}
-                  className={`w-full flex justify-center items-center gap-2 py-2 px-4 rounded text-white mb-2 transition-all duration-200 ${isSubmitting ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+                  disabled={isResending}
+                  className={`w-full flex justify-center items-center gap-2 py-2 px-4 rounded font-medium text-white mb-2 transition-all duration-200 bg-blue-600 hover:bg-blue-700 ${isResending && 'cursor-not-allowed opacity-50'
                     }`}
                 >
-                 {isSubmitting ? 'Resending...':'Resend'}
+                  {isResending ? 'Resending...' : 'Resend'}
                 </button>
               </div>
 
             }
-
-
-
 
             {/* Support section */}
             <div className="mt-6">
@@ -450,7 +494,7 @@ function Register() {
                 </div>
               </div>
               <div className="mt-6 text-center text-sm">
-                <Link to="/contact" className="font-medium text-blue-600 hover:text-blue-500">
+                <Link to="/contact" className="font-medium text-blue-600 hover:text-blue-500 border border-gray-200 p-1">
                   Contact our support team
                 </Link>
               </div>

@@ -26,7 +26,7 @@ export function ForgotPassword() {
     setIsSubmitting(true)
 
     try {
-      const response=await axios.post("http://127.0.0.1:8000/api/auth/forgot-password/",{
+      const response=await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/forgot-password/`,{
         email:email,
         withCredentials: true
       });

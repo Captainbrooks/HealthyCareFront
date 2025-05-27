@@ -6,15 +6,12 @@ import Footer from '../components/Footer'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import Alert from "@mui/material/Alert";
-import AlertTitle from "@mui/material/AlertTitle";
 import { jwtDecode } from 'jwt-decode';
 import { useAuthContext } from '../hooks/useAuthContext'
-import useDoctor from '../hooks/useDoctor'
 function Login() {
   const navigate = useNavigate()
-  const {dispatch}=useAuthContext()
-  
-  const { checkDoctorAccess } = useDoctor();
+  const { dispatch } = useAuthContext()
+
 
   useEffect(() => {
     const accessToken = localStorage.getItem("access_token");
@@ -25,7 +22,7 @@ function Login() {
 
       if (decoded.role === "Doctor") {
         navigate("/dashboard");
-        return; 
+        return;
       }
 
       navigate("/patient-portal");
@@ -74,17 +71,14 @@ function Login() {
       return;
     }
 
-
-
-
-
-
     setIsSubmitting(true)
 
-    console.log(email, password)
+    console.log("API:", import.meta.env.VITE_API_URL);
+
+
 
     try {
-      const response = await axios.post("http://127.0.0.1:8000/api/auth/login/", {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/login/`, {
         email: trimmedEmail,
         password: trimmedPassword,
 
@@ -92,16 +86,16 @@ function Login() {
       });
 
 
-      const token=response.data.access_token;
+      const token = response.data.access_token;
       const userInfo = jwtDecode(token);  // firstly we will convert the token
- 
-      
+
+
 
       // explicitly set the information at the localStorage
       localStorage.setItem('user', JSON.stringify(userInfo));
       localStorage.setItem('access_token', token);
-      localStorage.setItem('refresh_token',response.data.refresh_token)
-      
+      localStorage.setItem('refresh_token', response.data.refresh_token)
+
 
       // navigate according to the User type
       if (userInfo.role === "Doctor") {
@@ -113,7 +107,7 @@ function Login() {
 
 
       // update the react state 
-      dispatch({type:"Login",payload:userInfo})
+      dispatch({ type: "Login", payload: userInfo })
 
 
       if (rememberMe) {

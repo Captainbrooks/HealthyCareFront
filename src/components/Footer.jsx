@@ -45,8 +45,8 @@ import {
           <h4 className="text-white font-semibold mb-4">Quick Links</h4>
           <ul className="space-y-2">
             <li>
-              <Link to="/about" className="hover:text-white">
-                About Us
+              <Link to="/" className="hover:text-white">
+               Home
               </Link>
             </li>
             <li>

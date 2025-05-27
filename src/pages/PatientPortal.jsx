@@ -14,17 +14,31 @@ import {
   User,
   ClipboardCheck,
 } from 'lucide-react'
+import { jwtDecode } from 'jwt-decode'
+import { useNavigate } from 'react-router-dom';
 
 import Alert from "@mui/material/Alert";
 import AlertTitle from "@mui/material/AlertTitle";
 export function PatientPortal() {
+  const naviagte=useNavigate()
 
   const [upcomingAppointments, setUpComingAppointments] = useState([])
   const [loading,setLoading]=useState(true)
   const[message,setMessage]=useState('')
+  const[patientId,setPatientId]=useState("")
 
 
   const today = new Date().toLocaleString('en-us', { weekday: 'long' });
+
+  useEffect(()=>{
+    const user=JSON.parse(localStorage.getItem('user'));
+    if(user.id){
+      setPatientId(user.id)
+    }else{
+      navigate("/login")
+    }
+  },[])
+
 
 
 
@@ -36,7 +50,7 @@ export function PatientPortal() {
   useEffect(() => {
     const fetchAvailavleDoctors = async () => {
 
-      axios.get("http://127.0.0.1:8000/api/doctors/list/availabletoday/", {
+      axios.get(`${import.meta.env.VITE_API_URL}/api/doctors/list/availabletoday/`, {
         withCredentials: true
       })
         .then((response) => {
@@ -67,22 +81,16 @@ export function PatientPortal() {
       link: '/bookappointment',
     },
     {
-      icon: <MessageSquare className="w-6 h-6 text-blue-600" />,
-      title: 'Message Doctors',
-      description: 'Communicate directly with your healthcare providers',
-      link: '/messages',
-    },
-    {
       icon: <ClipboardCheck className="w-6 h-6 text-blue-600" />,
       title: 'View Test Results',
       description: 'Access your medical test results and reports',
-      link: '/test-results',
+      link: `/test-results/${patientId}`,
     },
     {
       icon: <Activity className="w-6 h-6 text-blue-600" />,
       title: 'Health Records',
       description: 'View and manage your medical history',
-      link: '/health-records',
+      link: `/health-records/${patientId}`,
     },
   ]
   const quickLinks = [
@@ -129,7 +137,7 @@ export function PatientPortal() {
         </div>
       </div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
           {availableServices.map((service, index) => (
             <div
               key={index}
