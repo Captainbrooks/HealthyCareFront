@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { User, LogOut, Bell, Menu, X } from "lucide-react";
-import Headroom from 'react-headroom';
 
 function Header() {
   const navigate = useNavigate();
@@ -38,7 +37,6 @@ function Header() {
   };
 
   return (
-    <Headroom>
       <div>
         <nav className="bg-white mb-2">
           <div className="max-w-7xl mx-auto px-4 sm:px-3 lg:px-6">
