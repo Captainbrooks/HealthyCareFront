@@ -5,6 +5,7 @@ import axios from 'axios'
 import { CircleAlert } from 'lucide-react'
 import toast from 'react-hot-toast'
 import Loader from '../components/Loader'
+import axiosClient from '../api/axios'
 
 const daysOfWeek = [
   'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday',
@@ -58,7 +59,7 @@ const AvailabilityPage = () => {
       const fetchDoctorAvailability = async () => {
 
         try {
-          const response = await axios.get(`/api/doctors/availability/${doctor_id}`, {
+          const response = await axiosClient.get(`/api/doctors/availability/${doctor_id}`, {
             withCredentials: true
           })
 
@@ -100,7 +101,7 @@ const AvailabilityPage = () => {
 
       setLoading(true)
 
-      const response = await axios.patch(`/api/doctors/${doctor_id}/update-availability/`,
+      const response = await axiosClient.patch(`/api/doctors/${doctor_id}/update-availability/`,
         {
           availability: currentavailability,
           withCredentials: true

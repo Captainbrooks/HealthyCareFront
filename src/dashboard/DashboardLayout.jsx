@@ -12,6 +12,7 @@ import {
   LogOutIcon,
 } from 'lucide-react'
 import { jwtDecode } from 'jwt-decode'
+import axiosClient from '../api/axios'
 
 const DashboardLayout = () => {
   const navigate = useNavigate()

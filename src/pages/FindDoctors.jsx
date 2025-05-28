@@ -6,8 +6,7 @@ import Footer from '../components/Footer';
 import DoctorCard from '../components/DoctorCard';
 import SearchFilters from '../components/SearchFilters';
 import Loader from "../components/Loader"
-import axios from 'axios';
-
+import axiosClient from '../api/axios';
 // Specialty options for filter
 const specialties = [
   'All Specialties',
@@ -33,7 +32,7 @@ export function FindDoctors() {
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        const response = await axios.get(`/api/doctors/list/`);
+        const response = await axiosClient.get(`/api/doctors/list/`);
         console.log(response.data);
         setFilteredDoctors(response.data);
         setDoctorsData(response.data);

@@ -9,6 +9,7 @@ import {
 import axios from 'axios';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import axiosClient from '../api/axios';
 
 import { useParams } from 'react-router-dom';
 
@@ -63,7 +64,7 @@ function VerifyEmail() {
 
     setIsSubmitting(true);
     try {
-      const response = await axios.post(
+      const response = await axiosClient.post(
         `/api/auth/verify-code/`,
         {
           email: trimmedEmail,
@@ -121,7 +122,7 @@ function VerifyEmail() {
 
     try {
 
-      const response = await axios.post(`/api/auth/resend-code/`, {
+      const response = await axiosClient.post(`/api/auth/resend-code/`, {
         email: trimmedEmail,
 
         withCredentials: true

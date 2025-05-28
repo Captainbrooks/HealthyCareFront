@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { MailIcon, ArrowLeftIcon } from 'lucide-react'
 import Header from "../components/Header"
-import axios from 'axios'
+import axiosClient from '../api/axios'
 export function ForgotPassword() {
   const [email, setEmail] = useState('')
   const [emailError, setEmailError] = useState('')
@@ -26,7 +26,7 @@ export function ForgotPassword() {
     setIsSubmitting(true)
 
     try {
-      const response = await axios.post(`/api/auth/forgot-password/`, {
+      const response = await axiosClient.post(`/api/auth/forgot-password/`, {
         email: email,
         withCredentials: true
       });

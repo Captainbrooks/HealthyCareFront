@@ -64,7 +64,7 @@ export const IsDoctorContextProvider = ({ children }) => {
       }
 
       try {
-        const response = await axios.post(
+        const response = await axiosClient.post(
           `/api/auth/dashboard-access-check/`,
           { email, role },
           { withCredentials: true }

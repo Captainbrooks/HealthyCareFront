@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import { jwtDecode } from 'jwt-decode'
 import axios from 'axios'
 import toast from 'react-hot-toast'
+import axiosClient from '../api/axios'
 
 const AppointmentsPage = () => {
   const [searchTerm, setSearchTerm] = useState('')
@@ -29,7 +30,7 @@ const AppointmentsPage = () => {
 
     const fetchAppointments = async () => {
       try {
-        const response = await axios.get(`/api/appointments/list/?doctor=${doctorId}`, {
+        const response = await axiosClient.get(`/api/appointments/list/?doctor=${doctorId}`, {
           withCredentials: true
         })
         setAppointments(response.data)
@@ -71,7 +72,7 @@ const AppointmentsPage = () => {
       if (!confirmed) return
     }
     try {
-      await axios.put(`/api/appointments/${patientId}/${timeId}/`,
+      await axiosClient.put(`/api/appointments/${patientId}/${timeId}/`,
         { status: newStatus },
         { withCredentials: true }
       )

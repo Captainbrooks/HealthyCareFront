@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom'
 import Alert from "@mui/material/Alert";
 import { jwtDecode } from 'jwt-decode';
 import { useAuthContext } from '../hooks/useAuthContext'
+import axiosClient from '../api/axios'
 function Login() {
   const navigate = useNavigate()
   const { dispatch } = useAuthContext()
@@ -73,12 +74,11 @@ function Login() {
 
     setIsSubmitting(true)
 
-    console.log("API:", import.meta.env.VITE_API_URL);
 
 
 
     try {
-      const response = await axios.post(`/api/auth/login/`, {
+      const response = await axiosClient.post(`/api/auth/login/`, {
         email: trimmedEmail,
         password: trimmedPassword,
 

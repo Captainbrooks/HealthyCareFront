@@ -19,6 +19,7 @@ import { useNavigate } from 'react-router-dom';
 import Alert from "@mui/material/Alert";
 import AlertTitle from "@mui/material/AlertTitle";
 import Loader from '../components/Loader';
+import axiosClient from '../api/axios';
 export function PatientPortal() {
   const naviagte = useNavigate()
 
@@ -50,7 +51,7 @@ export function PatientPortal() {
   useEffect(() => {
     const fetchAvailavleDoctors = async () => {
 
-      axios.get(`/api/doctors/list/availabletoday/`, {
+      axiosClient.get(`/api/doctors/list/availabletoday/`, {
         withCredentials: true
       })
         .then((response) => {

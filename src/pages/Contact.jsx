@@ -11,6 +11,7 @@ import {
   Calendar,
   MessageSquare,
 } from 'lucide-react';
+import axiosClient from '../api/axios';
 
 import Alert from "@mui/material/Alert";
 import AlertTitle from "@mui/material/AlertTitle";
@@ -19,6 +20,7 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import axios from 'axios';
+import axiosClient from '../api/axios';
 // Fix for default marker icon in leaflet
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -57,7 +59,7 @@ function Contact() {
     e.preventDefault();
     // Handle form submission here
 
-    axios.post(`/api/appointments/message/`, payload)
+    axiosClient.post(`/api/appointments/message/`, payload)
       .then((response) => {
 
 

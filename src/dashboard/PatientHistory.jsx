@@ -19,6 +19,7 @@ import axios from 'axios'
 import { useAuthContext } from "../hooks/useAuthContext"
 import toast from 'react-hot-toast'
 import { jwtDecode } from 'jwt-decode'
+import axiosClient from '../api/axios'
 
 
 const PatientHistory = () => {
@@ -109,7 +110,7 @@ const PatientHistory = () => {
 
         setLoading(true)
         try {
-          const response = await axios.get(`/api/patients/${patientId}`, {
+          const response = await axiosClient.get(`/api/patients/${patientId}`, {
             withCredentials: true
           });
 
@@ -153,7 +154,7 @@ const PatientHistory = () => {
     formData.append('report_file', file);
     formData.append('patient', patientId);
     try {
-      const response = await axios.post(`/api/patients/add-test-results/${patientId}/`,
+      const response = await axiosClient.post(`/api/patients/add-test-results/${patientId}/`,
         formData, {
         headers: {
 
@@ -193,7 +194,7 @@ const PatientHistory = () => {
     if (!window.confirm("Are you sure you want to delete this test result?")) return;
 
     try {
-      const response = await axios.delete(`/api/patients/delete-test-results/${patientId}/${test_id}`, {
+      const response = await axiosClient.delete(`/api/patients/delete-test-results/${patientId}/${test_id}`, {
         withCredentials: true
       });
 
@@ -246,7 +247,7 @@ const PatientHistory = () => {
 
 
 
-      const response = await axios.post(
+      const response = await axiosClient.post(
         `/api/patients/add-vital-signs/${patientId}/`,
         formData,
         {
@@ -284,7 +285,7 @@ const PatientHistory = () => {
 
       console.log("handle delete sign", vitalId, patientId)
 
-      const response = await axios.delete(`/api/patients/delete-vital-signs/${patientId}/${vitalId}`, {
+      const response = await axiosClient.delete(`/api/patients/delete-vital-signs/${patientId}/${vitalId}`, {
         withCredentials: true
       });
 
@@ -330,7 +331,7 @@ const PatientHistory = () => {
 
     try {
 
-      const response = await axios.post(`/api/patients/add-medication/${patientId}/`,
+      const response = await axiosClient.post(`/api/patients/add-medication/${patientId}/`,
         formData, {
         headers: {
 
@@ -372,7 +373,7 @@ const PatientHistory = () => {
 
 
 
-      const response = await axios.put(`/api/patients/update-medication/${patientId}/${medication_id}/`,
+      const response = await axiosClient.put(`/api/patients/update-medication/${patientId}/${medication_id}/`,
         formData,
         {
           headers: {
@@ -411,7 +412,7 @@ const PatientHistory = () => {
     if (!window.confirm("Are you sure you want to delete this vital signs?")) return;
 
     try {
-      const response = await axios.delete(`/api/patients/delete-medication/${patientId}/${medication_id}/`, {
+      const response = await axiosClient.delete(`/api/patients/delete-medication/${patientId}/${medication_id}/`, {
         withCredentials: true
       });
 

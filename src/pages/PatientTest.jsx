@@ -13,7 +13,7 @@ import {
 import Loader from '../components/Loader'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
-
+import axiosClient from '../api/axios'
 function PatientTest() {
   const { patientId } = useParams()
   const [patient, setPatient] = useState(null)
@@ -24,7 +24,7 @@ function PatientTest() {
     const fetchTestResults = async () => {
       try {
         setLoading(true)
-        const response = await axios.get(
+        const response = await axiosClient.get(
           `/api/patients/${patientId}`,
           { withCredentials: true }
         )

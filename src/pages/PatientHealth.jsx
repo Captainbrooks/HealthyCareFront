@@ -15,6 +15,7 @@ import {
 import Loader from '../components/Loader'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
+import axiosClient from '../api/axios'
 
 function PatientHealth() {
   const { patientId } = useParams()
@@ -26,7 +27,7 @@ function PatientHealth() {
     const fetchTestResults = async () => {
       try {
         setLoading(true)
-        const response = await axios.get(
+        const response = await axiosClient.get(
           `/api/patients/${patientId}`,
           { withCredentials: true }
         )

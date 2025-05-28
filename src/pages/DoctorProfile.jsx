@@ -14,6 +14,7 @@ import axios from 'axios'
 import { useNavigate, useParams } from 'react-router-dom';
 // import ReviewsList from '../components/ReviewsList'
 import ReviewForm from '../components/ReviewForm'
+import axiosClient from '../api/axios'
 
 
 
@@ -34,7 +35,7 @@ export default function DoctorProfile() {
     console.log(doctor_name)
 
     const fetchDoctorDetail=async()=>{
-        const response=await axios.get(`/api/doctors/detail/${doctor_name}`);
+        const response=await axiosClient.get(`/api/doctors/detail/${doctor_name}`);
         setDoctorData(response.data)
         setSpecializations(response.data.specializations)
         setCertifications(response.data.certifications)

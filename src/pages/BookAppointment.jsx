@@ -21,6 +21,7 @@ import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 
 import Loader from '../components/Loader'
+import axiosClient from "../api/axios";
 
 const departments = [
   "Cardiology",
@@ -116,7 +117,7 @@ function BookAppointment() {
   const fetchTimeSlots = async (doctor_id, date) => {
     setTimeLoading(true)
     try {
-      const response = await axios.get(`/api/doctors/timeslots/${doctor_id}/?appointment_date=${date}`, {
+      const response = await axiosClient.get(`/api/doctors/timeslots/${doctor_id}/?appointment_date=${date}`, {
         withCredentials: true
       });
 
@@ -145,7 +146,7 @@ function BookAppointment() {
     setDoctorLoading(true)
 
     try {
-      const response = await axios.get(`/api/doctors/list/${selecteddept}`);
+      const response = await axiosClient.get(`/api/doctors/list/${selecteddept}`);
 
       setDoctors(response.data)
       setDoctorLoading(false)
@@ -262,7 +263,7 @@ function BookAppointment() {
 
 
 
-    axios
+    axiosClient
       .post(`/api/appointments/create/`, payload)
       .then((response) => {
 

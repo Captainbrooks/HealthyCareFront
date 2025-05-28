@@ -13,6 +13,9 @@ import axios from 'axios'
 import toast from 'react-hot-toast'
 import Loader from '../components/Loader'
 import useDoctor from '../hooks/useDoctor'
+import axiosClient from '../api/axios'
+
+
 const DashboardHome = () => {
 
     const [doctor, setDoctor] = useState("")
@@ -39,7 +42,7 @@ const DashboardHome = () => {
             const fetchTodayAppointments = async () => {
 
                 try {
-                    const response = await axios.get(`/api/appointments/list/?doctor=${doctorId}`, {
+                    const response = await axiosClient.get(`/api/appointments/list/?doctor=${doctorId}`, {
                         withCredentials: true
                     })
 

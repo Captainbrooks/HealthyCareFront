@@ -11,7 +11,7 @@ import {
 
 import Header from '../components/Header'
 import Footer from '../components/Footer'
-import axios from 'axios'
+import axiosClient from '../api/axios'
 import { Link } from 'react-router-dom'
 
 export function ResetPassword() {
@@ -52,7 +52,7 @@ export function ResetPassword() {
 
 
         try {
-            const response = await axios.post(`/api/auth/reset-password/`, {
+            const response = await axiosClient.post(`/api/auth/reset-password/`, {
                 token: token,
                 new_password: formData.password,
                 confirm_password: formData.confirmPassword,

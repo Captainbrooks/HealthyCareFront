@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react'
 import axios from 'axios';
 import Loader from './Loader';
 import Unauthorized from '../pages/Unauthorized';
+import axiosClient from '../api/axios';
+
 
 function ProtectedDoctorRoute({ children }) {
 
@@ -27,9 +29,8 @@ function ProtectedDoctorRoute({ children }) {
     if (role === "Doctor" && email && !hasCheckedAccess) {
       setVerifying(true)
       const checkDoctorAccess = async () => {
-        console.log("API:", import.meta.env.VITE_API_URL);
         try {
-          const response = await axios.post(
+          const response = await axiosClient.post(
             `/api/auth/dashboard-access-check/`,
             { email, role },
             { withCredentials: true }

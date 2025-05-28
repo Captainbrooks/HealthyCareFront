@@ -12,6 +12,7 @@ import { Link } from 'react-router-dom'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import axios from 'axios'
+import axiosClient from '../api/axios'
 
 const specializations = [
   'Cardiology',
@@ -37,7 +38,7 @@ export function QualifiedDoctors() {
   useEffect(() => {
     const fetchfeaturedDoctors = async () => {
 
-      axios.get(`/api/doctors/all/qualified/`, {
+      axiosClient.get(`/api/doctors/all/qualified/`, {
         withCredentials: true
       }).then((response) => {
         console.log(response.data)

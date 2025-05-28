@@ -6,6 +6,8 @@ import axios from 'axios'
 import { toast } from 'react-hot-toast'
 import Loader from '../components/Loader'
 import { useLocation } from 'react-router-dom'
+
+import axiosClient from '../api/axios'
 const AppointmentsList = ({ limit }) => {
   const navigate = useNavigate()
   const location = useLocation()
@@ -40,7 +42,7 @@ const AppointmentsList = ({ limit }) => {
 
       const fetchAppointments = async () => {
         try {
-          const response = await axios.get(
+          const response = await axiosClient.get(
             `/api/appointments/list/?doctor=${doctor_id}`,
             {
               withCredentials: true,
@@ -128,7 +130,7 @@ const AppointmentsList = ({ limit }) => {
       if (!confirmed) return
     }
     try {
-      const response = await axios.put(
+      const response = await axiosClient.put(
         `/api/appointments/${id}/${timeid}/`,
         {
           status: newStatus,

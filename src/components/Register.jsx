@@ -8,7 +8,8 @@ import Alert from '@mui/material/Alert';
 import PasswordStrengthBar from 'react-password-strength-bar';
 import { jwtDecode } from 'jwt-decode';
 import { useAuthContext } from '../hooks/useAuthContext';
-import Loader from "../components/Loader"
+
+import axiosClient from '../api/axios';
 
 function Register() {
   const navigate = useNavigate();
@@ -110,7 +111,7 @@ function Register() {
     setIsSubmitting(true)
 
     try {
-      const response = await axios.post(`/api/auth/register/`, {
+      const response = await axiosClient.post(`/api/auth/register/`, {
         username: trimmedUsername,
         email: trimmedEmail,
         password: trimmedPassword
@@ -169,7 +170,7 @@ function Register() {
     setIsSubmitting(true)
 
     try {
-      const response = await axios.post(`/api/auth/verify-code/`, {
+      const response = await axiosClient.post(`/api/auth/verify-code/`, {
 
         email: trimmedEmail,
         code: trimmedCode
@@ -177,7 +178,6 @@ function Register() {
         withCredentials: true
       });
 
-      console.log("response", response.data)
 
       const userInfo = jwtDecode(accesstoken)
 
@@ -235,7 +235,7 @@ function Register() {
 
     try {
 
-      const response = await axios.post(`/api/auth/resend-code/`, {
+      const response = await axiosClient.post(`/api/auth/resend-code/`, {
         email: trimmedEmail,
 
         withCredentials: true

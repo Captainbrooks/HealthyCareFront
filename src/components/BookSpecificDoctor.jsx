@@ -20,6 +20,7 @@ import { jwtDecode } from "jwt-decode";
 
 import Loader from "./Loader";
 import toast from "react-hot-toast";
+import axiosClient from "../api/axios";
 
 
 
@@ -71,7 +72,7 @@ function BookSpecificDoctor() {
 
 
   useEffect(() => {
-    axios.get(`/api/doctors/detail/${doctorName}`, {
+    axiosClient.get(`/api/doctors/detail/${doctorName}`, {
       withCredentials: true
     }).then((response) => {
       setDoctor(response.data)
@@ -123,7 +124,7 @@ function BookSpecificDoctor() {
     console.log("fetch time slots reached", doctor_id, date)
     setLoading(true)
     try {
-      const response = await axios.get(`/api/doctors/timeslots/${doctor_id}/?appointment_date=${date}`, {
+      const response = await axiosClientClient.get(`/api/doctors/timeslots/${doctor_id}/?appointment_date=${date}`, {
         withCredentials: true
       });
 
@@ -223,7 +224,7 @@ function BookSpecificDoctor() {
     try {
       console.log("Before sending", payload);
 
-      const response = await axios.post(`/api/appointments/create/`, payload);
+      const response = await axiosClientClient.post(`/api/appointments/create/`, payload);
 
       console.log("Form submitted successfully:", response.data);
       setAppointmentSuccess(true);

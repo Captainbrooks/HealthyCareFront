@@ -5,6 +5,7 @@ import { jwtDecode } from 'jwt-decode'
 import axios from 'axios'
 import toast from 'react-hot-toast'
 import Loader from '../components/Loader'
+import axiosClient from '../api/axios'
 
 
 const TestResultsPage = ({ }) => {
@@ -61,7 +62,7 @@ const TestResultsPage = ({ }) => {
       console.log("Fetching", url)
       const fetchAllAppointments = async () => {
         try {
-          const response = await axios.get(url, {
+          const response = await axiosClient.get(url, {
             withCredentials: true
           })
 
@@ -148,7 +149,7 @@ const TestResultsPage = ({ }) => {
     formData.append('report_file', file);
     formData.append('patient', patientId);
     try {
-      const response = await axios.post(`/api/patients/add-test-results/${patientId}/`,
+      const response = await axiosClient.post(`/api/patients/add-test-results/${patientId}/`,
         formData, {
         headers: {
 
