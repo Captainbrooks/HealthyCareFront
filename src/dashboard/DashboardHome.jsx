@@ -22,11 +22,11 @@ const DashboardHome = () => {
     const [totalpatients, setTotalPatients] = useState("")
 
     const [completedappointments, setCompletedAppointments] = useState("")
-    const[loading,setLoading]=useState(false)
-    const[error,setError]=useState("")
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState("")
 
 
-    const{doctorName,doctorId}=useDoctor();
+    const { doctorName, doctorId } = useDoctor();
 
 
     useEffect(() => {
@@ -43,7 +43,7 @@ const DashboardHome = () => {
                         withCredentials: true
                     })
 
-                    
+
                     const todaysAppCount = []
 
                     const today = new Date().toISOString().split('T')[0];
@@ -77,7 +77,7 @@ const DashboardHome = () => {
                         }
 
                     })
-                    
+
                     setCompletedAppointments(completedAppointments.length)
                     setTodayAppointmentCount(todaysAppCount.length)
                     setTodayAppointments(response.data)
@@ -88,7 +88,7 @@ const DashboardHome = () => {
                     console.log(error)
                     setLoading(false)
                     setError("We couldn’t reach the server. Please check your internet connection or try again shortly.")
-                }finally{
+                } finally {
                     setLoading(false)
                 }
             }
@@ -133,74 +133,74 @@ const DashboardHome = () => {
 
     if (error) {
         return (
-          <div className="my-8 flex justify-center items-center gap-3 rounded-lg border border-red-200 bg-red-50 p-4 shadow-sm">
-            {/* Alert icon */}
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 flex-shrink-0 text-red-600"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 9v4m0 4h.01M4.93 4.93l14.14 14.14M4.93 19.07L19.07 4.93"
-              />
-            </svg>
-      
-            {/* Message */}
-            <p className="text-sm font-medium text-red-700">
-              {error}
-            </p>
-          </div>
+            <div className="my-8 flex justify-center items-center gap-3 rounded-lg border border-red-200 bg-red-50 p-4 shadow-sm">
+                {/* Alert icon */}
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 flex-shrink-0 text-red-600"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                >
+                    <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M12 9v4m0 4h.01M4.93 4.93l14.14 14.14M4.93 19.07L19.07 4.93"
+                    />
+                </svg>
+
+                {/* Message */}
+                <p className="text-sm font-medium text-red-700">
+                    {error}
+                </p>
+            </div>
         );
-      }
-      
+    }
+
     return (
         <>
 
-    
 
 
-        { !loading ? (
-        <div className="space-y-6">
-            <div>
-                <h1 className="text-2xl font-bold text-gray-800">Doctor Dashboard</h1>
-                <p className="text-gray-600">Welcome back, Dr. {doctorName}</p>
-            </div>
-            {/* Stats Cards */}
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                {stats.map((stat, index) => (
-                    <StatsCard
-                        key={index}
-                        title={stat.title}
-                        value={stat.value}
-                        icon={stat.icon}
-                        change={stat.change}
-                        trend={stat.trend}
-                    />
-                ))}
-            </div>
-            {/* Upcoming Appointments */}
-            <div className="bg-white rounded-lg shadow overflow-hidden">
-                <div className="p-6">
-                    <h2 className="text-lg font-medium text-gray-900">
-                        Today's Appointments
-                    </h2>
-                    <p className="text-sm text-gray-500">Your schedule for today</p>
-                   
+
+            {!loading ? (
+                <div className="space-y-6">
+                    <div>
+                        <h1 className="text-2xl font-bold text-gray-800">Doctor Dashboard</h1>
+                        <p className="text-gray-600">Welcome back, Dr. {doctorName}</p>
+                    </div>
+                    {/* Stats Cards */}
+                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                        {stats.map((stat, index) => (
+                            <StatsCard
+                                key={index}
+                                title={stat.title}
+                                value={stat.value}
+                                icon={stat.icon}
+                                change={stat.change}
+                                trend={stat.trend}
+                            />
+                        ))}
+                    </div>
+                    {/* Upcoming Appointments */}
+                    <div className="bg-white rounded-lg shadow overflow-hidden">
+                        <div className="p-6">
+                            <h2 className="text-lg font-medium text-gray-900">
+                                Today's Appointments
+                            </h2>
+                            <p className="text-sm text-gray-500">Your schedule for today</p>
+
+                        </div>
+                        <AppointmentsList />
+                    </div>
+                </div>) :
+
+                <div className='p-10 my-10'>
+                    <Loader />
                 </div>
-                <AppointmentsList />
-            </div>
-        </div> ):
-
-<div className='p-10 my-10'>
-          <Loader />
-         </div> 
             }
-            </>
+        </>
     )
 }
 export default DashboardHome

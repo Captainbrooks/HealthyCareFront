@@ -354,82 +354,82 @@ const TestResultsPage = ({ }) => {
 
 
 
-{/* mobile view for search start */}
+                {/* mobile view for search start */}
 
 
-                                      <div className={`${filteredPatients && filteredPatients.length > 0 && 'block'} sm:hidden my-2 p-2`}>
-                        {
-                          filteredPatients && filteredPatients.length > 0 && filteredPatients.map((patient) => (
-                            <div key={patient.patient_data.id}
-                              className={`rounded-xl shadow-sm transition-all duration-200 hover:shadow-md`}
-                            >
-                              <div className="flex items-center p-3 pb-3">
-                                <div className="h-14 w-14 flex-shrink-0">
-                                  <img
-                                    className="h-14 w-14 rounded-full cursor-pointer ring-2 ring-gray-100 hover:ring-gray-200 transition-all duration-200"
-                                    src={`https://api.dicebear.com/6.x/initials/svg?seed=${patient.patient_data.full_name}`}
-                                    alt=""
+                <div className={`${filteredPatients && filteredPatients.length > 0 && 'block'} sm:hidden my-2 p-2`}>
+                  {
+                    filteredPatients && filteredPatients.length > 0 && filteredPatients.map((patient) => (
+                      <div key={patient.patient_data.id}
+                        className={`rounded-xl shadow-sm transition-all duration-200 hover:shadow-md`}
+                      >
+                        <div className="flex items-center p-3 pb-3">
+                          <div className="h-14 w-14 flex-shrink-0">
+                            <img
+                              className="h-14 w-14 rounded-full cursor-pointer ring-2 ring-gray-100 hover:ring-gray-200 transition-all duration-200"
+                              src={`https://api.dicebear.com/6.x/initials/svg?seed=${patient.patient_data.full_name}`}
+                              alt=""
 
-                                  />
-                                </div>
-                                <div
-                                  className="ml-4 flex-1 cursor-pointer"
-                                >
-                                  <div className="text-lg font-semibold text-gray-900 mb-1">
-                                    {patient.patient_data.full_name}
-                                  </div>
-                                  <div className="text-sm text-gray-600">
-                                    {patient.patient_data.age ?? "xx"} years old
-                                  </div>
-                                </div>
-                              </div>
-
-                                    {/* Test Result Info */}
-      <div className="px-4 pb-2 text-sm text-gray-500">
-        {patient.patient_data.test_results.length > 0 ? (
-          <div>
-            Last test:{" "}
-            <span className="font-medium text-gray-700">
-              {patient.patient_data.test_results[0].test_type}
-            </span>{" "}
-            <span className="font-semibold text-gray-800">
-              ({patient.patient_data.test_results[0].result})
-            </span>
-          </div>
-        ) : (
-          <div className="text-sm text-red-500 italic">
-            ⚠️ No test results yet
-          </div>
-        )}
-      </div>
-
-                              <div className="flex flex-wrap gap-2 p-2 justify-center w-full">
-                                <div className="flex justify-end space-x-2">
-                                  <button
-                                    onClick={() => {
-                                      setUploadModalOpen(true)
-                                      PassPatientId(patient.patient_data.id)
-                                    }}
-                                    className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                                  >
-                                    <UploadIcon className="h-4 w-4 mr-1" />
-                                    Upload Results
-                                  </button>
-                                  <button className="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                                    onClick={() => handleViewHistory(patient.patient_data.id)}
-                                  >
-                                    <FileTextIcon className="h-4 w-4 mr-1" />
-                                    View History
-                                  </button>
-                                </div>
-                              </div>
+                            />
+                          </div>
+                          <div
+                            className="ml-4 flex-1 cursor-pointer"
+                          >
+                            <div className="text-lg font-semibold text-gray-900 mb-1">
+                              {patient.patient_data.full_name}
                             </div>
+                            <div className="text-sm text-gray-600">
+                              {patient.patient_data.age ?? "xx"} years old
+                            </div>
+                          </div>
+                        </div>
 
-                          ))
-                        }
+                        {/* Test Result Info */}
+                        <div className="px-4 pb-2 text-sm text-gray-500">
+                          {patient.patient_data.test_results.length > 0 ? (
+                            <div>
+                              Last test:{" "}
+                              <span className="font-medium text-gray-700">
+                                {patient.patient_data.test_results[0].test_type}
+                              </span>{" "}
+                              <span className="font-semibold text-gray-800">
+                                ({patient.patient_data.test_results[0].result})
+                              </span>
+                            </div>
+                          ) : (
+                            <div className="text-sm text-red-500 italic">
+                              ⚠️ No test results yet
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="flex flex-wrap gap-2 p-2 justify-center w-full">
+                          <div className="flex justify-end space-x-2">
+                            <button
+                              onClick={() => {
+                                setUploadModalOpen(true)
+                                PassPatientId(patient.patient_data.id)
+                              }}
+                              className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                            >
+                              <UploadIcon className="h-4 w-4 mr-1" />
+                              Upload Results
+                            </button>
+                            <button className="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                              onClick={() => handleViewHistory(patient.patient_data.id)}
+                            >
+                              <FileTextIcon className="h-4 w-4 mr-1" />
+                              View History
+                            </button>
+                          </div>
+                        </div>
                       </div>
 
-{/* mobile view end */}
+                    ))
+                  }
+                </div>
+
+                {/* mobile view end */}
               </>
             ) :
 
@@ -442,15 +442,15 @@ const TestResultsPage = ({ }) => {
             <div>
 
               {
-                
+
 
                 loading ? <div className='my-10 p-10'><Loader /></div> :
 
 
-                appointments && appointments.length > 0 ? (
-                  
+                  appointments && appointments.length > 0 ? (
 
-                  <div>
+
+                    <div>
                       {/* desktop */}
                       <div className='hidden sm:block'>
 
@@ -623,25 +623,25 @@ const TestResultsPage = ({ }) => {
                       </div>
 
                       {/* mobile */}
-               </div>
-                )
-                
-                :
-                
-                (
+                    </div>
+                  )
 
-                  // if 0 completed appointments
-                
-                <div className={`w-full flex justify-center items-center my-4  py-4`}>
-                <div className="inline-flex items-center space-x-2 bg-green-50 border border-green-200 text-green-700 px-3 py-2 rounded-full shadow-sm">
-                  <CheckCircle2 className="w-5 h-5" />
-                  <span className="text-sm font-semibold">
-                    Only completed appointment patients will appear here
-                  </span>
-                </div>
-              </div>
-                
-              )
+                    :
+
+                    (
+
+                      // if 0 completed appointments
+
+                      <div className={`w-full flex justify-center items-center my-4  py-4`}>
+                        <div className="inline-flex items-center space-x-2 bg-green-50 border border-green-200 text-green-700 px-3 py-2 rounded-full shadow-sm">
+                          <CheckCircle2 className="w-5 h-5" />
+                          <span className="text-sm font-semibold">
+                            Only completed appointment patients will appear here
+                          </span>
+                        </div>
+                      </div>
+
+                    )
 
 
 

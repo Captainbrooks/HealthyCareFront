@@ -435,7 +435,7 @@ function Register() {
                   : 'bg-green-50 text-green-900 font-medium  text-lg'
                   }`}
               >
-                {  message.type === 'error' ? <div>
+                {message.type === 'error' ? <div>
 
                   <AlertTriangle className="w-4 h-4 text-center" />
 
@@ -443,7 +443,7 @@ function Register() {
 
                   <div>
                     <div className="mx-auto flex items-center justify-center p-3 rounded-full bg-green-200">
-                      <Check className='w-6 h-6'/>
+                      <Check className='w-6 h-6' />
                     </div>
                   </div>
                 }

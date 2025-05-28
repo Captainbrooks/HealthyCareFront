@@ -4,7 +4,7 @@ export const Unauthorized = () => {
   const handleGoBack = () => {
     window.history.back()
   }
-  
+
   return (
     <div className="min-h-screen w-full bg-gray-50 flex flex-col items-center justify-center p-4">
       <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 text-center">

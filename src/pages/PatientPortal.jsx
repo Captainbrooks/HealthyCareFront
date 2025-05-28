@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import axios from 'axios';
-import LoadingSpinner from '../components/LoadingSpinner';
 import {
   Calendar,
   FileText,
@@ -19,25 +18,26 @@ import { useNavigate } from 'react-router-dom';
 
 import Alert from "@mui/material/Alert";
 import AlertTitle from "@mui/material/AlertTitle";
+import Loader from '../components/Loader';
 export function PatientPortal() {
-  const naviagte=useNavigate()
+  const naviagte = useNavigate()
 
   const [upcomingAppointments, setUpComingAppointments] = useState([])
-  const [loading,setLoading]=useState(true)
-  const[message,setMessage]=useState('')
-  const[patientId,setPatientId]=useState("")
+  const [loading, setLoading] = useState(true)
+  const [message, setMessage] = useState('')
+  const [patientId, setPatientId] = useState("")
 
 
   const today = new Date().toLocaleString('en-us', { weekday: 'long' });
 
-  useEffect(()=>{
-    const user=JSON.parse(localStorage.getItem('user'));
-    if(user.id){
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (user.id) {
       setPatientId(user.id)
-    }else{
+    } else {
       navigate("/login")
     }
-  },[])
+  }, [])
 
 
 
@@ -56,11 +56,11 @@ export function PatientPortal() {
         .then((response) => {
           setUpComingAppointments(response.data)
           setLoading(false)
-          if(response.data.length === 0){
+          if (response.data.length === 0) {
             setMessage("No Available Appointments")
           }
 
-        }).catch((error)=>{
+        }).catch((error) => {
           console.log(error)
           setMessage("Failed to fetch the available appointments.Please try refreshing the page")
           setLoading(false)
@@ -72,7 +72,7 @@ export function PatientPortal() {
     fetchAvailavleDoctors()
   }, [])
 
-  
+
   const availableServices = [
     {
       icon: <Calendar className="w-6 h-6 text-blue-600" />,
@@ -175,63 +175,63 @@ export function PatientPortal() {
             <h2 className="text-xl font-semibold mb-6">
               Available Appointments
             </h2>
-            
+
             <div className="space-y-6">
 
-  {
-  loading ? (<LoadingSpinner/>):(
+              {
+                loading ? (<Loader />) : (
 
-    upcomingAppointments.length > 0 ?
-  upcomingAppointments.map((appointment) => (
-    <div
-      key={appointment.doctor_name}
-      className="shadow-sm p-2 flex items-start space-x-4  pb-6 last:border-none"
-    >
-      <img
-        src={appointment.image}
-        alt={appointment.doctor_name}
-        className="w-16 h-16 rounded-full object-cover shadow"
-      />
+                  upcomingAppointments.length > 0 ?
+                    upcomingAppointments.map((appointment) => (
+                      <div
+                        key={appointment.doctor_name}
+                        className="shadow-sm p-2 flex items-start space-x-4  pb-6 last:border-none"
+                      >
+                        <img
+                          src={appointment.image}
+                          alt={appointment.doctor_name}
+                          className="w-16 h-16 rounded-full object-cover shadow"
+                        />
 
-      <div className="flex-1">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-lg font-semibold">{appointment.doctor_name}</p>
-            <p className="text-sm text-gray-600">{appointment.department_name}</p>
-          </div>
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="text-lg font-semibold">{appointment.doctor_name}</p>
+                              <p className="text-sm text-gray-600">{appointment.department_name}</p>
+                            </div>
 
-          <div className="flex items-center space-x-2">
-            <span className="w-2 h-2 bg-green-500 rounded-full" />
-            <span className="text-green-600 text-sm font-medium">Available today</span>
-          </div>
-        </div>
+                            <div className="flex items-center space-x-2">
+                              <span className="w-2 h-2 bg-green-500 rounded-full" />
+                              <span className="text-green-600 text-sm font-medium">Available today</span>
+                            </div>
+                          </div>
 
-        <div className="mt-4 flex space-x-3">
-          <Link
-            to={`/doctor/${appointment.doctor_name.replace(/\s+/g, '-')}`}
-            className="flex-1"
-          >
-            <button className="w-full bg-white border border-blue-600 text-blue-600 px-4 py-2 rounded-md text-sm hover:bg-blue-50 transition">
-              View Profile
-            </button>
-          </Link>
+                          <div className="mt-4 flex space-x-3">
+                            <Link
+                              to={`/doctor/${appointment.doctor_name.replace(/\s+/g, '-')}`}
+                              className="flex-1"
+                            >
+                              <button className="w-full bg-white border border-blue-600 text-blue-600 px-4 py-2 rounded-md text-sm hover:bg-blue-50 transition">
+                                View Profile
+                              </button>
+                            </Link>
 
-          <Link
-            to={`/bookappointment/${appointment.department_name}/${appointment.doctor_name.replace(/\s+/g, '-')}`}
-            className="flex-1"
-          >
-            <button className="w-full bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700 transition flex items-center justify-center">
-              <Calendar className="w-4 h-4 mr-2" />
-              Book Now
-            </button>
-          </Link>
-        </div>
-      </div>
-    </div>
-  )):(<div>
-{message && <Alert severity='warning'>{message}</Alert>}
-  </div>))}
-</div>
+                            <Link
+                              to={`/bookappointment/${appointment.department_name}/${appointment.doctor_name.replace(/\s+/g, '-')}`}
+                              className="flex-1"
+                            >
+                              <button className="w-full bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700 transition flex items-center justify-center">
+                                <Calendar className="w-4 h-4 mr-2" />
+                                Book Now
+                              </button>
+                            </Link>
+                          </div>
+                        </div>
+                      </div>
+                    )) : (<div>
+                      {message && <Alert severity='warning'>{message}</Alert>}
+                    </div>))}
+            </div>
 
           </div>
         </div>
@@ -261,6 +261,5 @@ export function PatientPortal() {
     </div>
   )
 }
-
 
 export default PatientPortal;

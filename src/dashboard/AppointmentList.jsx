@@ -37,6 +37,7 @@ const AppointmentsList = ({ limit }) => {
     if (doctor_id) {
       setError('')
       setLoading(true)
+
       const fetchAppointments = async () => {
         try {
           const response = await axios.get(
@@ -112,9 +113,13 @@ const AppointmentsList = ({ limit }) => {
       fetchAppointments()
     }
   }, [doctor_id])
+
+
   const displayAppointments = limit
     ? appointments.slice(0, limit)
     : appointments
+
+    
   const handleStatusChange = async (id, timeid, newStatus) => {
     if (newStatus === 'cancelled') {
       const confirmed = window.confirm(
@@ -134,9 +139,9 @@ const AppointmentsList = ({ limit }) => {
         prev.map((appt) =>
           appt.id === id && appt.timeId === timeid
             ? {
-                ...appt,
-                status: newStatus,
-              }
+              ...appt,
+              status: newStatus,
+            }
             : appt,
         ),
       )
@@ -146,6 +151,8 @@ const AppointmentsList = ({ limit }) => {
       toast.error('Failed to update status : ' + error.message)
     }
   }
+
+
   const getStatusBadge = (status) => {
     switch (status) {
       case 'completed':
@@ -174,6 +181,7 @@ const AppointmentsList = ({ limit }) => {
         )
     }
   }
+
   const handleViewHistory = (patientId) => {
     navigate(`/patient/${patientId}`)
   }
@@ -251,6 +259,7 @@ const AppointmentsList = ({ limit }) => {
       </div>
     )
   }
+
   const getFilteredAppointments = () => {
     if (location.pathname === '/dashboard/appointments') {
       return displayAppointments.filter(
@@ -259,6 +268,7 @@ const AppointmentsList = ({ limit }) => {
     }
     return displayAppointments
   }
+
   const filteredAppointments = getFilteredAppointments()
   if (error) {
     return (
@@ -390,7 +400,7 @@ const AppointmentsList = ({ limit }) => {
 
 
       {/* Mobile Card View */}
-    <div className="md:hidden space-y-3">
+      <div className="md:hidden space-y-3">
         {filteredAppointments.map((appointment) => (
           <div
             key={`${appointment.id}-${appointment.timeId}`}
@@ -442,7 +452,7 @@ const AppointmentsList = ({ limit }) => {
             <div className="px-4 pb-4">
               <div className="flex justify-center">
                 {appointment.status === 'completed' ||
-                appointment.status === 'cancelled' ? (
+                  appointment.status === 'cancelled' ? (
                   <div className="text-center py-2">
                     <span className="text-gray-500 text-sm font-medium">
                       No actions available
@@ -494,7 +504,7 @@ const AppointmentsList = ({ limit }) => {
                       title="Cancel appointment"
                       disabled={appointment.status === 'in-progress'}
                     >
-                     <TrashIcon className="h-4 w-4 font-bold"/>
+                      <TrashIcon className="h-4 w-4 font-bold" />
                       Cancel
                     </button>
                   </div>

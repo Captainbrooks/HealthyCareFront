@@ -29,13 +29,12 @@ const ScheduleTable = ({ department, schedule }) => {
           >
             <span className="text-gray-600 capitalize">{day}</span>
             <span
-              className={`font-medium ${
-                schedule[day] === '24/7'
+              className={`font-medium ${schedule[day] === '24/7'
                   ? 'text-green-600'
                   : schedule[day] === 'Closed'
-                  ? 'text-red-600'
-                  : 'text-gray-900'
-              }`}
+                    ? 'text-red-600'
+                    : 'text-gray-900'
+                }`}
             >
               {schedule[day]}
             </span>

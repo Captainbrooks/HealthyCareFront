@@ -32,13 +32,12 @@ const StatsCard = (props) => {
           <MinusIcon className="h-4 w-4 text-gray-500 mr-1" />
         )}
         <span
-          className={`text-xs font-medium ${
-            trend === 'up'
+          className={`text-xs font-medium ${trend === 'up'
               ? 'text-green-500'
               : trend === 'down'
-              ? 'text-red-500'
-              : 'text-gray-500'
-          }`}
+                ? 'text-red-500'
+                : 'text-gray-500'
+            }`}
         >
           {change}
         </span>

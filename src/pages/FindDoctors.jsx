@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Search, Filter, Star, Calendar } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Search, Filter, Star, Calendar, ArrowLeftIcon } from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import DoctorCard from '../components/DoctorCard';
@@ -28,6 +28,7 @@ export function FindDoctors() {
   const [filteredDoctors, setFilteredDoctors] = useState([]);
   const [doctorsData, setDoctorsData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate()
 
   useEffect(() => {
     const fetchDoctors = async () => {
@@ -38,7 +39,7 @@ export function FindDoctors() {
         setDoctorsData(response.data);
       } catch (error) {
         console.log('Error', error);
-      }finally{
+      } finally {
         setTimeout(() => setLoading(false));
       }
     };
@@ -54,7 +55,7 @@ export function FindDoctors() {
 
   useEffect(() => {
 
-    const currentDay=getCurrentDay()
+    const currentDay = getCurrentDay()
     // Filter doctors based on search term, specialty, and availability
     const filtered = doctorsData.filter((doctor) => {
       const matchesSearch = doctor.doctor_name
@@ -67,11 +68,11 @@ export function FindDoctors() {
 
       // Adjust availability filter based on array of availability
       const matchesAvailability =
-      !availabilityToday || doctor.availability.includes(currentDay); // Availability check for today
+        !availabilityToday || doctor.availability.includes(currentDay); // Availability check for today
 
-    return matchesSearch && matchesSpecialty && matchesAvailability; // Check if Today is included in the availability array
+      return matchesSearch && matchesSpecialty && matchesAvailability; // Check if Today is included in the availability array
 
-     
+
     });
     setFilteredDoctors(filtered);
   }, [searchTerm, selectedSpecialty, availabilityToday, doctorsData]);
@@ -88,6 +89,16 @@ export function FindDoctors() {
   return (
     <div className="w-full min-h-screen bg-gray-50">
       <Header />
+
+      <div className="px-4">
+        <button
+          onClick={() => navigate(-1)}
+          className="p-0.5 flex items-center justify-between text-sm text-blue-600 hover:text-blue-700 hover:bg-blue-100 hover:rounded-full"
+        >
+          <ArrowLeftIcon className="w-6 h-6" />
+
+        </button>
+      </div>
 
       <div className="mt-6 md:mt-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <SearchFilters
@@ -122,7 +133,7 @@ export function FindDoctors() {
             </div>
           )}
         </div>
-     
+
       </div>
       <Footer />
     </div>

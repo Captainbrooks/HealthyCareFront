@@ -6,13 +6,15 @@ import {
   BriefcaseIcon,
   GraduationCapIcon,
   CalendarIcon,
+  ArrowLeftIcon,
 } from 'lucide-react'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import axios from 'axios'
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 // import ReviewsList from '../components/ReviewsList'
 import ReviewForm from '../components/ReviewForm'
+
 
 
 export default function DoctorProfile() {
@@ -24,6 +26,7 @@ export default function DoctorProfile() {
   const[certifications,setCertifications]=useState([])
   const[languages,setLanguages]=useState([])
   const[reviews,setReviews]=useState([])
+  const navigate=useNavigate()
 
 
 
@@ -47,6 +50,15 @@ export default function DoctorProfile() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
+      <div className="px-4 py-4">
+          <button
+            onClick={() => navigate(-1)}
+            className="p-0.5 flex items-center justify-between text-sm text-blue-600 hover:text-blue-700 hover:bg-blue-100 hover:rounded-full"
+          >
+            <ArrowLeftIcon className="w-6 h-6" />
+          
+          </button>
+        </div>
       <div className="bg-blue-600 pt-12 pb-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row items-center md:items-start text-center md:text-left gap-6">

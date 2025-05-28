@@ -28,7 +28,7 @@ const PatientHistory = () => {
   const [showAllTests, setShowAllTests] = useState(false);
   const [doctor, setDoctor] = useState()
 
- 
+
   const [loading, setLoading] = useState(false)
   const [patient, setPatient] = useState([])
   const [uploadModalOpen, setUploadModalOpen] = useState(false)
@@ -36,13 +36,13 @@ const PatientHistory = () => {
   const [medicationModalOpen, setMedicationModalOpen] = useState(false)
   const [updateMedicationModal, setUpdateMedicationModal] = useState(false)
 
-  
+
   const [editingMedication, setEditingMedication] = useState(null)
 
   const [emergencyContactModalOpen, setEmergencyContactModalOpen] = useState(false)
 
 
-// test results
+  // test results
   const [testtype, setTestType] = useState('')
   const [date, setDate] = useState('')
   const [result, setResult] = useState('')
@@ -51,25 +51,25 @@ const PatientHistory = () => {
 
   // vital signs
 
-  const [bloodpressure,setBloodPressure]=useState('')
-  const [pulse,setPulse]=useState('')
-  const [temp,setTemp]=useState('')
-  const [weight,setWeight]=useState('')
+  const [bloodpressure, setBloodPressure] = useState('')
+  const [pulse, setPulse] = useState('')
+  const [temp, setTemp] = useState('')
+  const [weight, setWeight] = useState('')
 
 
 
   // medications
 
-  const [medicationname,setMedicationName]=useState('')
-  const [dosage,setDosage]=useState('')
-  const [frequency,setFrequency]=useState('')
+  const [medicationname, setMedicationName] = useState('')
+  const [dosage, setDosage] = useState('')
+  const [frequency, setFrequency] = useState('')
 
 
   // updated medications
 
-  const [updatedmedicationname,setUpdateMedicationName]=useState('')
-  const [updateddosage,setUpdatedDosage]=useState('')
-  const [updatedfrequency,setUpdatedFrequency]=useState('')
+  const [updatedmedicationname, setUpdateMedicationName] = useState('')
+  const [updateddosage, setUpdatedDosage] = useState('')
+  const [updatedfrequency, setUpdatedFrequency] = useState('')
 
 
 
@@ -79,7 +79,7 @@ const PatientHistory = () => {
   const today = new Date().toISOString().split('T')[0];
 
 
-  
+
 
 
 
@@ -88,7 +88,7 @@ const PatientHistory = () => {
 
 
     const token = localStorage.getItem('access_token');
-    if(!token){
+    if (!token) {
       navigate("/unauthorized")
       return
     }
@@ -184,7 +184,7 @@ const PatientHistory = () => {
 
   const visibleTests = showAllTests ? sortedTests : sortedTests.slice(0, 3);
   // this is for sorting the patients by latest date
-  
+
 
   // remove test result
 
@@ -219,34 +219,34 @@ const PatientHistory = () => {
 
 
 
-// add vital signs
-  const handleVitalSigns=async(e)=>{
+  // add vital signs
+  const handleVitalSigns = async (e) => {
     e.preventDefault()
 
     console.log("clicked handle vital signs")
 
-   const formData=new FormData()
+    const formData = new FormData()
 
 
 
- // Format: YYYY-MM-DD
-   formData.append('patient', patientId);
-   formData.append('blood_pressure',bloodpressure);
-   formData.append('pulse',pulse);
-   formData.append('temperature',temp);
-   formData.append('weight',weight);
-   formData.append('date', today);
+    // Format: YYYY-MM-DD
+    formData.append('patient', patientId);
+    formData.append('blood_pressure', bloodpressure);
+    formData.append('pulse', pulse);
+    formData.append('temperature', temp);
+    formData.append('weight', weight);
+    formData.append('date', today);
 
 
 
 
-  
+
 
     try {
 
-    
 
-      const response=await axios.post(
+
+      const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/patients/add-vital-signs/${patientId}/`,
         formData,
         {
@@ -257,34 +257,34 @@ const PatientHistory = () => {
         }
       );
 
-    
-
-      
-
-  toast.success("Vital Signs Added Successfully")
-  setPatient(response.data)
-  setVitalSignsModalOpen(false)
 
 
-      
+
+
+      toast.success("Vital Signs Added Successfully")
+      setPatient(response.data)
+      setVitalSignsModalOpen(false)
+
+
+
     } catch (error) {
       toast.error(error.message)
       setVitalSignsModalOpen(false)
     }
 
   }
-// add vital signs
+  // add vital signs
 
 
-// delete vital signs
-  const handleDeleteVitalSign=async(vitalId,patientId)=>{
+  // delete vital signs
+  const handleDeleteVitalSign = async (vitalId, patientId) => {
     if (!window.confirm("Are you sure you want to delete this vital signs?")) return;
 
     try {
 
-      console.log("handle delete sign",vitalId,patientId)
+      console.log("handle delete sign", vitalId, patientId)
 
-      const response=await axios.delete(`${import.meta.env.VITE_API_URL}/api/patients/delete-vital-signs/${patientId}/${vitalId}`,{
+      const response = await axios.delete(`${import.meta.env.VITE_API_URL}/api/patients/delete-vital-signs/${patientId}/${vitalId}`, {
         withCredentials: true
       });
 
@@ -297,14 +297,14 @@ const PatientHistory = () => {
       }));
 
       toast.success("Vital Signs deleted successfully..")
-      
+
     } catch (error) {
       toast.error(error)
     }
 
   }
 
-// delete vital signs
+  // delete vital signs
 
 
 
@@ -313,9 +313,9 @@ const PatientHistory = () => {
 
 
 
-// add medication
+  // add medication
 
-  const handleAddMedication=async(e)=>{
+  const handleAddMedication = async (e) => {
     e.preventDefault();
 
 
@@ -330,7 +330,7 @@ const PatientHistory = () => {
 
     try {
 
-      const response=await axios.post(`${import.meta.env.VITE_API_URL}/api/patients/add-medication/${patientId}/`,
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/patients/add-medication/${patientId}/`,
         formData, {
         headers: {
 
@@ -343,14 +343,14 @@ const PatientHistory = () => {
       toast.success("Medication added successsfully")
       setPatient(response.data)
       setMedicationModalOpen(false)
-      
+
     } catch (error) {
       toast.error("error")
       setMedicationModalOpen(false)
     }
   }
 
-// add medication
+  // add medication
 
 
 
@@ -358,14 +358,14 @@ const PatientHistory = () => {
 
 
 
-// update medication
-  const handleUpdateMedication=async(patientId,medication_id)=>{
+  // update medication
+  const handleUpdateMedication = async (patientId, medication_id) => {
 
-    
-const formData = new FormData();
-formData.append("name", editingMedication.name);
-formData.append("dosage", editingMedication.dosage);
-formData.append("frequency", editingMedication.frequency)
+
+    const formData = new FormData();
+    formData.append("name", editingMedication.name);
+    formData.append("dosage", editingMedication.dosage);
+    formData.append("frequency", editingMedication.frequency)
     try {
 
 
@@ -382,16 +382,16 @@ formData.append("frequency", editingMedication.frequency)
 
         });
 
-        const updatedMedication=response.data
+      const updatedMedication = response.data
 
-       
-        setPatient((prev) => ({
-          ...prev,
-          medication_set: prev.medication_set.map((med) =>
-            med.id === updatedMedication.id ? updatedMedication : med
-          )
-        }));
-        toast.success("Success")
+
+      setPatient((prev) => ({
+        ...prev,
+        medication_set: prev.medication_set.map((med) =>
+          med.id === updatedMedication.id ? updatedMedication : med
+        )
+      }));
+      toast.success("Success")
       setUpdateMedicationModal(false)
     } catch (error) {
       toast.error(error.message)
@@ -406,12 +406,12 @@ formData.append("frequency", editingMedication.frequency)
 
   // delete medication
 
-  const handleDeleteMedication=async(patientId,medication_id)=>{
+  const handleDeleteMedication = async (patientId, medication_id) => {
 
     if (!window.confirm("Are you sure you want to delete this vital signs?")) return;
 
     try {
-      const response=await axios.delete(`${import.meta.env.VITE_API_URL}/api/patients/delete-medication/${patientId}/${medication_id}/`,{
+      const response = await axios.delete(`${import.meta.env.VITE_API_URL}/api/patients/delete-medication/${patientId}/${medication_id}/`, {
         withCredentials: true
       });
 
@@ -425,7 +425,7 @@ formData.append("frequency", editingMedication.frequency)
       toast.success("Medication deleted successfully")
     } catch (error) {
       toast.error("error " + error.message)
-      
+
     }
   }
 
@@ -488,7 +488,7 @@ formData.append("frequency", editingMedication.frequency)
         <div className="lg:col-span-2 space-y-6">
           {/* Recent Test Results */}
           <div className="bg-white shadow rounded-lg">
-            <div className="p-6 border-b border-gray-200">
+            <div className="p-4 border-b border-gray-200">
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
                   <FileTextIcon className="h-5 w-5 text-gray-400" />
@@ -505,53 +505,97 @@ formData.append("frequency", editingMedication.frequency)
                 </button>
               </div>
             </div>
+
+
             <div className="divide-y divide-gray-200">
               {visibleTests.length > 0 ? (
                 visibleTests.map((test) => (
-                  <div key={test.id} className="p-6">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h3 className="text-sm font-medium text-gray-900">
-                          {test.test_type}
-                        </h3>
-                        <p className="mt-1 text-sm text-gray-600">
-                          Date: {test.date}
-                        </p>
-                        <p className="mt-1 text-sm text-gray-600">
-                          Result: {test.result}
-                        </p>
-                        <p className="mt-1 text-sm text-gray-600">
-                          Doctor: <span>{test.doctor_info ? `Dr. ${test.doctor_info.doctor_name}` : 'Not Assigned'}</span>
-                        </p>
-                      </div>
-                      <div className="flex gap-2">
-                        <a
-                          href={test.report_file}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-2 px-3 py-1.5 border border-gray-300 text-xs font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-                        >
-                          <Eye className="h-4 w-4" /> View Report
-                        </a>
-                        <a
-                          href={test.report_file}
-                          download={true}
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-2 px-3 py-1.5 border border-blue-300 text-xs font-medium rounded-md text-blue-700 bg-white hover:bg-blue-50"
-                        >
-                          <ArrowDown className="h-4 w-4" /> Download Report
-                        </a>
-                        <button
-                          onClick={() => {
-                            handleDeleteTest(test.patient, test.id);
-                          }}
-                          className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-md text-white bg-red-400 hover:bg-red-600"
-                        >
-                          <TrashIcon className="h-4 w-4" /> Remove Test
-                        </button>
+                  <>
+                    <div key={test.id} className="hidden sm:block p-4 sm:p-6">
+                      <div className="p-1 flex justify-between items-start">
+                        <div>
+                          <h3 className="text-sm font-medium text-gray-900">
+                            {test.test_type}
+                          </h3>
+                          <p className="mt-1 text-sm text-gray-600">
+                            Date: {test.date}
+                          </p>
+                          <p className="mt-1 text-sm text-gray-600">
+                            Result: {test.result}
+                          </p>
+                          <p className="mt-1 text-sm text-gray-600">
+                            Doctor: <span>{test.doctor_info ? `Dr. ${test.doctor_info.doctor_name}` : 'Not Assigned'}</span>
+                          </p>
+                        </div>
+                        <div className="flex gap-2">
+                          <a
+                            href={test.report_file}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-2 px-3 py-1.5 border border-gray-300 text-xs font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                          >
+                            <Eye className="h-4 w-4" /> View Report
+                          </a>
+                          <a
+                            href={test.report_file}
+                            download={true}
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-2 px-3 py-1.5 border border-blue-300 text-xs font-medium rounded-md text-blue-700 bg-white hover:bg-blue-50"
+                          >
+                            <ArrowDown className="h-4 w-4" /> Download Report
+                          </a>
+                          <button
+                            onClick={() => {
+                              handleDeleteTest(test.patient, test.id);
+                            }}
+                            className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-md text-white bg-red-400 hover:bg-red-600"
+                          >
+                            <TrashIcon className="h-4 w-4" /> Remove Test
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </div>
+
+
+
+                    <div key={test.id} className="block sm:hidden p-4 sm:p-6">
+                      <div className="p-2 sm:p-4 border border-gray-200 rounded-md">
+                        <div className="space-y-2">
+                          <h3 className="text-base font-semibold text-gray-900">{test.test_type}</h3>
+                          <p className="text-sm text-gray-600">Date: {test.date}</p>
+                          <p className="text-sm text-gray-600">Result: {test.result}</p>
+                          <p className="text-sm text-gray-600">
+                            Doctor: <span>{test.doctor_info ? `Dr. ${test.doctor_info.doctor_name}` : 'Not Assigned'}</span>
+                          </p>
+                        </div>
+
+                        <div className="mt-4 flex flex-col sm:flex-row sm:justify-end sm:items-center gap-2">
+                          <a
+                            href={test.report_file}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium rounded-md text-gray-700 bg-white border border-gray-300 hover:bg-gray-100"
+                          >
+                            <Eye className="h-4 w-4" /> View Report
+                          </a>
+                          <a
+                            href={test.report_file}
+                            download
+                            rel="noopener noreferrer"
+                            className="flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium rounded-md text-blue-700 bg-white border border-blue-300 hover:bg-blue-100"
+                          >
+                            <ArrowDown className="h-4 w-4" /> Download Report
+                          </a>
+                          <button
+                            onClick={() => handleDeleteTest(test.patient, test.id)}
+                            className="flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium rounded-md text-white bg-red-500 hover:bg-red-600"
+                          >
+                            <TrashIcon className="h-4 w-4" /> Remove Test
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </>
                 ))
               ) : (
                 <p className="p-6 text-sm text-gray-600">No test results available</p>
@@ -600,13 +644,13 @@ formData.append("frequency", editingMedication.frequency)
             </div>
             <div className="p-6">
 
-            <p className={`p-6 text-sm text-gray-600 ${patient.vitalsign_set && patient.vitalsign_set.length > 0 ? 'hidden':'block'}`}>No Vital Signs Available</p>
+              <p className={`p-6 text-sm text-gray-600 ${patient.vitalsign_set && patient.vitalsign_set.length > 0 ? 'hidden' : 'block'}`}>No Vital Signs Available</p>
 
-              <div className={`overflow-x-auto ${patient.vitalsign_set && patient.vitalsign_set.length > 0 ? 'block':'hidden'}`}>
+              <div className={`overflow-x-auto ${patient.vitalsign_set && patient.vitalsign_set.length > 0 ? 'block' : 'hidden'}`}>
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead>
                     <tr>
-                   
+
                       <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Date
                       </th>
@@ -628,13 +672,13 @@ formData.append("frequency", editingMedication.frequency)
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    
+
                     {patient.vitalsign_set && patient.vitalsign_set.length > 0 ? patient.vitalsign_set.map((vital) => (
-                      
+
                       <tr key={vital.id}>
 
 
-                    
+
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                           {vital.date}
                         </td>
@@ -651,14 +695,14 @@ formData.append("frequency", editingMedication.frequency)
                           {vital.weight}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        <button
-                        onClick={()=>{
-                        handleDeleteVitalSign(vital.id,vital.patient)  
-                      }}
-                      className="p-1 rounded-full text-red-600 hover:bg-red-50"
-                        >
-                          <TrashIcon className="h-4 w-4" />
-                        </button>
+                          <button
+                            onClick={() => {
+                              handleDeleteVitalSign(vital.id, vital.patient)
+                            }}
+                            className="p-1 rounded-full text-red-600 hover:bg-red-50"
+                          >
+                            <TrashIcon className="h-4 w-4" />
+                          </button>
                         </td>
                       </tr>
                     )) : (
@@ -701,7 +745,7 @@ formData.append("frequency", editingMedication.frequency)
               <div className="space-y-4">
                 {patient.medication_set && patient.medication_set.length > 0 ? patient.medication_set.map((medication) => (
                   <div key={medication.id} className="border-l-2 border-blue-500 pl-4">
-                    <div className="flex justify-between items-start">
+                    <div className="flex justify-between items-start border-b-2 border-gray-100 pb-2">
                       <div>
                         <h3 className="text-sm font-medium text-gray-900">
                           {medication.name}
@@ -728,7 +772,7 @@ formData.append("frequency", editingMedication.frequency)
                           <PencilIcon className="h-4 w-4" />
                         </button>
                         <button
-                          onClick={() => handleDeleteMedication(medication.patient,medication.id)}
+                          onClick={() => handleDeleteMedication(medication.patient, medication.id)}
                           className="p-1 rounded-full text-red-600 hover:bg-red-50"
                         >
                           <TrashIcon className="h-4 w-4" />
@@ -919,9 +963,9 @@ formData.append("frequency", editingMedication.frequency)
             <span className="hidden sm:inline-block sm:align-middle sm:h-screen">
               &#8203;
             </span>
-            
-        
-     
+
+
+
             <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
               <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                 <h3 className="text-lg leading-6 font-medium text-gray-900">
@@ -937,7 +981,7 @@ formData.append("frequency", editingMedication.frequency)
                       className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                       placeholder="120/80"
                       value={bloodpressure}
-                      onChange={(e)=>setBloodPressure(e.target.value)}
+                      onChange={(e) => setBloodPressure(e.target.value)}
                     />
                   </div>
                   <div>
@@ -949,7 +993,7 @@ formData.append("frequency", editingMedication.frequency)
                       className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                       placeholder="72"
                       value={pulse}
-                      onChange={(e)=>setPulse(e.target.value)}
+                      onChange={(e) => setPulse(e.target.value)}
                     />
                   </div>
                   <div>
@@ -961,7 +1005,7 @@ formData.append("frequency", editingMedication.frequency)
                       className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                       placeholder="98.6"
                       value={temp}
-                      onChange={(e)=>setTemp(e.target.value)}
+                      onChange={(e) => setTemp(e.target.value)}
                     />
                   </div>
                   <div>
@@ -973,14 +1017,14 @@ formData.append("frequency", editingMedication.frequency)
                       className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                       placeholder="75kg"
                       value={weight}
-                      onChange={(e)=>setWeight(e.target.value)}
+                      onChange={(e) => setWeight(e.target.value)}
                     />
                   </div>
                 </div>
               </div>
               <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                 <button
-              onClick={handleVitalSigns}
+                  onClick={handleVitalSigns}
                   type="button"
                   className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
                 >
@@ -996,10 +1040,10 @@ formData.append("frequency", editingMedication.frequency)
               </div>
 
 
-            
-          
+
+
             </div>
-            
+
           </div>
         </div>
       )}
@@ -1015,7 +1059,7 @@ formData.append("frequency", editingMedication.frequency)
               &#8203;
             </span>
 
-           
+
             <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
               <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                 <h3 className="text-lg leading-6 font-medium text-gray-900">
@@ -1030,7 +1074,7 @@ formData.append("frequency", editingMedication.frequency)
                       type="text"
                       className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                       value={medicationname}
-                      onChange={(e)=>setMedicationName(e.target.value)}
+                      onChange={(e) => setMedicationName(e.target.value)}
                     />
                   </div>
                   <div>
@@ -1041,7 +1085,7 @@ formData.append("frequency", editingMedication.frequency)
                       type="text"
                       className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                       value={dosage}
-                      onChange={(e)=>setDosage(e.target.value)}
+                      onChange={(e) => setDosage(e.target.value)}
                     />
                   </div>
                   <div>
@@ -1052,29 +1096,29 @@ formData.append("frequency", editingMedication.frequency)
                       type="text"
                       className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                       value={frequency}
-                      onChange={(e)=>setFrequency(e.target.value)}
+                      onChange={(e) => setFrequency(e.target.value)}
                     />
                   </div>
-                
+
                 </div>
 
               </div>
 
               <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                 <button
-                onClick={handleAddMedication}
-                
+                  onClick={handleAddMedication}
+
                   type="button"
                   className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
                 >
-                 Add
+                  Add
                 </button>
                 <button
                   type="button"
                   onClick={() => {
 
                     setMedicationModalOpen(false)
-               
+
                   }}
                   className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
                 >
@@ -1083,7 +1127,7 @@ formData.append("frequency", editingMedication.frequency)
 
               </div>
             </div>
-          
+
           </div>
         </div>
       )}
@@ -1098,23 +1142,23 @@ formData.append("frequency", editingMedication.frequency)
               &#8203;
             </span>
 
-           
+
             <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
               <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                 <h3 className="text-lg leading-6 font-medium text-gray-900">
-                 Edit Medication
+                  Edit Medication
                 </h3>
                 <div className="mt-4 space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700">
                       Medication Name
                     </label>
-                 
+
                     <input
                       type="text"
                       className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                       value={editingMedication?.name || ''}
-                      onChange={(e)=>setEditingMedication({...editingMedication, name:e.target.value})}
+                      onChange={(e) => setEditingMedication({ ...editingMedication, name: e.target.value })}
                     />
                   </div>
                   <div>
@@ -1125,7 +1169,7 @@ formData.append("frequency", editingMedication.frequency)
                       type="text"
                       className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                       value={editingMedication?.dosage || ''}
-                      onChange={(e)=>
+                      onChange={(e) =>
                         setEditingMedication({ ...editingMedication, dosage: e.target.value })
                       }
                     />
@@ -1138,33 +1182,33 @@ formData.append("frequency", editingMedication.frequency)
                       type="text"
                       className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                       value={editingMedication?.frequency || ''}
-                      onChange={(e)=>
+                      onChange={(e) =>
                         setEditingMedication({ ...editingMedication, frequency: e.target.value })
                       }
                     />
                   </div>
-                 
+
                 </div>
 
               </div>
 
               <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                 <button
-                onClick={
-                  
-                  ()=>handleUpdateMedication(editingMedication.patient,editingMedication.id)}
-                
+                  onClick={
+
+                    () => handleUpdateMedication(editingMedication.patient, editingMedication.id)}
+
                   type="button"
                   className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
                 >
-                 Update
+                  Update
                 </button>
                 <button
                   type="button"
                   onClick={() => {
 
                     setUpdateMedicationModal(false)
-               
+
                   }}
                   className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
                 >
@@ -1173,7 +1217,7 @@ formData.append("frequency", editingMedication.frequency)
 
               </div>
             </div>
-          
+
           </div>
         </div>
       )}

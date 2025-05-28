@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
-import  Footer  from '../components/Footer';
-import  Header  from '../components/Header';
+import Footer from '../components/Footer';
+import Header from '../components/Header';
 import {
   MapPin,
   Phone,
@@ -31,8 +31,8 @@ L.Icon.Default.mergeOptions({
 });
 
 function Contact() {
-    const [messagesuccess,setMessageSuccess]=useState(false)
-    const [messageFailure,setMessageFailure]=useState(false)
+  const [messagesuccess, setMessageSuccess] = useState(false)
+  const [messageFailure, setMessageFailure] = useState(false)
   const [formData, setFormData] = useState({
     fullname: '',
     email: '',
@@ -42,12 +42,12 @@ function Contact() {
   });
 
 
-  const payload={
-    fullname:formData.fullname,
-    email:formData.email,
-    phone:formData.phone,
-    department:formData.department,
-    message:formData.message
+  const payload = {
+    fullname: formData.fullname,
+    email: formData.email,
+    phone: formData.phone,
+    department: formData.department,
+    message: formData.message
 
   }
 
@@ -57,31 +57,31 @@ function Contact() {
     e.preventDefault();
     // Handle form submission here
 
-    axios.post(`${import.meta.env.VITE_API_URL}/api/appointments/message/`,payload)
-    .then((response)=>{
+    axios.post(`${import.meta.env.VITE_API_URL}/api/appointments/message/`, payload)
+      .then((response) => {
 
 
-      setMessageSuccess(true)
-      setMessageFailure(false)
-
-      setTimeout(()=>{
-        setFormData({
-          fullname:"",
-          email:"",
-          phone:"",
-          department:"",
-          message:""
-        });
-        setMessageSuccess(false)
+        setMessageSuccess(true)
         setMessageFailure(false)
-      },5000)
 
-    }).catch((error)=>{
-      console.log("there was an error", error)
-     
-      setMessageFailure(true)
-      setMessageSuccess(false)
-    })
+        setTimeout(() => {
+          setFormData({
+            fullname: "",
+            email: "",
+            phone: "",
+            department: "",
+            message: ""
+          });
+          setMessageSuccess(false)
+          setMessageFailure(false)
+        }, 5000)
+
+      }).catch((error) => {
+        console.log("there was an error", error)
+
+        setMessageFailure(true)
+        setMessageSuccess(false)
+      })
   };
 
   const handleChange = (e) => {
@@ -129,7 +129,7 @@ function Contact() {
 
   return (
     <div className="w-full min-h-screen bg-gray-50">
-    <Header/>
+      <Header />
       {/* Hero Section */}
       <div className="bg-blue-600 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -266,8 +266,8 @@ function Contact() {
               </button>
             </form>
 
-                   <div className='my-2'>{!messagesuccess && messageFailure && <Alert severity="warning" >Failed to send your message. Please try again later.</Alert>}</div>
-                   <div className='my-2'>{!messageFailure && messagesuccess && <Alert severity="success">Your message has been sent successfully! We will get back to you shortly via email.</Alert>}</div>
+            <div className='my-2'>{!messagesuccess && messageFailure && <Alert severity="warning" >Failed to send your message. Please try again later.</Alert>}</div>
+            <div className='my-2'>{!messageFailure && messagesuccess && <Alert severity="success">Your message has been sent successfully! We will get back to you shortly via email.</Alert>}</div>
           </div>
           {/* Map */}
           <div className="bg-white p-8 rounded-lg shadow-sm">
@@ -331,7 +331,7 @@ function Contact() {
 
 
       </div>
-   
+
       <Footer />
     </div>
   );

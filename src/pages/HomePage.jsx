@@ -30,7 +30,7 @@ export function HomePage() {
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-center px-4 sm:px-8 max-w-3xl">
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-6 drop-shadow-md">
-              <span className="bg-gradient-to-r from-red-400 via-pink-400 to-yellow-400 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-red-400 via-pink-400 to-yellow-400 bg-clip-text">
                 Your Health Is Our Priority
               </span>
             </h1>
@@ -54,8 +54,6 @@ export function HomePage() {
           </div>
         </div>
       </div>
-
-
 
       {/* Features */}
       <section className="py-12 bg-gray-100">

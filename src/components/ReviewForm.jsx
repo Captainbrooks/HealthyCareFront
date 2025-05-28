@@ -26,7 +26,7 @@ export default function ReviewForm({ onSubmit, onCancel }) {
   return (
     <form onSubmit={handleSubmit} className="mb-8 bg-gray-50 p-6 rounded-lg">
       <h3 className="text-lg font-semibold mb-4">Write a Review</h3>
-      
+
       {/* Rating Selection */}
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -47,7 +47,7 @@ export default function ReviewForm({ onSubmit, onCancel }) {
           ))}
         </div>
       </div>
-      
+
       {/* Name Input */}
       <div className="mb-4">
         <label
@@ -66,7 +66,7 @@ export default function ReviewForm({ onSubmit, onCancel }) {
           placeholder="Enter your name"
         />
       </div>
-      
+
       {/* Review Text */}
       <div className="mb-4">
         <label
@@ -85,7 +85,7 @@ export default function ReviewForm({ onSubmit, onCancel }) {
           placeholder="Share your experience with this doctor"
         />
       </div>
-      
+
       {/* Buttons */}
       <div className="flex gap-3">
         <button

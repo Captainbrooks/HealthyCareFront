@@ -73,6 +73,7 @@ function BookAppointment() {
 
     const decodedToken = jwtDecode(token)
     if (decodedToken.id) {
+      console.log("decoded",decodedToken)
       setUser_ID(decodedToken.id)
       setFullName(decodedToken.username)
       setEmail(decodedToken.email)
@@ -80,7 +81,6 @@ function BookAppointment() {
     }
 
   }, [])
-
 
 
 
@@ -297,11 +297,6 @@ function BookAppointment() {
         setConfirmLoading(false)
       });
   };
-
-
-
-
-
 
   return (
     <div ref={stepcount} className="min-h-screen bg-gray-50">
@@ -536,14 +531,14 @@ function BookAppointment() {
                 <h3 className="text-md font-medium mb-3">Select Time</h3>
                 <div className={`${timeloading ? 'block' : 'hidden'}`}>
                 </div>
-                <div className={`${formData.date && timeslots.length > 0 ? 'grid grid-cols-2 gap-2' : 'block'}`}>
+                <div className={`${formData.date && timeslots.length > 0 ? 'grid grid-cols-2 lg:grid-cols-3 gap-2' : 'block'}`}>
 
                   {
                     formData.date ? (
 
 
                       timeloading ? (
-                        <div className="border-2"><Loader /></div>
+                        <div className="py-4"><Loader /></div>
                       ) :
                         doctorAvailabilityError ? (
                           <div className="mt-2">

@@ -29,31 +29,31 @@ const specializations = [
 
 export function QualifiedDoctors() {
 
-  const [featuredDoctors,setFeaturedDoctors]=useState([])
+  const [featuredDoctors, setFeaturedDoctors] = useState([])
 
 
 
 
-  useEffect(()=>{
-    const fetchfeaturedDoctors=async()=>{
-  
-    axios.get(`${import.meta.env.VITE_API_URL}/api/doctors/all/qualified/`,{
-        withCredentials:true
-      }).then((response)=>{
+  useEffect(() => {
+    const fetchfeaturedDoctors = async () => {
+
+      axios.get(`${import.meta.env.VITE_API_URL}/api/doctors/all/qualified/`, {
+        withCredentials: true
+      }).then((response) => {
         console.log(response.data)
         setFeaturedDoctors(response.data)
-        
-      }).catch((error)=>{
+
+      }).catch((error) => {
         console.log("There was an error", error)
       })
-  
+
     }
-  
+
     fetchfeaturedDoctors()
-  },[])
+  }, [])
 
 
-  
+
   return (
     <div className="w-full min-h-screen bg-gray-50">
       <Header />
@@ -106,7 +106,7 @@ export function QualifiedDoctors() {
                     <div>
                       <p className="text-sm text-gray-600">Awards</p>
                       <ul className="list-disc list-inside">
-                      {doctor.awards && console.log("Awards for", doctor.doctor_name, doctor.awards)}
+                        {doctor.awards && console.log("Awards for", doctor.doctor_name, doctor.awards)}
 
                         {doctor.awards.map((award, i) => (
                           <li key={i} className="text-sm text-gray-900">
@@ -127,12 +127,12 @@ export function QualifiedDoctors() {
                   </div>
                 </div>
                 <div className="mt-6">
-                <Link to={`/bookappointment/${doctor.department_name}/${doctor.doctor_name.replace(/\s+/g, '-')}`} className="flex-1">
-                <button className="w-full bg-blue-600 text-white px-3 py-2 rounded text-sm hover:bg-blue-700 transition-colors flex items-center justify-center">
-                  <Calendar className="w-4 h-4 mr-1" />
-                  Book Now
-                </button>
-              </Link>
+                  <Link to={`/bookappointment/${doctor.department_name}/${doctor.doctor_name.replace(/\s+/g, '-')}`} className="flex-1">
+                    <button className="w-full bg-blue-600 text-white px-3 py-2 rounded text-sm hover:bg-blue-700 transition-colors flex items-center justify-center">
+                      <Calendar className="w-4 h-4 mr-1" />
+                      Book Now
+                    </button>
+                  </Link>
                 </div>
               </div>
             </div>

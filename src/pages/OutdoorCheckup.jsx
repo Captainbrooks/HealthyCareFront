@@ -179,7 +179,7 @@ export function OutdoorCheckup() {
             Book a home visit with our qualified medical professionals. We bring
             healthcare to your doorstep.
           </p>
-         <Link to='/bookappointment'> <button className="bg-blue-600 text-white px-8 py-3 rounded-md hover:bg-blue-700 transition-colors">
+          <Link to='/bookappointment'> <button className="bg-blue-600 text-white px-8 py-3 rounded-md hover:bg-blue-700 transition-colors">
             Schedule Now
           </button>
           </Link>

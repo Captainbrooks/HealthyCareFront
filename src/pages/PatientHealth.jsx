@@ -108,19 +108,19 @@ function PatientHealth() {
                 </div>
                 <div>
                   <p className="text-xs font-medium text-blue-600 uppercase">Blood Type</p>
-                  <p className="mt-1 font-medium text-gray-900">{patient.blood_type}</p>
+                  <p className="mt-1 font-medium text-gray-900">{patient.blood_type ?? "N/A"}</p>
                 </div>
                 <div>
                   <p className="text-xs font-medium text-blue-600 uppercase">Age</p>
-                  <p className="mt-1 font-medium text-gray-900">{patient.age}</p>
+                  <p className="mt-1 font-medium text-gray-900">{patient.age ?? "N/A"}</p>
                 </div>
                 <div>
                   <p className="text-xs font-medium text-blue-600 uppercase">Gender</p>
-                  <p className="mt-1 font-medium text-gray-900">{patient.gender}</p>
+                  <p className="mt-1 font-medium text-gray-900">{patient.gender ?? "N/A"}</p>
                 </div>
                 <div>
                   <p className="text-xs font-medium text-blue-600 uppercase">Emergency Contact</p>
-                  <p className="mt-1 font-medium text-gray-900">{patient.emergency_contact}</p>
+                  <p className="mt-1 font-medium text-gray-900">{patient.emergency_contact ?? "N/A"}</p>
                 </div>
 
               </div>
@@ -128,81 +128,65 @@ function PatientHealth() {
           </div>
 
           {/* Test Results Table */}
-          <div className="p-6">
+          <div className="p-3 sm:p-6">
 
             {/* start of vital signs */}
-             <div>
-                <h1 className="text-md font-bold text-gray-900 flex items-center gap-2">
-                  <ActivityIcon className="h-5 w-5 text-gray-400" />
-                 <span>Vital Signs</span>
-                </h1>
-            {patient.vitalsign_set.length > 0 ? (
-                     <div className="p-6">
+            <div>
+  <h1 className="text-md font-bold text-gray-900 flex items-center gap-2 px-6 pt-4">
+    <ActivityIcon className="h-5 w-5 text-gray-400" />
+    <span>Vital Signs</span>
+  </h1>
 
-            <p className={`p-6 text-sm text-gray-600 ${patient.vitalsign_set && patient.vitalsign_set.length > 0 ? 'hidden':'block'}`}>No Vital Signs Available</p>
+  {patient.vitalsign_set.length > 0 ? (
+    <div className="p-6">
 
-              <div className={`overflow-x-auto ${patient.vitalsign_set && patient.vitalsign_set.length > 0 ? 'block':'hidden'}`}>
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead>
-                    <tr>
-                   
-                      <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Date
-                      </th>
-                      <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Blood Pressure
-                      </th>
-                      <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Pulse
-                      </th>
-                      <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Temperature
-                      </th>
-                      <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Weight
-                      </th>
-                
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200 border border-gray-200">
-                    
-                    {patient.vitalsign_set && patient.vitalsign_set.length > 0 ? patient.vitalsign_set.map((vital) => (
-                      
-                      <tr key={vital.id}>
+      {/* Desktop Table */}
+      <div className="hidden sm:block overflow-x-auto">
+        <table className="w-full divide-y divide-gray-200">
+          <thead>
+            <tr>
+              <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+              <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Blood Pressure</th>
+              <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pulse</th>
+              <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Temperature</th>
+              <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Weight</th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200 border border-gray-200">
+            {patient.vitalsign_set.map((vital) => (
+              <tr key={vital.id}>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{vital.date}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{vital.blood_pressure}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{vital.pulse}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{vital.temperature}°C</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{vital.weight}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
+      {/* Mobile View */}
+      <div className="block sm:hidden space-y-4">
+        {patient.vitalsign_set.map((vital) => (
+          <div key={vital.id} className="border-l-4 border-blue-500 pl-4 py-2">
+            <p className="text-sm font-semibold text-gray-900">Date: {vital.date}</p>
+            <p className="text-sm text-gray-600">Blood Pressure: {vital.blood_pressure}</p>
+            <p className="text-sm text-gray-600">Pulse: {vital.pulse}</p>
+            <p className="text-sm text-gray-600">Temperature: {vital.temperature}°C</p>
+            <p className="text-sm text-gray-600">Weight: {vital.weight}</p>
+          </div>
+        ))}
+      </div>
 
-                    
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {vital.date}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {vital.blood_pressure}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {vital.pulse}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {vital.temperature}°C
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {vital.weight}
-                        </td>
-           
-                      </tr>
-                    )) : (
-                      <p className="p-6 text-sm text-gray-600 text-center">No Vital Signs Available</p>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-        
-            ) : (
-              <div className="text-center py-10">
-                <p className="text-gray-500">No test results available for this patient.</p>
-              </div>
-            )}
-            </div>
+    </div>
+  ) : (
+    <div className="text-center py-10">
+      <p className="text-gray-500">No Vital Signs Available</p>
+    </div>
+  )}
+</div>
+
 
             {/* end of vital signs */}
 
@@ -225,51 +209,80 @@ function PatientHealth() {
 
 
 
-      <table className="min-w-full divide-y divide-gray-200">
-                  <thead>
-                    <tr>
-                   
-                      <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Medicine Name
-                      </th>
-                      <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Dosage
-                      </th>
-                      <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Frequency
-                      </th>
-                      <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Starting Date
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200 border border-gray-200">
-                    
-                    {patient.medication_set && patient.medication_set.length > 0 ? patient.medication_set.map((medication) => (
-                      
-                      <tr key={medication.id}>
+ <div className="w-full overflow-x-auto">
+  <table className="w-full divide-y divide-gray-200 hidden sm:table">
+    <thead>
+      <tr>
+        <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          Medicine Name
+        </th>
+        <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          Dosage
+        </th>
+        <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          Frequency
+        </th>
+        <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          Starting Date
+        </th>
+      </tr>
+    </thead>
+    <tbody className="bg-white divide-y divide-gray-200 border border-gray-200">
+      {patient.medication_set && patient.medication_set.length > 0 ? (
+        patient.medication_set.map((medication) => (
+          <tr key={medication.id}>
+            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{medication.name}</td>
+            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{medication.dosage}</td>
+            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{medication.frequency}</td>
+            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{medication.start_date}</td>
+          </tr>
+        ))
+      ) : (
+        <tr>
+          <td colSpan="4" className="px-6 py-4 text-center text-sm text-gray-600">
+            Not taking any medications yet
+          </td>
+        </tr>
+      )}
+    </tbody>
+  </table>
+</div>
 
 
-                    
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+
+                {/* mobile view */}
+
+
+                   <div className="block sm:hidden space-y-4">
+                {patient.medication_set && patient.medication_set.length > 0 ? patient.medication_set.map((medication) => (
+                  <div key={medication.id} className="border-l-2 border-blue-500 pl-4">
+                    <div className="flex justify-between items-start border-b-2 border-gray-100 pb-2">
+                      <div>
+                        <h3 className="text-sm font-medium text-gray-900">
                           {medication.name}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {medication.dosage}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {medication.frequency}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {medication.start_date}
-                        </td>
-                    
-                      </tr>
-                    )) : (
-                      <p className="p-6 text-sm text-gray-600 text-center">Not taking any medications yet</p>
-                    )}
-                  </tbody>
-                </table>
+                        </h3>
+                        <p className="mt-1 text-sm text-gray-600">
+                          Dosage: {medication.dosage}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          Frequency: {medication.frequency}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          Started: {medication.start_date}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )) : (
+                  <p className="p-6 text-sm text-gray-600">Not Taking Medication Yet</p>
+                )
+
+                }
+              </div>
+
+
+
+                {/* mobile view */}
 
             </div>
           </div>

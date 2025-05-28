@@ -1,6 +1,5 @@
 import React from 'react';
 import { Search, Filter } from 'lucide-react';
-import LoadingSpinner from './LoadingSpinner';
 import { ChevronDown } from "lucide-react";
 
 const SearchFilters = ({
@@ -14,7 +13,7 @@ const SearchFilters = ({
 }) => {
   return (
     <div className="bg-white rounded-lg shadow-sm p-3 md:p-4 -mt-12">
-     
+
       <div className="flex flex-col lg:flex-row gap-4">
         <div className="flex-1">
           <div className="relative">
@@ -29,23 +28,23 @@ const SearchFilters = ({
           </div>
         </div>
         <div className="lg:w-1/4 relative">
-  <select
-    className="w-full px-4 py-3 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white"
-    value={selectedSpecialty}
-    onChange={(e) => setSelectedSpecialty(e.target.value)}
-  >
-    {specialties.map((specialty) => (
-      <option key={specialty} value={specialty}>
-        {specialty}
-      </option>
-    ))}
-  </select>
-  
-  <ChevronDown
-    size={20}
-    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none"
-  />
-</div>
+          <select
+            className="w-full px-4 py-3 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white"
+            value={selectedSpecialty}
+            onChange={(e) => setSelectedSpecialty(e.target.value)}
+          >
+            {specialties.map((specialty) => (
+              <option key={specialty} value={specialty}>
+                {specialty}
+              </option>
+            ))}
+          </select>
+
+          <ChevronDown
+            size={20}
+            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none"
+          />
+        </div>
         <div className="lg:w-auto flex items-center">
           <label className="inline-flex items-center cursor-pointer">
             <input

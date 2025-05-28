@@ -42,8 +42,8 @@ function PatientTest() {
   if (loading) {
     return (
       <div className="min-h-screen">
-       
-          <Loader />
+
+        <Loader />
       </div>
     )
   }
@@ -64,123 +64,150 @@ function PatientTest() {
   return (
 
     <>
-    <Header/>
-    <div className="min-h-screen bg-[#F8FAFC] p-6">
-      <div className="max-w-5xl mx-auto">
-        {/* Navigation */}
-        <div className="mb-4 flex">
-          <button
-            onClick={() => window.history.back()}
-            className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900"
-          >
-            <ChevronLeftIcon className="h-4 w-4 mr-1 my-1 text-blue-600" />
-            <span className='text-blue-600 text-md'>
-            Back
-            </span>
-          </button>
-        </div>
-
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-          {/* Header */}
-          <div className="border-b border-gray-200 bg-white rounded-t-xl p-6">
-            <div className="flex justify-between items-start">
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900 flex items-center">
-                  <ClipboardListIcon className="h-7 w-7 mr-2 text-blue-600" />
-                  Test Results
-                </h1>
-                <p className="mt-1 text-sm text-gray-500">
-                  Comprehensive medical laboratory report
-                </p>
-              </div>
-            </div>
-
-            {/* Patient Information */}
-        <div className="mt-6 bg-blue-50 rounded-lg border border-blue-100 p-4">
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                <div>
-                  <p className="text-xs font-medium text-blue-600 uppercase">
-                    Patient Name
-                  </p>
-                  <p className="mt-1 font-medium text-gray-900">{patient.full_name}</p>
-                </div>
-                <div>
-                  <p className="text-xs font-medium text-blue-600 uppercase">Blood Type</p>
-                  <p className="mt-1 font-medium text-gray-900">{patient.blood_type}</p>
-                </div>
-                <div>
-                  <p className="text-xs font-medium text-blue-600 uppercase">Age</p>
-                  <p className="mt-1 font-medium text-gray-900">{patient.age}</p>
-                </div>
-                <div>
-                  <p className="text-xs font-medium text-blue-600 uppercase">Gender</p>
-                  <p className="mt-1 font-medium text-gray-900">{patient.gender}</p>
-                </div>
-                <div>
-                  <p className="text-xs font-medium text-blue-600 uppercase">Emergency Contact</p>
-                  <p className="mt-1 font-medium text-gray-900">{patient.emergency_contact}</p>
-                </div>
-
-              </div>
-            </div>
+      <Header />
+      <div className="min-h-screen bg-[#F8FAFC] p-6">
+        <div className="max-w-5xl mx-auto">
+          {/* Navigation */}
+          <div className="mb-4 flex">
+            <button
+              onClick={() => window.history.back()}
+              className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900"
+            >
+              <ChevronLeftIcon className="h-4 w-4 mr-1 my-1 text-blue-600" />
+              <span className='text-blue-600 text-md'>
+                Back
+              </span>
+            </button>
           </div>
 
-          {/* Test Results Table */}
-          <div className="p-6">
-            {patient.test_results.length > 0 ? (
-              <div className="space-y-8">
-                {patient.test_results.map((test) => (
-                  <div key={test.id} className="border border-gray-200 rounded-lg overflow-hidden">
-                    <div className="bg-gray-50 p-4 flex justify-between items-start">
-                      <p className="text-sm text-gray-600">
-                        Ordered by: Dr. {test.doctor_info?.doctor_name || 'N/A'}
-                      </p>
-                    </div>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+            {/* Header */}
+            <div className="border-b border-gray-200 bg-white rounded-t-xl p-6">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h1 className="text-2xl font-bold text-gray-900 flex items-center">
+                    <ClipboardListIcon className="h-7 w-7 mr-2 text-blue-600" />
+                    Test Results
+                  </h1>
+                  <p className="mt-1 text-sm text-gray-500">
+                    Comprehensive medical laboratory report
+                  </p>
+                </div>
+              </div>
 
-                    <div className="overflow-x-auto">
-                      <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
-                          <tr>
-                            <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Test Name</th>
-                            <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Result</th>
-                            <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Date</th>
-                            <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Actions</th>
-                          </tr>
-                        </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
-                          <tr>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{test.test_type}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{test.result}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{test.date}</td>
-                      
-                            <td className="px-6 py-4 whitespace-nowrap">
-                               <a
-                          href={test.report_file}
-                          download={true}
-                          rel="noopener noreferrer"
-                          className="flex items-center w-3/4 gap-2 px-3 py-1.5 text-xs font-medium rounded-md text-blue-700 bg-white hover:bg-blue-50"
-                        >
-                          <ArrowDown className="h-4 w-4" /> Download Report
-                        </a>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
+              {/* Patient Information */}
+              <div className="mt-6 bg-blue-50 rounded-lg border border-blue-100 p-4">
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                  <div>
+                    <p className="text-xs font-medium text-blue-600 uppercase">
+                      Patient Name
+                    </p>
+                    <p className="mt-1 font-medium text-gray-900">{patient.full_name}</p>
                   </div>
-                ))}
+                  <div>
+                    <p className="text-xs font-medium text-blue-600 uppercase">Blood Type</p>
+                    <p className="mt-1 font-medium text-gray-900">{patient.blood_type ?? "N/A"}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs font-medium text-blue-600 uppercase">Age</p>
+                    <p className="mt-1 font-medium text-gray-900">{patient.age ?? "N/A"}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs font-medium text-blue-600 uppercase">Gender</p>
+                    <p className="mt-1 font-medium text-gray-900">{patient.gender ?? "N/A"}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs font-medium text-blue-600 uppercase">Emergency Contact</p>
+                    <p className="mt-1 font-medium text-gray-900">{patient.emergency_contact ?? "N/A"}</p>
+                  </div>
+
+                </div>
               </div>
-            ) : (
-              <div className="text-center py-10">
-                <p className="text-gray-500">No test results available for this patient.</p>
-              </div>
-            )}
+            </div>
+
+            {/* Test Results Section */}
+            <div className="p-6">
+              {patient.test_results.length > 0 ? (
+                <div className="space-y-8">
+
+                  {patient.test_results.map((test) => (
+                    <div key={test.id} className="border border-gray-200 rounded-lg overflow-hidden">
+
+                      {/* Header */}
+                      <div className="bg-gray-50 p-4 flex justify-between items-start">
+                        <p className="text-sm text-gray-600">
+                          Ordered by: Dr. {test.doctor_info?.doctor_name || 'N/A'}
+                        </p>
+                      </div>
+
+                      {/* Desktop Table */}
+                      <div className="hidden sm:block overflow-x-auto">
+                        <table className="min-w-full divide-y divide-gray-200">
+                          <thead className="bg-gray-50">
+                            <tr>
+                              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Test Name</th>
+                              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Result</th>
+                              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Date</th>
+                              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Actions</th>
+                            </tr>
+                          </thead>
+                          <tbody className="bg-white divide-y divide-gray-200">
+                            <tr>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{test.test_type}</td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{test.result}</td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{test.date}</td>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <a
+                                  href={test.report_file}
+                                  download={true}
+                                  rel="noopener noreferrer"
+                                  className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-md text-blue-700 bg-white hover:bg-blue-50"
+                                >
+                                  <ArrowDown className="h-4 w-4" /> Download Report
+                                </a>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+
+                      {/* Mobile Card View */}
+                      <div className="block sm:hidden p-4 space-y-2">
+                        <p className="text-sm text-gray-700">
+                          <span className="font-semibold">Test:</span> {test.test_type}
+                        </p>
+                        <p className="text-sm text-gray-700">
+                          <span className="font-semibold">Result:</span> {test.result}
+                        </p>
+                        <p className="text-sm text-gray-700">
+                          <span className="font-semibold">Date:</span> {test.date}
+                        </p>
+                        <div>
+                          <a
+                            href={test.report_file}
+                            download={true}
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-md text-blue-700 bg-white hover:bg-blue-50 border border-blue-200"
+                          >
+                            <ArrowDown className="h-4 w-4" /> Download Report
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+
+                </div>
+              ) : (
+                <div className="text-center py-10">
+                  <p className="text-gray-500">No test results available for this patient.</p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <Footer/>
+      <Footer />
     </>
   )
 }

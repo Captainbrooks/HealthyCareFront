@@ -1,7 +1,5 @@
 import { useEffect, useState } from 'react';
 import { Routes, Route, Router } from 'react-router-dom';
-
-import './App.css';
 import { HomePage } from './pages/HomePage';
 import BookAppointment from './pages/BookAppointment';
 import EmergencyContacts from './pages/EmergencyContacts';
@@ -36,11 +34,6 @@ import { useAuthContext } from './hooks/useAuthContext';
 import { Navigate } from 'react-router-dom';
 import Unauthorized from './pages/Unauthorized';
 import NotFound from './pages/NotFound';
-import axios from 'axios';
-import { useLocation } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode';
-
-import { Loader } from 'lucide-react';
 import ProtectedDoctorRoute from './components/ProtectedDoctorRoute';
 import PatientTest from './pages/PatientTest';
 import PatientHealth from './pages/PatientHealth';
@@ -49,29 +42,14 @@ import PatientHealth from './pages/PatientHealth';
 
 function App() {
 
-
-
-
-
-
-  const { user} = useAuthContext();
-
-
-
-
-
-
+  const { user } = useAuthContext();
   const access_token = localStorage.getItem('access_token')
 
 
   return (
     <>
-    
-
-
-<Toaster />
+      <Toaster />
       <ScrollToTop />
-
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/bookappointment" element={access_token ? <BookAppointment /> : <Navigate to="/login" />} />
@@ -80,27 +58,15 @@ function App() {
         <Route path="/services" element={<Services />} />
         <Route path="/contact" element={<Contact />} />
         <Route path='/login' element={<Login />} />
-
-
         <Route path="/patient-portal" element={
-
           access_token ?
-
-
-
             <PatientPortal />
-
             :
-
             <Navigate to="/login" />
-
-
-
         } />
         <Route path="/register" element={<Register />} />
         <Route path="/find-doctors" element={<FindDoctors />} />
         <Route path="/departments" element={<Departments />} />
-
         <Route path="/opening-hours" element={<OpeningHours />} />
         <Route path="/emergency-care" element={<EmergencyCare />} />
         <Route path="/qualified-doctors" element={<QualifiedDoctors />} />
@@ -115,16 +81,14 @@ function App() {
         <Route path='/unauthorized' element={<Unauthorized />} />
         <Route path='/test-results/:patientId' element={<PatientTest />} />
         <Route path='/health-records/:patientId' element={<PatientHealth />} />
-
         {/*Doctor Dashboard */}
         <Route
           path="/dashboard"
           element={
 
-              <ProtectedDoctorRoute>
-                 <DashboardLayout />
-              </ProtectedDoctorRoute>
-             
+            <ProtectedDoctorRoute>
+              <DashboardLayout />
+            </ProtectedDoctorRoute>
           }
         >
           <Route index element={<DashboardHome />} />
@@ -134,19 +98,16 @@ function App() {
         </Route>
 
         <Route path="/patient/:patientId" element={
-        <ProtectedDoctorRoute>
-          <PatientHistory />  
+          <ProtectedDoctorRoute>
+            <PatientHistory />
           </ProtectedDoctorRoute>
-          
-          } />
-       
-      
-  
+
+        } />
         {/*Doctor Dashboard */}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>
-    
+
   );
 }
 
