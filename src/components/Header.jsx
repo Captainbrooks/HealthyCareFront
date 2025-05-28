@@ -162,7 +162,6 @@ function Header() {
           </div>
         </nav>
       </div>
-    </Headroom>
   );
 }
 export default Header;
