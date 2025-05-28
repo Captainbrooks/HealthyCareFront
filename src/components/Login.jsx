@@ -78,7 +78,7 @@ function Login() {
 
 
     try {
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/login/`, {
+      const response = await axios.post(`/api/auth/login/`, {
         email: trimmedEmail,
         password: trimmedPassword,
 

@@ -39,7 +39,7 @@ const DashboardHome = () => {
             const fetchTodayAppointments = async () => {
 
                 try {
-                    const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/appointments/list/?doctor=${doctorId}`, {
+                    const response = await axios.get(`/api/appointments/list/?doctor=${doctorId}`, {
                         withCredentials: true
                     })
 

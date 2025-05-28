@@ -29,7 +29,7 @@ const AppointmentsPage = () => {
 
     const fetchAppointments = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/appointments/list/?doctor=${doctorId}`, {
+        const response = await axios.get(`/api/appointments/list/?doctor=${doctorId}`, {
           withCredentials: true
         })
         setAppointments(response.data)
@@ -71,7 +71,7 @@ const AppointmentsPage = () => {
       if (!confirmed) return
     }
     try {
-      await axios.put(`${import.meta.env.VITE_API_URL}/api/appointments/${patientId}/${timeId}/`,
+      await axios.put(`/api/appointments/${patientId}/${timeId}/`,
         { status: newStatus },
         { withCredentials: true }
       )

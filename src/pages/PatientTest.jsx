@@ -25,7 +25,7 @@ function PatientTest() {
       try {
         setLoading(true)
         const response = await axios.get(
-          `${import.meta.env.VITE_API_URL}/api/patients/${patientId}`,
+          `/api/patients/${patientId}`,
           { withCredentials: true }
         )
         setPatient(response.data)

@@ -37,7 +37,7 @@ export function QualifiedDoctors() {
   useEffect(() => {
     const fetchfeaturedDoctors = async () => {
 
-      axios.get(`${import.meta.env.VITE_API_URL}/api/doctors/all/qualified/`, {
+      axios.get(`/api/doctors/all/qualified/`, {
         withCredentials: true
       }).then((response) => {
         console.log(response.data)

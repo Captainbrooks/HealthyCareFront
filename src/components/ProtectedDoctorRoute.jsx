@@ -30,7 +30,7 @@ function ProtectedDoctorRoute({ children }) {
         console.log("API:", import.meta.env.VITE_API_URL);
         try {
           const response = await axios.post(
-            `${import.meta.env.VITE_API_URL}/api/auth/dashboard-access-check/`,
+            `/api/auth/dashboard-access-check/`,
             { email, role },
             { withCredentials: true }
           );

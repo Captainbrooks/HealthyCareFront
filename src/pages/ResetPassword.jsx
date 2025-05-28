@@ -52,7 +52,7 @@ export function ResetPassword() {
 
 
         try {
-            const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/reset-password/`, {
+            const response = await axios.post(`/api/auth/reset-password/`, {
                 token: token,
                 new_password: formData.password,
                 confirm_password: formData.confirmPassword,

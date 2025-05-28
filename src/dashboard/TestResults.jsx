@@ -57,7 +57,7 @@ const TestResultsPage = ({ }) => {
       const status = 'completed'
       setError("")
       setLoading(true)
-      const url = `${import.meta.env.VITE_API_URL}/api/appointments/all/?doctor=${doctor_id}&status=${status}`;
+      const url = `/api/appointments/all/?doctor=${doctor_id}&status=${status}`;
       console.log("Fetching", url)
       const fetchAllAppointments = async () => {
         try {
@@ -148,7 +148,7 @@ const TestResultsPage = ({ }) => {
     formData.append('report_file', file);
     formData.append('patient', patientId);
     try {
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/patients/add-test-results/${patientId}/`,
+      const response = await axios.post(`/api/patients/add-test-results/${patientId}/`,
         formData, {
         headers: {
 

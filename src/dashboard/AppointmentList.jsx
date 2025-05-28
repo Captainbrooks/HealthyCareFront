@@ -41,7 +41,7 @@ const AppointmentsList = ({ limit }) => {
       const fetchAppointments = async () => {
         try {
           const response = await axios.get(
-            `${import.meta.env.VITE_API_URL}/api/appointments/list/?doctor=${doctor_id}`,
+            `/api/appointments/list/?doctor=${doctor_id}`,
             {
               withCredentials: true,
             },
@@ -129,7 +129,7 @@ const AppointmentsList = ({ limit }) => {
     }
     try {
       const response = await axios.put(
-        `${import.meta.env.VITE_API_URL}/api/appointments/${id}/${timeid}/`,
+        `/api/appointments/${id}/${timeid}/`,
         {
           status: newStatus,
           withCredentials: true,

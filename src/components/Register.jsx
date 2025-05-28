@@ -110,7 +110,7 @@ function Register() {
     setIsSubmitting(true)
 
     try {
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/register/`, {
+      const response = await axios.post(`/api/auth/register/`, {
         username: trimmedUsername,
         email: trimmedEmail,
         password: trimmedPassword
@@ -169,7 +169,7 @@ function Register() {
     setIsSubmitting(true)
 
     try {
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/verify-code/`, {
+      const response = await axios.post(`/api/auth/verify-code/`, {
 
         email: trimmedEmail,
         code: trimmedCode
@@ -235,7 +235,7 @@ function Register() {
 
     try {
 
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/resend-code/`, {
+      const response = await axios.post(`/api/auth/resend-code/`, {
         email: trimmedEmail,
 
         withCredentials: true

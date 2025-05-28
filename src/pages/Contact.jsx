@@ -57,7 +57,7 @@ function Contact() {
     e.preventDefault();
     // Handle form submission here
 
-    axios.post(`${import.meta.env.VITE_API_URL}/api/appointments/message/`, payload)
+    axios.post(`/api/appointments/message/`, payload)
       .then((response) => {
 
 

@@ -116,7 +116,7 @@ function BookAppointment() {
   const fetchTimeSlots = async (doctor_id, date) => {
     setTimeLoading(true)
     try {
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/doctors/timeslots/${doctor_id}/?appointment_date=${date}`, {
+      const response = await axios.get(`/api/doctors/timeslots/${doctor_id}/?appointment_date=${date}`, {
         withCredentials: true
       });
 
@@ -145,7 +145,7 @@ function BookAppointment() {
     setDoctorLoading(true)
 
     try {
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/doctors/list/${selecteddept}`);
+      const response = await axios.get(`/api/doctors/list/${selecteddept}`);
 
       setDoctors(response.data)
       setDoctorLoading(false)
@@ -263,7 +263,7 @@ function BookAppointment() {
 
 
     axios
-      .post(`${import.meta.env.VITE_API_URL}/api/appointments/create/`, payload)
+      .post(`/api/appointments/create/`, payload)
       .then((response) => {
 
         setAppointmentSuccess(true)

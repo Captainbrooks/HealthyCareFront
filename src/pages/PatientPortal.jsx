@@ -50,7 +50,7 @@ export function PatientPortal() {
   useEffect(() => {
     const fetchAvailavleDoctors = async () => {
 
-      axios.get(`${import.meta.env.VITE_API_URL}/api/doctors/list/availabletoday/`, {
+      axios.get(`/api/doctors/list/availabletoday/`, {
         withCredentials: true
       })
         .then((response) => {
