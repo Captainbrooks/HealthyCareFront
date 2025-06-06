@@ -37,10 +37,24 @@ import NotFound from './pages/NotFound';
 import ProtectedDoctorRoute from './components/ProtectedDoctorRoute';
 import PatientTest from './pages/PatientTest';
 import PatientHealth from './pages/PatientHealth';
+import axiosClient from './api/axios';
 
 
 
 function App() {
+
+useEffect(() => {
+  const fetchCsrfToken = async () => {
+    try {
+      const response = await axiosClient.get('/api/csrf/');
+      console.log("✅ CSRF token set");
+    } catch (error) {
+      console.error("Failed to set CSRF", error);
+    }
+  };
+
+  fetchCsrfToken();
+}, []);
 
   const { user } = useAuthContext();
   const access_token = localStorage.getItem('access_token')
