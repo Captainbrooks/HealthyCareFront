@@ -170,7 +170,7 @@ function Register() {
     setIsSubmitting(true)
 
     try {
-      const response = await axiosClient.post(`/api/auth/verify-code/`, {
+      const response = await axiosClient.post(`/auth/verify-code/`, {
 
         email: trimmedEmail,
         code: trimmedCode
@@ -235,7 +235,7 @@ function Register() {
 
     try {
 
-      const response = await axiosClient.post(`/api/auth/resend-code/`, {
+      const response = await axiosClient.post(`/auth/resend-code/`, {
         email: trimmedEmail,
 
         withCredentials: true

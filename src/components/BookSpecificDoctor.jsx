@@ -72,7 +72,7 @@ function BookSpecificDoctor() {
 
 
   useEffect(() => {
-    axiosClient.get(`/api/doctors/detail/${doctorName}`, {
+    axiosClient.get(`/doctors/detail/${doctorName}`, {
       withCredentials: true
     }).then((response) => {
       setDoctor(response.data)
@@ -124,7 +124,7 @@ function BookSpecificDoctor() {
     console.log("fetch time slots reached", doctor_id, date)
     setLoading(true)
     try {
-      const response = await axiosClientClient.get(`/api/doctors/timeslots/${doctor_id}/?appointment_date=${date}`, {
+      const response = await axiosClientClient.get(`/doctors/timeslots/${doctor_id}/?appointment_date=${date}`, {
         withCredentials: true
       });
 
@@ -224,7 +224,7 @@ function BookSpecificDoctor() {
     try {
       console.log("Before sending", payload);
 
-      const response = await axiosClientClient.post(`/api/appointments/create/`, payload);
+      const response = await axiosClientClient.post(`/appointments/create/`, payload);
 
       console.log("Form submitted successfully:", response.data);
       setAppointmentSuccess(true);

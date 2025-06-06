@@ -42,7 +42,7 @@ const DashboardHome = () => {
             const fetchTodayAppointments = async () => {
 
                 try {
-                    const response = await axiosClient.get(`/api/appointments/list/?doctor=${doctorId}`, {
+                    const response = await axiosClient.get(`/appointments/list/?doctor=${doctorId}`, {
                         withCredentials: true
                     })
 

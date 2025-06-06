@@ -25,7 +25,7 @@ function PatientTest() {
       try {
         setLoading(true)
         const response = await axiosClient.get(
-          `/api/patients/${patientId}`,
+          `/patients/${patientId}`,
           { withCredentials: true }
         )
         setPatient(response.data)

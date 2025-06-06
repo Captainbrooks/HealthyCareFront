@@ -65,7 +65,7 @@ function VerifyEmail() {
     setIsSubmitting(true);
     try {
       const response = await axiosClient.post(
-        `/api/auth/verify-code/`,
+        `/auth/verify-code/`,
         {
           email: trimmedEmail,
           code: trimmedCode,
@@ -122,7 +122,7 @@ function VerifyEmail() {
 
     try {
 
-      const response = await axiosClient.post(`/api/auth/resend-code/`, {
+      const response = await axiosClient.post(`/auth/resend-code/`, {
         email: trimmedEmail,
 
         withCredentials: true

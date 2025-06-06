@@ -78,7 +78,7 @@ function Login() {
 
 
     try {
-      const response = await axiosClient.post(`/api/auth/login/`, {
+      const response = await axiosClient.post(`/auth/login/`, {
         email: trimmedEmail,
         password: trimmedPassword,
 

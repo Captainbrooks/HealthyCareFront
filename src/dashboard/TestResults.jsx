@@ -58,7 +58,7 @@ const TestResultsPage = ({ }) => {
       const status = 'completed'
       setError("")
       setLoading(true)
-      const url = `/api/appointments/all/?doctor=${doctor_id}&status=${status}`;
+      const url = `/appointments/all/?doctor=${doctor_id}&status=${status}`;
       console.log("Fetching", url)
       const fetchAllAppointments = async () => {
         try {
@@ -149,7 +149,7 @@ const TestResultsPage = ({ }) => {
     formData.append('report_file', file);
     formData.append('patient', patientId);
     try {
-      const response = await axiosClient.post(`/api/patients/add-test-results/${patientId}/`,
+      const response = await axiosClient.post(`/patients/add-test-results/${patientId}/`,
         formData, {
         headers: {
 

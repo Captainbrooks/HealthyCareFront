@@ -51,7 +51,7 @@ export function PatientPortal() {
   useEffect(() => {
     const fetchAvailavleDoctors = async () => {
 
-      axiosClient.get(`/api/doctors/list/availabletoday/`, {
+      axiosClient.get(`/doctors/list/availabletoday/`, {
         withCredentials: true
       })
         .then((response) => {

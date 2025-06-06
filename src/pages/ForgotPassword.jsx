@@ -26,7 +26,7 @@ export function ForgotPassword() {
     setIsSubmitting(true)
 
     try {
-      const response = await axiosClient.post(`/api/auth/forgot-password/`, {
+      const response = await axiosClient.post(`/auth/forgot-password/`, {
         email: email,
         withCredentials: true
       });

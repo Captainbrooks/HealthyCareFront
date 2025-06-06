@@ -46,7 +46,7 @@ function App() {
 useEffect(() => {
   const fetchCsrfToken = async () => {
     try {
-      const response = await axiosClient.get('/api/csrf/');
+      const response = await axiosClient.get('/csrf/');
       console.log("✅ CSRF token set");
     } catch (error) {
       console.error("Failed to set CSRF", error);

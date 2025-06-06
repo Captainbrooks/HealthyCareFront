@@ -32,7 +32,7 @@ export function FindDoctors() {
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        const response = await axiosClient.get(`/api/doctors/list/`);
+        const response = await axiosClient.get(`/doctors/list/`);
         console.log(response.data);
         setFilteredDoctors(response.data);
         setDoctorsData(response.data);

@@ -35,7 +35,7 @@ export default function DoctorProfile() {
     console.log(doctor_name)
 
     const fetchDoctorDetail=async()=>{
-        const response=await axiosClient.get(`/api/doctors/detail/${doctor_name}`);
+        const response=await axiosClient.get(`/doctors/detail/${doctor_name}`);
         setDoctorData(response.data)
         setSpecializations(response.data.specializations)
         setCertifications(response.data.certifications)

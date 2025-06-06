@@ -56,7 +56,7 @@ function Contact() {
     e.preventDefault();
     // Handle form submission here
 
-    axiosClient.post(`/api/appointments/message/`, payload)
+    axiosClient.post(`/appointments/message/`, payload)
       .then((response) => {
 
 

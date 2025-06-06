@@ -117,7 +117,7 @@ function BookAppointment() {
   const fetchTimeSlots = async (doctor_id, date) => {
     setTimeLoading(true)
     try {
-      const response = await axiosClient.get(`/api/doctors/timeslots/${doctor_id}/?appointment_date=${date}`, {
+      const response = await axiosClient.get(`/doctors/timeslots/${doctor_id}/?appointment_date=${date}`, {
         withCredentials: true
       });
 
@@ -146,7 +146,7 @@ function BookAppointment() {
     setDoctorLoading(true)
 
     try {
-      const response = await axiosClient.get(`/api/doctors/list/${selecteddept}`);
+      const response = await axiosClient.get(`/doctors/list/${selecteddept}`);
 
       setDoctors(response.data)
       setDoctorLoading(false)
@@ -264,7 +264,7 @@ function BookAppointment() {
 
 
     axiosClient
-      .post(`/api/appointments/create/`, payload)
+      .post(`/appointments/create/`, payload)
       .then((response) => {
 
         setAppointmentSuccess(true)

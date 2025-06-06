@@ -110,7 +110,7 @@ const PatientHistory = () => {
 
         setLoading(true)
         try {
-          const response = await axiosClient.get(`/api/patients/${patientId}`, {
+          const response = await axiosClient.get(`/patients/${patientId}`, {
             withCredentials: true
           });
 
@@ -154,7 +154,7 @@ const PatientHistory = () => {
     formData.append('report_file', file);
     formData.append('patient', patientId);
     try {
-      const response = await axiosClient.post(`/api/patients/add-test-results/${patientId}/`,
+      const response = await axiosClient.post(`/patients/add-test-results/${patientId}/`,
         formData, {
         headers: {
 
@@ -194,7 +194,7 @@ const PatientHistory = () => {
     if (!window.confirm("Are you sure you want to delete this test result?")) return;
 
     try {
-      const response = await axiosClient.delete(`/api/patients/delete-test-results/${patientId}/${test_id}`, {
+      const response = await axiosClient.delete(`/patients/delete-test-results/${patientId}/${test_id}`, {
         withCredentials: true
       });
 
@@ -248,7 +248,7 @@ const PatientHistory = () => {
 
 
       const response = await axiosClient.post(
-        `/api/patients/add-vital-signs/${patientId}/`,
+        `/patients/add-vital-signs/${patientId}/`,
         formData,
         {
           headers: {
@@ -331,7 +331,7 @@ const PatientHistory = () => {
 
     try {
 
-      const response = await axiosClient.post(`/api/patients/add-medication/${patientId}/`,
+      const response = await axiosClient.post(`/patients/add-medication/${patientId}/`,
         formData, {
         headers: {
 
@@ -373,7 +373,7 @@ const PatientHistory = () => {
 
 
 
-      const response = await axiosClient.put(`/api/patients/update-medication/${patientId}/${medication_id}/`,
+      const response = await axiosClient.put(`/patients/update-medication/${patientId}/${medication_id}/`,
         formData,
         {
           headers: {
@@ -412,7 +412,7 @@ const PatientHistory = () => {
     if (!window.confirm("Are you sure you want to delete this vital signs?")) return;
 
     try {
-      const response = await axiosClient.delete(`/api/patients/delete-medication/${patientId}/${medication_id}/`, {
+      const response = await axiosClient.delete(`/patients/delete-medication/${patientId}/${medication_id}/`, {
         withCredentials: true
       });
 

@@ -59,7 +59,7 @@ const AvailabilityPage = () => {
       const fetchDoctorAvailability = async () => {
 
         try {
-          const response = await axiosClient.get(`/api/doctors/availability/${doctor_id}`, {
+          const response = await axiosClient.get(`/doctors/availability/${doctor_id}`, {
             withCredentials: true
           })
 
@@ -101,7 +101,7 @@ const AvailabilityPage = () => {
 
       setLoading(true)
 
-      const response = await axiosClient.patch(`/api/doctors/${doctor_id}/update-availability/`,
+      const response = await axiosClient.patch(`/doctors/${doctor_id}/update-availability/`,
         {
           availability: currentavailability,
           withCredentials: true

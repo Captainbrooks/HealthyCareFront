@@ -52,7 +52,7 @@ export function ResetPassword() {
 
 
         try {
-            const response = await axiosClient.post(`/api/auth/reset-password/`, {
+            const response = await axiosClient.post(`/auth/reset-password/`, {
                 token: token,
                 new_password: formData.password,
                 confirm_password: formData.confirmPassword,

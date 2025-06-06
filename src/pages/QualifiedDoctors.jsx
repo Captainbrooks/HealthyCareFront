@@ -38,7 +38,7 @@ export function QualifiedDoctors() {
   useEffect(() => {
     const fetchfeaturedDoctors = async () => {
 
-      axiosClient.get(`/api/doctors/all/qualified/`, {
+      axiosClient.get(`/doctors/all/qualified/`, {
         withCredentials: true
       }).then((response) => {
         console.log(response.data)

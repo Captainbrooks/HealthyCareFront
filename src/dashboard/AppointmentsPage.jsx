@@ -30,7 +30,7 @@ const AppointmentsPage = () => {
 
     const fetchAppointments = async () => {
       try {
-        const response = await axiosClient.get(`/api/appointments/list/?doctor=${doctorId}`, {
+        const response = await axiosClient.get(`/appointments/list/?doctor=${doctorId}`, {
           withCredentials: true
         })
         setAppointments(response.data)
@@ -72,7 +72,7 @@ const AppointmentsPage = () => {
       if (!confirmed) return
     }
     try {
-      await axiosClient.put(`/api/appointments/${patientId}/${timeId}/`,
+      await axiosClient.put(`/appointments/${patientId}/${timeId}/`,
         { status: newStatus },
         { withCredentials: true }
       )
